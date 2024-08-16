@@ -1,9 +1,7 @@
-import express from 'express'
-// import userRoutes from "./users.routes"
-const router = express.Router()
+import express from "express";
+import userRoutes from "../../routes/v1/user.route";
+const router = express.Router();
 
+router.use("/users", userRoutes);
 
-// router.use('/users', userRoutes);
-
-
-export default router
+export default router;

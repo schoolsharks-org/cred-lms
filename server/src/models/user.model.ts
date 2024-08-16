@@ -19,7 +19,7 @@ export interface User extends Document {
   createdAt: Date;
 }
 
-const UserSchema: Schema<User> = new Schema(
+const UserSchema: Schema<User> = new Schema<User>(
   {
     name: {
       type: String,

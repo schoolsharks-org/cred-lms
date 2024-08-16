@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-export interface DailyQuestion extends Document {
+export interface DailyQuestionI extends Document {
   date: Date;
   questionPrompt: string;
   departmentResponses: {
@@ -23,7 +23,7 @@ export interface DailyQuestion extends Document {
   };
 }
 
-const dailyQuestionSchema: Schema<DailyQuestion> = new Schema(
+const dailyQuestionSchema: Schema<DailyQuestionI> = new Schema<DailyQuestionI>(
   {
     date: {
       type: Date,
@@ -82,9 +82,9 @@ const dailyQuestionSchema: Schema<DailyQuestion> = new Schema(
   }
 );
 
-const Question: Model<DailyQuestion> = mongoose.model(
+const DailyQuestion: Model<DailyQuestionI> = mongoose.model(
   "DailyQuestion",
   dailyQuestionSchema
 );
 
-export default Question;
+export default DailyQuestion;
