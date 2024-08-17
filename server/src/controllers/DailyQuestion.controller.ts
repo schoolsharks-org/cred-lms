@@ -7,15 +7,38 @@ export const getDailyQuestion = async (
   res: Response
 ): Promise<void> => {
   try {
-    const today = new Date().setHours(0, 0, 0, 0);
-    const { userId } = req.body;
+    const today = new Date();
+    const startOfToday = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      0,
+      0,
+      0,
+      0
+    );
+    const endOfToday = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      23,
+      59,
+      59,
+      999
+    );
 
-    const dailyQuestion = await DailyQuestion.findOne({ date: today });
+    const dailyQuestion = await DailyQuestion.findOne({
+      date: {
+        $gte: startOfToday,
+        $lt: endOfToday,
+      },
+    });
+
     if (!dailyQuestion) {
       res.status(404).json({ message: "No daily question found for today" });
       return;
     }
-
+    const { userId } = req.body;
     const user = await User.findById(userId).select("dailyQuestionResponse");
     const userResponse = user?.dailyQuestionResponse;
 
@@ -28,8 +51,8 @@ export const getDailyQuestion = async (
     const response = {
       question: dailyQuestion.questionPrompt,
       options: {
-        OptionA: "Option A ",
-        OptionB: "Option B ",
+        OptionA: "Option A",
+        OptionB: "Option B",
       },
       userResponse: userResponse,
       stats,

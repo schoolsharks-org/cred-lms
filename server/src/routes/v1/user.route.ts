@@ -6,6 +6,6 @@ import { getDailyQuestion } from "../../controllers/DailyQuestion.controller";
 const router = express.Router();
 
 router.get("/get-user", asyncHandler(handleGetUser));
-router.get("/daily-question", getDailyQuestion);
+router.get("/get-daily-question", asyncHandler(getDailyQuestion));
 
 export default router;
