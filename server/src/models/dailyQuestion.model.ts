@@ -1,8 +1,15 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
+
+export type Option='OptionA' | 'OptionB'
+
 export interface DailyQuestionI extends Document {
   date: Date;
   questionPrompt: string;
+  options: {
+    optionA: string;
+    optionB: string;
+  };
   departmentResponses: {
     Sales: {
       OptionA: number;
@@ -16,7 +23,7 @@ export interface DailyQuestionI extends Document {
       OptionA: number;
       OptionB: number;
     };
-    Other: {
+    Others: {
       OptionA: number;
       OptionB: number;
     };
@@ -33,6 +40,16 @@ const dailyQuestionSchema: Schema<DailyQuestionI> = new Schema<DailyQuestionI>(
       type: String,
       required: true,
       trim: true,
+    },
+    options: {
+      optionA: {
+        type: String,
+        required: true,
+      },
+      optionB: {
+        type: String,
+        required: true,
+      },
     },
     departmentResponses: {
       Sales: {
@@ -65,7 +82,7 @@ const dailyQuestionSchema: Schema<DailyQuestionI> = new Schema<DailyQuestionI>(
           required: true,
         },
       },
-      Other: {
+      Others: {
         OptionA: {
           type: Number,
           required: true,

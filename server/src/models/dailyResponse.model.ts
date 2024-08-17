@@ -1,11 +1,10 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
-import DailyQuestion from "./dailyQuestion.model";
-import User from "./user.model";
+
 interface dailyResponseI extends Document {
   date: Date;
-  dailyQuestionPrompt: string;
-  user: string;
-  userResponse: string;
+  dailyQuestion: mongoose.Types.ObjectId;
+  user: mongoose.Types.ObjectId;
+  userResponse: 'OptionA'|'OptionB';
 }
 
 const dailyResponseSchema: Schema<dailyResponseI> = new Schema<dailyResponseI>(
@@ -14,19 +13,19 @@ const dailyResponseSchema: Schema<dailyResponseI> = new Schema<dailyResponseI>(
       type: Date,
       required: true,
     },
-    dailyQuestionPrompt: {
-      type: String,
-      ref: DailyQuestion,
+    dailyQuestion: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'DailyQuestion',
       required: true,
-      trim: true,
     },
     user: {
-      type: String,
-      ref: User,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
     },
     userResponse: {
       type: String,
+      enum:['OptionA','OptionB'],
       required: true,
     },
   },
@@ -36,7 +35,7 @@ const dailyResponseSchema: Schema<dailyResponseI> = new Schema<dailyResponseI>(
 );
 
 const DailyResponse: Model<dailyResponseI> = mongoose.model<dailyResponseI>(
-  "DailyRespponse",
+  "DailyResponse",
   dailyResponseSchema
 );
 

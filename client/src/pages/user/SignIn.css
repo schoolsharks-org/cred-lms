@@ -1,0 +1,10 @@
+.sign-in-page .MuiOutlinedInput-notchedOutline{
+    border-color: #00000000 !important;
+}
+.sign-in-page .MuiInputBase-input{
+    background-color: #F9E1E2 !important;
+    padding: 24px;
+}
+.sign-in-page .MuiFormLabel-root{
+    font-weight: 700;
+}

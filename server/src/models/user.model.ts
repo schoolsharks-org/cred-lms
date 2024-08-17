@@ -1,4 +1,7 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt"
+
 
 export enum Department {
   Sales = "Sales",
@@ -8,15 +11,20 @@ export enum Department {
 }
 
 export interface User extends Document {
+  _id:mongoose.Types.ObjectId,
   name: string;
+  password:string;
   email: string;
   department: Department;
   contact: string;
   address: string;
   score: number;
   dailyQuestionResponse: string;
-  token: string;
+  refreshToken: string;
   createdAt: Date;
+  isPasswordCorrect(password: string): Promise<boolean>;
+  generateAccessToken(): string;
+  generateRefreshToken(): string;
 }
 
 const UserSchema: Schema<User> = new Schema<User>(
@@ -25,6 +33,11 @@ const UserSchema: Schema<User> = new Schema<User>(
       type: String,
       required: true,
       trim: true,
+    },
+    password:{
+      type:String,
+      required:true,
+      trim:true,
     },
     email: {
       type: String,
@@ -58,9 +71,8 @@ const UserSchema: Schema<User> = new Schema<User>(
       type: String,
       trim: true,
     },
-    token: {
+    refreshToken: {
       type: String,
-      required: true,
       trim: true,
     },
   },
@@ -68,6 +80,50 @@ const UserSchema: Schema<User> = new Schema<User>(
     timestamps: true,
   }
 );
+
+UserSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
+  try {
+    this.password = await bcrypt.hash(this.password, 10);
+    next();
+  } catch (error:any) {
+    next(error);
+  }
+});
+
+
+UserSchema.methods.isPasswordCorrect = async function(password:string){
+  return await bcrypt.compare(password, this.password)
+}
+
+UserSchema.methods.generateAccessToken = function(){
+  return jwt.sign(
+      {
+          _id: this._id,
+          email: this.email,
+          name: this.name,
+      },
+      process.env.ACCESS_TOKEN_SECRET as string,
+      {
+          expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+      }
+  )
+}
+
+
+UserSchema.methods.generateRefreshToken = function(){
+  return jwt.sign(
+      {
+          _id: this._id,
+      },
+      process.env.REFRESH_TOKEN_SECRET as string,
+      {
+          expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+      }
+  )
+}
+
 
 const User: Model<User> = mongoose.model<User>("User", UserSchema);
 
