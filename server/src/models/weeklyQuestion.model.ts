@@ -1,38 +1,39 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
-
-interface WeeklyQuestion extends Document {
+import Question from "./questions.model";
+interface WeeklyQuestionI extends Document {
   date: Date;
-  questionPrompt: string[];
+  weeklyQuestionModule: [];
   totalScore: number;
   totalAnswers: number;
 }
 
-const weeklyQuestionSchema: Schema<WeeklyQuestion> = new Schema<WeeklyQuestion>(
-  {
-    date: {
-      type: Date,
-      required: true,
+const weeklyQuestionSchema: Schema<WeeklyQuestionI> =
+  new Schema<WeeklyQuestionI>(
+    {
+      date: {
+        type: Date,
+        required: true,
+      },
+      weeklyQuestionModule: {
+        type: [],
+        ref: Question,
+        required: true,
+      },
+      totalScore: {
+        type: Number,
+        required: true,
+      },
+      totalAnswers: {
+        type: Number,
+        required: true,
+      },
     },
-    questionPrompt: {
-      type: [String],
-      required: true,
-      trim: true,
-    },
-    totalScore: {
-      type: Number,
-      required: true,
-    },
-    totalAnswers: {
-      type: Number,
-      required: true,
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
+    {
+      timestamps: true,
+    }
+  );
 
-const WeeklyQuestion: Model<WeeklyQuestion> = mongoose.model<WeeklyQuestion>(
+const WeeklyQuestion: Model<WeeklyQuestionI> = mongoose.model<WeeklyQuestionI>(
   "WeeklyQuestion",
   weeklyQuestionSchema
 );

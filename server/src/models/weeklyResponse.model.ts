@@ -3,7 +3,6 @@ import WeeklyQuestion from "./weeklyQuestion.model";
 import User from "./user.model";
 interface weeklyResponseI extends Document {
   date: Date;
-  weeklyQuestionPrompt: mongoose.Schema.Types.ObjectId;
   user: mongoose.Schema.Types.ObjectId;
   userResponse: Array<{
     id: mongoose.Schema.Types.ObjectId;
@@ -18,12 +17,6 @@ const weeklyResponseSchema: Schema<weeklyResponseI> =
         type: Date,
         required: true,
       },
-      weeklyQuestionPrompt: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: WeeklyQuestion,
-        required: true,
-        trim: true,
-      },
       user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: User,
@@ -31,8 +24,8 @@ const weeklyResponseSchema: Schema<weeklyResponseI> =
       },
       userResponse: [
         {
-          id: {
-            type: String,
+          _id: {
+            type: mongoose.Schema.Types.ObjectId,
             required: true,
           },
           response: {
