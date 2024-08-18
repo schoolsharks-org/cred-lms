@@ -13,7 +13,7 @@ const initialState: User = {
   name: '',
   score: 0,
   authenticated: false,
-  loading: false,
+  loading: true,
   error: null,
 };
 
@@ -30,10 +30,10 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action: PayloadAction<{ name: string; score: number }>) => {
-        state.loading = false;
         state.authenticated = true;
         state.name = action.payload.name;
         state.score = action.payload.score;
+        state.loading = false;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
