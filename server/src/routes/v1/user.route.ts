@@ -28,6 +28,7 @@ router
   .route("/daily-question")
   .get(authMiddleware, asyncHandler(getDailyQuestion))
   .post(authMiddleware, asyncHandler(respondToDailyQuestion));
+  
 router
   .route("/weekly-question")
   .get(authMiddleware, asyncHandler(getWeeklyQuestion))

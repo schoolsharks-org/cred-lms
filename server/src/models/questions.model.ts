@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import { Schema, Document } from "mongoose";
 
 export enum Options {
   YES = "YES",
@@ -26,10 +26,7 @@ export interface Question extends Document {
   createdAt: Date;
 }
 
-
-
-
-const QuestionSchema: Schema<Question> = new Schema<Question>(
+export const QuestionSchema: Schema<Question> = new Schema<Question>(
   {
     questionPrompt: {
       type: String,
@@ -51,12 +48,12 @@ const QuestionSchema: Schema<Question> = new Schema<Question>(
     optionA: {
       type: String,
       required: true,
-      enum: Options,
+      // enum: Object.values(Options),
     },
     optionB: {
       type: String,
       required: true,
-      enum: Options,
+      // enum: Object.values(Options),
     },
     score: {
       type: Number,
@@ -68,10 +65,3 @@ const QuestionSchema: Schema<Question> = new Schema<Question>(
     timestamps: true,
   }
 );
-
-const Question: Model<Question> = mongoose.model<Question>(
-  "Question",
-  QuestionSchema
-);
-
-export default Question;

@@ -32,7 +32,8 @@ const BottomNav = () => {
         maxWidth: "480px",
         width: "100%",
         margin: "auto",
-        boxShadow:"0 -4px 10px #00000022"
+        boxShadow:"0 -4px 10px #00000022",
+        zIndex:"999"
       }}
     >
       <BottomNavigation

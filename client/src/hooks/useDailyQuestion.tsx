@@ -1,5 +1,8 @@
 import userApi from "@/api/userApi";
+import { AppDispatch } from "@/store/store";
+import { setUser } from "@/store/user/userSlice";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 
 export interface DailyQuestion {
   question: string;
@@ -33,11 +36,15 @@ const useDailyQuestion = () => {
   const [data, setData] = useState<DailyQuestion | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const dispatch=useDispatch<AppDispatch>()
+
   const fetchDailyQuestion = async () => {
     try {
       setLoading(true)
+      const istDate = date.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+      
       const response = await userApi.get("/daily-question", {
-        params: { date:date },
+        params: { date:istDate },
       });
       setData(response.data);
     } catch (error: any) {
@@ -52,6 +59,7 @@ const useDailyQuestion = () => {
     try {
       const response = await userApi.post("/daily-question", { option });
       setData(response.data);
+      dispatch(setUser({score:response.data.score}))
     } catch (error: any) {
       setError(error.message);
     }

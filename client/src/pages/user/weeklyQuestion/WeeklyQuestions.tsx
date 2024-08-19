@@ -1,7 +1,18 @@
+import Loader from "@/components/Loader";
+import useWeeklyQuestion from "@/hooks/useWeeklyQuestion";
 import { Box, Button, Stack, Typography, useTheme } from "@mui/material";
 
 const WeeklyQuestions = () => {
   const theme = useTheme();
+  const {error,loading,currentQuestion,correctAnswer,time,totalQuestions,answered,handleSubmitAnswer,handleNextQuestion,} = useWeeklyQuestion();
+
+  // const handleSubmitResponse=async(option:'OptionA'|'OptionB')=>{
+    
+  // }
+
+  if(loading){
+    return <Loader/>
+  }
 
   return (
     <Stack height="100vh">
@@ -28,16 +39,16 @@ const WeeklyQuestions = () => {
           justifyContent={"space-between"}
           color={"#fff"}
         >
-          <Typography fontWeight={"500"}>00:02</Typography>
-          <Typography fontWeight={"500"}>10/100</Typography>
+          <Typography fontWeight={"500"}>{time}</Typography>
+          <Typography fontWeight={"500"}>{answered}/{totalQuestions}</Typography>
         </Stack>
 
         <Stack direction={"row"} gap={"10px"} marginTop={"20px"}>
-          {Array.from({ length: 10 }).map((_, index) => (
+          {Array.from({ length: totalQuestions }).map((_, index) => (
             <Box
               key={index}
               flex={"1"}
-              sx={{ height: "28px", bgcolor: "", border: "1px solid #fff" }}
+              sx={{ height: "28px", bgcolor: index<answered?"#fff":"", border: "1px solid #fff" }}
             />
           ))}
         </Stack>
@@ -49,19 +60,32 @@ const WeeklyQuestions = () => {
           justifyContent={"center"}
         >
           <Typography fontSize={"2rem"} fontWeight={"500"}>
-            Do you think this will be the right approach? Let us know your
-            opinion.
+            {currentQuestion?.questionPrompt}
           </Typography>
         </Stack>
         <Stack minHeight={"100px"} padding={"24px"} justifyContent={"center"}>
-          <Typography color={"#fff"} fontSize={"1.25rem"} fontWeight={"400"} sx={{opacity:"0.75"}}>
-            Correct Answer - Option A
+          <Typography
+            color={"#fff"}
+            fontSize={"1.25rem"}
+            fontWeight={"400"}
+            sx={{ opacity: "0.75" }}
+          >
+            {correctAnswer &&  `Correct Answere - ${correctAnswer}`}
           </Typography>
         </Stack>
-        <Stack direction={"row"} bgcolor={theme.palette.secondary.main} height={"100px"}>
-          <Button
+        <Stack
+          direction={"row"}
+          bgcolor={theme.palette.secondary.main}
+          height={"100px"}
+        >
+          {correctAnswer?
+          <Button variant="contained" onClick={handleNextQuestion} sx={{height:"max-content", margin:"auto",fontSize:"1.5rem",borderRadius:"12px"}}>
+            Next
+            </Button>
+          :
+          <><Button
             variant="outlined"
-            // onClick={()=>handleSubmit(key as 'OptionA'|'OptionB')}
+            onClick={()=>handleSubmitAnswer(currentQuestion?.optionA??"")}
             sx={{
               borderRadius: "0",
               border: "2px solid #000",
@@ -75,11 +99,11 @@ const WeeklyQuestions = () => {
               },
             }}
           >
-            YES
+            {currentQuestion?.optionA}
           </Button>
           <Button
             variant="outlined"
-            // onClick={()=>handleSubmit(key as 'OptionA'|'OptionB')}
+            onClick={()=>handleSubmitAnswer(currentQuestion?.optionB??"")}
             sx={{
               borderRadius: "0",
               border: "2px solid #000",
@@ -93,8 +117,8 @@ const WeeklyQuestions = () => {
               },
             }}
           >
-            NO
-          </Button>
+            {currentQuestion?.optionB}
+          </Button> </>}
         </Stack>
       </Stack>
     </Stack>

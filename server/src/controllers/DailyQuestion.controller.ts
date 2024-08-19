@@ -1,7 +1,9 @@
+import moment from 'moment-timezone';
 import { NextFunction, Request, Response } from "express";
 import DailyQuestion, { Option } from "../models/dailyQuestion.model";
 import DailyResponse from "../models/dailyResponse.model";
 import AppError from "../utils/appError";
+import User from '../models/user.model';
 
 
 export const getDailyQuestion = async (
@@ -13,13 +15,16 @@ export const getDailyQuestion = async (
       next(new AppError("Unauthorized", 401));
       return;
     }
-
+    
     const { date } = req.query;
     const { _id: userId } = req.user;
+    
+    console.log("Date",date)
 
-    const requestedDate = new Date(date as string);
-    const startOfDay = new Date(requestedDate.setUTCHours(0, 0, 0, 0));
-    const endOfDay = new Date(requestedDate.setUTCHours(23, 59, 59, 999));
+    const requestedDate = moment.tz(date as string, "DD/MM/YYYY, hh:mm:ss A", "Asia/Kolkata");
+    const startOfDay = requestedDate.clone().startOf('day').toDate();
+    const endOfDay = requestedDate.clone().endOf('day').toDate();
+
 
     let dailyQuestion = await DailyQuestion.findOne({
       date: { $gte: startOfDay, $lt: endOfDay },
@@ -51,9 +56,8 @@ export const getDailyQuestion = async (
     };
 
     res.status(200).json(response);
-
- 
 };
+
 
 
 export const respondToDailyQuestion = async (
@@ -69,7 +73,7 @@ export const respondToDailyQuestion = async (
       return;
     }
 
-    const { _id: userId, department } = req.user;
+    const { _id: userId,department, score } = req.user;
 
     if (option !== "OptionA" && option !== "OptionB") {
       res.status(400).json({ message: "Invalid option." });
@@ -97,6 +101,11 @@ export const respondToDailyQuestion = async (
     if (existingResponse) {
       const response = {
         question: dailyQuestion.questionPrompt,
+        score:score,
+        options: {
+          OptionA: dailyQuestion.options.optionA,
+          OptionB: dailyQuestion.options.optionB,
+        },
         userResponse: existingResponse.userResponse,
         stats: {
           Sales: dailyQuestion.departmentResponses.Sales,
@@ -118,6 +127,11 @@ export const respondToDailyQuestion = async (
 
     await userResponse.save();
 
+    await User.findByIdAndUpdate(
+      userId,
+      { $inc: { score: 5 } },
+    )
+
     if (department && dailyQuestion.departmentResponses[department]) {
       dailyQuestion.departmentResponses[department][option] += 1;
     }
@@ -127,12 +141,17 @@ export const respondToDailyQuestion = async (
     const response = {
       question: dailyQuestion.questionPrompt,
       userResponse: userResponse.userResponse,
+      options: {
+        OptionA: dailyQuestion.options.optionA,
+        OptionB: dailyQuestion.options.optionB,
+      },
       stats: {
         Sales: dailyQuestion.departmentResponses.Sales,
         Credit: dailyQuestion.departmentResponses.Credit,
         Collection: dailyQuestion.departmentResponses.Collection,
         Others: dailyQuestion.departmentResponses.Others,
       },
+      score:score+5
     };
 
     res.status(200).json(response);
