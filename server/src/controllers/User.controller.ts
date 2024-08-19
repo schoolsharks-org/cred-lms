@@ -62,7 +62,7 @@ const handleLoginUser = async (
   const options: CookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    // sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   };
 
   return res
@@ -186,7 +186,7 @@ const handleRefreshAccessToken = async (
     const options: CookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      // sameSite: "strict",
     };
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(

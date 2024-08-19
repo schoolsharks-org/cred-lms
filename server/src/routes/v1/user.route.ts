@@ -24,6 +24,7 @@ router.route("/refresh-token").post(asyncHandler(handleRefreshAccessToken));
 router.route("/logout").post(authMiddleware, asyncHandler(handleLogoutUser));
 
 router.get("/get-user", authMiddleware, asyncHandler(handleGetUser));
+
 router
   .route("/daily-question")
   .get(authMiddleware, asyncHandler(getDailyQuestion))
