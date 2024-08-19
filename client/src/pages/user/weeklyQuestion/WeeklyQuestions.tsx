@@ -4,7 +4,7 @@ import { Box, Button, Stack, Typography, useTheme } from "@mui/material";
 
 const WeeklyQuestions = () => {
   const theme = useTheme();
-  const {error,loading,currentQuestion,correctAnswer,time,totalQuestions,answered,handleSubmitAnswer,handleNextQuestion,} = useWeeklyQuestion();
+  const {loading,currentQuestion,correctAnswer,time,totalQuestions,answered,handleSubmitAnswer,handleNextQuestion,} = useWeeklyQuestion();
 
   // const handleSubmitResponse=async(option:'OptionA'|'OptionB')=>{
     

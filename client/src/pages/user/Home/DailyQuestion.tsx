@@ -21,7 +21,7 @@ import Loader from "@/components/Loader";
 
 const DailyQuestion = () => {
   const theme = useTheme();
-  const { date, dailyQuestionData,loading,error,respondToDailyQuestion ,prevDay,forwardDay} = useDailyQuestion();
+  const { date, dailyQuestionData,loading,respondToDailyQuestion ,prevDay,forwardDay} = useDailyQuestion();
 
   const formatDate = (date: Date) => {
     return `${date.getDate()} ${date.toLocaleString("default", {

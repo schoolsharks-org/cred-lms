@@ -16,7 +16,7 @@ const SignIn = () => {
   const [password, setPassword] = useState("");
   const [fieldError, setFieldError] = useState<string | null>(null);
 
-  const { authenticated, loading, error } = useSelector((state: RootState) => state.user);
+  const { authenticated, loading } = useSelector((state: RootState) => state.user);
 
   const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>, field: "phone" | "password") => {
     const { value } = e.target;
