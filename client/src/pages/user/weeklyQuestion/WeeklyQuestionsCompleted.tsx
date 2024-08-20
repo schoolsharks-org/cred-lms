@@ -15,7 +15,7 @@ const WeeklyQuestionsCompleted = () => {
     return <Navigate to="/weekly-question"/>
   }
   return (
-    <Stack height={"100vh"}>
+    <Stack minHeight={"100vh"}>
       <Stack alignItems={"center"} gap={"20px"} marginTop={"90px"}>
         <Typography fontSize={"2.5rem"} fontWeight={"600"}>
           Congratulations!!
