@@ -13,7 +13,7 @@ const Header = () => {
       <Stack direction={"row"} justifyContent={"space-between"}>
         <Stack>
           <Stack direction={"row"} alignItems={"center"} gap={"16px"}>
-            <Typography fontWeight={"600"} fontSize={"2.5rem"}>
+            <Typography fontWeight={"600"} fontSize={"2rem"}>
               Hello {name.split(" ")[0]}!{" "}
               <Box
                 sx={{
