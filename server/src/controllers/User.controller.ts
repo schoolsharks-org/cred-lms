@@ -1,5 +1,5 @@
 import { CookieOptions, NextFunction, Request, Response } from "express";
-import User from "../models/user.model";
+import User, { Department } from "../models/user.model";
 import mongoose from "mongoose";
 import AppError from "../utils/appError";
 import jwt, { JwtPayload } from "jsonwebtoken";
@@ -220,7 +220,9 @@ const handleGetUser = async (
 
   const objectId = new mongoose.Types.ObjectId(userId);
 
-  const user = await User.findById(objectId).select("name score");
+  const user = await User.findById(objectId).select(
+    "name score email address department"
+  );
   if (!user) {
     res.status(404).json({ message: "User not found" });
     return;
@@ -229,6 +231,9 @@ const handleGetUser = async (
   res.status(200).json({
     name: user.name,
     score: user.score,
+    department: user.department,
+    address: user.address,
+    email: user.email,
   });
 };
 
