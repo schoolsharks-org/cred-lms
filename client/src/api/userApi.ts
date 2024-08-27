@@ -10,7 +10,6 @@ const userApi = axios.create({
   withCredentials: true,
 });
 
-// Request interceptor to attach the accessToken from localStorage to the Authorization header
 userApi.interceptors.request.use(
   (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
     const token = localStorage.getItem('accessToken');
@@ -24,10 +23,8 @@ userApi.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle token storage and refresh
 userApi.interceptors.response.use(
   (response: AxiosResponse): AxiosResponse => {
-    // Store the accessToken and refreshToken in localStorage when received
     if (response.data.accessToken && response.data.refreshToken) {
       localStorage.setItem('accessToken', response.data.accessToken);
       localStorage.setItem('refreshToken', response.data.refreshToken);
@@ -41,7 +38,6 @@ userApi.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        // Attempt to refresh the token using the refreshToken stored in localStorage
         const refreshToken = localStorage.getItem('refreshToken');
         if (!refreshToken) throw new Error('No refresh token available');
 
@@ -51,18 +47,15 @@ userApi.interceptors.response.use(
           { withCredentials: true }
         );
 
-        // Update tokens in localStorage
         localStorage.setItem('accessToken', data.accessToken);
         localStorage.setItem('refreshToken', data.refreshToken);
 
-        // Attach the new accessToken to the original request and retry it
         userApi.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;
         originalRequest.headers['Authorization'] = `Bearer ${data.accessToken}`;
 
         return userApi(originalRequest);
       } catch (refreshError) {
         console.error('Refresh token failed', refreshError);
-        // Optionally clear tokens from localStorage if refresh fails
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
       }

@@ -62,6 +62,11 @@ const WeeklyQuestions = () => {
           <Typography fontSize={"2rem"} fontWeight={"500"}>
             {currentQuestion?.questionPrompt}
           </Typography>
+          <Stack direction={"row"} gap={"16px"} marginTop={"16px"}>
+            {currentQuestion?.images?.map((image,index)=>(
+              <img src={image} alt="" key={index} style={{flex:"1",width:"100%"}}/>
+            ))}
+          </Stack>
         </Stack>
         <Stack minHeight={"100px"} padding={"24px"} justifyContent={"center"}>
           <Typography

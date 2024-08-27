@@ -1,0 +1,186 @@
+{
+  "_id": { "$oid": "66c9bcb4df3382c52f4861fc" },
+  "name": "Session-1",
+  "blindSpotQuestions": [
+    {
+      "id": { "$numberInt": "10" },
+      "count": { "$numberInt": "0" },
+      "_id": {
+        "$oid": "66c83e7281a0ad68259cd8e9"
+      }
+    },
+    {
+      "id": { "$numberInt": "14" },
+      "count": { "$numberInt": "0" },
+      "_id": {
+        "$oid": "66c83e9e81a0ad68259cd904"
+      }
+    },
+    {
+      "id": { "$numberInt": "19" },
+      "count": { "$numberInt": "0" },
+      "_id": {
+        "$oid": "66c83ea381a0ad68259cd928"
+      }
+    },
+    {
+      "id": { "$numberInt": "21" },
+      "count": { "$numberInt": "0" },
+      "_id": {
+        "$oid": "66c83ea681a0ad68259cd939"
+      }
+    },
+    {
+      "id": { "$numberInt": "6" },
+      "count": { "$numberInt": "0" },
+      "_id": {
+        "$oid": "66c845ee0eaea315ca78bf42"
+      }
+    },
+    {
+      "id": { "$numberInt": "24" },
+      "count": { "$numberInt": "0" },
+      "_id": {
+        "$oid": "66c845fd0eaea315ca78bffa"
+      }
+    }
+  ],
+  "__v": { "$numberInt": "6" },
+  "leadershipStyles": {
+    "directive": { "$numberLong": "0" },
+    "collaborative": { "$numberLong": "0" },
+    "coaching": { "$numberLong": "0" },
+    "participative": { "$numberLong": "0" }
+  },
+  "analysis": [
+    {
+      "id": { "$numberInt": "1" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "2" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "3" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "4" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "5" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "6" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "7" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "8" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "9" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "10" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "11" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "12" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "13" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "14" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "15" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "16" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "17" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "18" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "19" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "20" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "21" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "22" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "23" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "24" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    },
+    {
+      "id": { "$numberInt": "25" },
+      "happinessScore": { "$numberInt":"0" },
+      "stateWealth": { "$numberInt":"0" }
+    }
+  ],
+  "happinessScore": { "$numberLong": "0" },
+  "optionA": { "$numberLong": "0" },
+  "optionB": { "$numberLong": "0" },
+  "stateWealth": { "$numberLong": "0" }
+}

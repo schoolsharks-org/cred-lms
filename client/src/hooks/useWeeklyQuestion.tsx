@@ -14,6 +14,7 @@ export interface Question {
   optionA: string;
   optionB: string;
   questionCategory: QuestionCategory;
+  images?:string[];
 }
 
 const useWeeklyQuestion = () => {
