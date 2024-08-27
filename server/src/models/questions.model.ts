@@ -36,7 +36,7 @@ export const QuestionSchema: Schema<Question> = new Schema<Question>(
     questionCategory: {
       type: String,
       enum: Object.values(Category),
-      required: true,
+      // required: true,
     },
     images: {
       type: [String],

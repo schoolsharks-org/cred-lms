@@ -11,6 +11,7 @@ import { getUser } from "@/store/user/userActions";
 import Loader from "@/components/Loader";
 import WeeklyQuestions from "./weeklyQuestion/WeeklyQuestions";
 import WeeklyQuestionsCompleted from "./weeklyQuestion/WeeklyQuestionsCompleted";
+import Score from "./Score/Score";
 
 const UserMain = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -41,7 +42,7 @@ const UserMain = () => {
           <>
             <Route element={<UserLayout />}>
               <Route path="/home" element={<HomeMain />} />
-              <Route path="/score" element={<div>Score Component</div>} />
+              <Route path="/score" element={<Score/>} />
               <Route path="/offer" element={<div>Offer Component</div>} />
               <Route path="/profile" element={<div>Profile Component</div>} />
               <Route path="/weekly-question/completed" element={<WeeklyQuestionsCompleted/>} />
