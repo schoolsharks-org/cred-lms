@@ -15,7 +15,13 @@ export const loginUser = createAsyncThunk(
 
       const { user } = response.data;
 
-      return { name: user.name, score: user.score };
+      return {
+        name: user.name,
+        score: user.score,
+        email: user.email,
+        department: user.department,
+        address: user.address,
+      };
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to login"

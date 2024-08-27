@@ -19,16 +19,7 @@ function getSundayOfCurrentWeek(date: Date): Date {
   sunday.setUTCHours(23, 59, 59, 999);
   return sunday;
 }
-export const handleAdminDashboard = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  if (!req.user) {
-    next(new AppError("Unauthorized", 401));
-    return;
-  }
-
+async function handleUserScores() {
   const TodayDate = new Date();
   const startOfWeek = getMondayOfCurrentWeek(TodayDate);
   const endOfWeek = getSundayOfCurrentWeek(TodayDate);
@@ -37,15 +28,16 @@ export const handleAdminDashboard = async (
     date: startOfWeek,
   });
 
-  const usersCurrentWeekResponses = await WeeklyResponse.find({
+  const userWeeklyTopScorers = await WeeklyResponse.find({
     startTime: { $gte: startOfWeek, $lte: endOfWeek },
   })
     .sort({ score: -1 })
-    .select("score user");
+    .select("score user")
+    .limit(10);
 
   const TopScorers = [];
   if (weeklyQuestions) {
-    for (const response of usersCurrentWeekResponses) {
+    for (const response of userWeeklyTopScorers) {
       const user = await User.findOne({ _id: response.user }).select("name");
 
       if (user) {
@@ -57,7 +49,131 @@ export const handleAdminDashboard = async (
     }
   }
 
-  res.json({
-    TopScorers,
-  });
+  const userWeeklyBelowAverageScorers = await WeeklyResponse.find({
+    startTime: { $gte: startOfWeek, $lte: endOfWeek },
+  })
+    .sort({ score: 1 })
+    .select("score user")
+    .limit(5);
+
+  const belowAvgScorers = [];
+  if (weeklyQuestions) {
+    for (const response of userWeeklyBelowAverageScorers) {
+      const user = await User.findOne({ _id: response.user }).select("name");
+
+      if (user) {
+        belowAvgScorers.push({
+          Name: user.name,
+          Score: (response.score * 100) / weeklyQuestions.totalScore,
+        });
+      }
+    }
+  }
+
+  return { TopScore: TopScorers, BelowAverageScore: belowAvgScorers };
+}
+
+async function getSevenDaysInactiveUsersCount() {
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const lastSevenDaysInactiveUsers = await User.aggregate([
+    {
+      $lookup: {
+        from: "dailyresponses",
+        localField: "_id",
+        foreignField: "user",
+        as: "responses",
+      },
+    },
+    {
+      $match: {
+        "responses.date": { $not: { $gte: sevenDaysAgo } },
+      },
+    },
+    {
+      $group: {
+        _id: "$department",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  return lastSevenDaysInactiveUsers;
+}
+
+async function getFifteenDaysInactiveUsersCount() {
+  const fifteenDaysAgo = new Date();
+  fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
+
+  const lastFifteenDaysInactiveUsers = await User.aggregate([
+    {
+      $lookup: {
+        from: "dailyresponses",
+        localField: "_id",
+        foreignField: "user",
+        as: "responses",
+      },
+    },
+    {
+      $match: {
+        "responses.date": { $not: { $gte: fifteenDaysAgo } },
+      },
+    },
+    {
+      $group: {
+        _id: "$department",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  return lastFifteenDaysInactiveUsers;
+}
+
+async function getUserCountForEachDepartment() {
+  const departmentCounts = await User.aggregate([
+    {
+      $group: {
+        _id: "$department",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  return { userCount: departmentCounts };
+}
+
+export const handleAdminDashboard = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    if (!req.user) {
+      next(new AppError("Unauthorized", 401));
+      return;
+    }
+
+    const [
+      userScores,
+      sevenDaysInactiveUsers,
+      fifteenDaysInactiveUsers,
+      userCountofDepartment,
+    ] = await Promise.all([
+      handleUserScores(),
+      getSevenDaysInactiveUsersCount(),
+      getFifteenDaysInactiveUsersCount(),
+      getUserCountForEachDepartment(),
+    ]);
+
+    res.json({
+      userScores,
+      sevenDaysInactiveUsers,
+      fifteenDaysInactiveUsers,
+      userCountofDepartment,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
