@@ -39,10 +39,22 @@ const userSlice = createSlice({
       })
       .addCase(
         loginUser.fulfilled,
-        (state, action: PayloadAction<{ name: string; score: number }>) => {
+        (
+          state,
+          action: PayloadAction<{
+            name: string;
+            score: number;
+            address: string;
+            email: string;
+            department: string;
+          }>
+        ) => {
           state.authenticated = true;
           state.name = action.payload.name;
           state.score = action.payload.score;
+          state.address = action.payload.address;
+          state.email = action.payload.email;
+          state.department = action.payload.department;
           state.loading = false;
         }
       )

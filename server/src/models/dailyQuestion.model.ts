@@ -1,7 +1,6 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-
-export type Option='OptionA' | 'OptionB'
+export type Option = "OptionA" | "OptionB";
 
 export interface DailyQuestionI extends Document {
   date: Date;
@@ -20,6 +19,10 @@ export interface DailyQuestionI extends Document {
       OptionB: number;
     };
     Collection: {
+      OptionA: number;
+      OptionB: number;
+    };
+    Operations: {
       OptionA: number;
       OptionB: number;
     };
