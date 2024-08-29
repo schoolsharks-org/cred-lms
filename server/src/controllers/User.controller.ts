@@ -3,7 +3,7 @@ import User, { Department } from "../models/user.model";
 import mongoose from "mongoose";
 import AppError from "../utils/appError";
 import jwt, { JwtPayload } from "jsonwebtoken";
-
+const nodemailer = require("nodemailer");
 const generateAccessAndRefreshTokens = async (
   userId: mongoose.Types.ObjectId
 ): Promise<{ accessToken: string; refreshToken: string }> => {
@@ -33,7 +33,7 @@ const handleLoginUser = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { phone, password } = req.body;
+  const { phone, password, userMail } = req.body;
 
   if (!phone && !password) {
     return next(new AppError("All Fields Required", 400));
@@ -49,6 +49,32 @@ const handleLoginUser = async (
 
   if (!isPasswordValid) {
     return next(new AppError("Invalid user credentials", 401));
+  }
+
+  const verificationCode = Math.floor(1000 + Math.random() * 9000).toString();
+  console.log("verificationCode: ", verificationCode);
+  const transporter = await nodemailer.createTransport({
+    service: "gmail",
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  const mailOptions = {
+    from: `"CRED DOST" <${process.env.EMAIL_USER}>`,
+    to: userMail,
+    subject: "Your Verification Code",
+    html: `<p>Your verification code is <strong>${verificationCode}</strong></p>`,
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Verification email sent: %s", info.messageId);
+  } catch (error) {
+    console.error("Error sending verification email:", error);
   }
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
