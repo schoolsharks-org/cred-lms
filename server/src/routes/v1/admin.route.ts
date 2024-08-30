@@ -6,6 +6,6 @@ const router = express.Router();
 
 router
   .route("/admin-dashboard")
-  .get(authMiddleware, asyncHandler(handleAdminDashboard));
+  .get(asyncHandler(handleAdminDashboard));
 
 export default router;

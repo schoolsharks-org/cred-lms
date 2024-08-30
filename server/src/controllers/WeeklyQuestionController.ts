@@ -43,7 +43,7 @@ export const getWeeklyQuestion = async (
 
   let answeredCount = 0;
   let userResponse;
-  
+
   if (existingUserResponse) {
     answeredCount = existingUserResponse.userResponse.length;
     userResponse = existingUserResponse;
@@ -58,27 +58,26 @@ export const getWeeklyQuestion = async (
     userResponse.save();
   }
 
-
-  res
-    .status(200)
-    .json({
-      questions: weeklyQuestions.weeklyQuestionModule,
-      startTime: userResponse.startTime,
-      answeredCount,
-      scores:answeredCount===weeklyQuestions.weeklyQuestionModule.length?{
-        userScore:userResponse.score,
-        averageScore:weeklyQuestions.totalScore/weeklyQuestions.totalAnswers
-      }:undefined
-    });
+  res.status(200).json({
+    questions: weeklyQuestions.weeklyQuestionModule,
+    startTime: userResponse.startTime,
+    answeredCount,
+    scores:
+      answeredCount === weeklyQuestions.weeklyQuestionModule.length
+        ? {
+            userScore: userResponse.score,
+            averageScore:
+              weeklyQuestions.totalScore / weeklyQuestions.totalAnswers,
+          }
+        : undefined,
+  });
 };
-
-
 
 export const respondToWeeklyQuestion = async (
   req: Request,
   res: Response,
   next: NextFunction
-)=> {
+) => {
   if (!req.user) {
     next(new AppError("Unauthorized", 401));
     return;
@@ -94,11 +93,9 @@ export const respondToWeeklyQuestion = async (
     date: startOfWeek,
   });
 
-
   if (!weeklyQuestions) {
     return next(new AppError("No weekly questions found for this week", 404));
   }
-
 
   const question = weeklyQuestions.weeklyQuestionModule.find(
     (element) => element.id.toString() === questionId.toString()
@@ -134,10 +131,10 @@ export const respondToWeeklyQuestion = async (
     });
   }
 
-  if(response===question.correctOption){
-    existingUserResponse.score+=question.score
+  if (response === question.correctOption) {
+    existingUserResponse.score += question.score;
   }
-  
+
   existingUserResponse.userResponse.push({
     _id: questionId,
     response: response,
@@ -145,11 +142,14 @@ export const respondToWeeklyQuestion = async (
 
   await existingUserResponse.save();
 
-  if(existingUserResponse.userResponse.length===weeklyQuestions.weeklyQuestionModule.length){
-    weeklyQuestions.totalAnswers+=1;
-    weeklyQuestions.totalScore+=existingUserResponse.score
-    console.log(weeklyQuestions.totalAnswers)
-    
+  if (
+    existingUserResponse.userResponse.length ===
+    weeklyQuestions.weeklyQuestionModule.length
+  ) {
+    weeklyQuestions.totalAnswers += 1;
+    weeklyQuestions.totalScore += existingUserResponse.score;
+    console.log(weeklyQuestions.totalAnswers);
+
     await weeklyQuestions.save();
   }
 
@@ -157,10 +157,14 @@ export const respondToWeeklyQuestion = async (
     message: "Response stored successfully",
     correctAnswer: question.correctOption,
     answeredCount: existingUserResponse.userResponse.length,
-    scores:existingUserResponse.userResponse.length===weeklyQuestions.weeklyQuestionModule.length?{
-      userScore:existingUserResponse.score,
-      averageScore:weeklyQuestions.totalScore/weeklyQuestions.totalAnswers
-    }:undefined
-
+    scores:
+      existingUserResponse.userResponse.length ===
+      weeklyQuestions.weeklyQuestionModule.length
+        ? {
+            userScore: existingUserResponse.score,
+            averageScore:
+              weeklyQuestions.totalScore / weeklyQuestions.totalAnswers,
+          }
+        : undefined,
   });
 };

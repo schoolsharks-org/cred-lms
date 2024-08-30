@@ -13,12 +13,17 @@ export interface Question {
   questionPrompt: string;
   optionA: string;
   optionB: string;
+  optionTexts?: {
+    optionA: string;
+    optionB: string;
+  };
+  correctAnswerDescription?:string;
   questionCategory: QuestionCategory;
-  images?:string[];
+  images?: string[];
 }
 
 const useWeeklyQuestion = () => {
-  const navigate=useNavigate()
+  const navigate = useNavigate();
 
   const [error, setError] = useState<null | string>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -27,21 +32,25 @@ const useWeeklyQuestion = () => {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [correctAnswer, setCorrectAnswer] = useState<null | string>(null);
   const [time, setTime] = useState<string>("00:00");
-  const [scores,setScores]=useState({
-    userScore:0,
-    averageScore:0
-  })
+  const [scores, setScores] = useState({
+    userScore: 0,
+    averageScore: 0,
+  });
 
   const calculateTimeDifference = useCallback((startTime: Date) => {
     const now = new Date();
-    const differenceInSeconds = Math.floor((now.getTime() - new Date(startTime).getTime()) / 1000);
+    const differenceInSeconds = Math.floor(
+      (now.getTime() - new Date(startTime).getTime()) / 1000
+    );
 
     const minutes = Math.floor(differenceInSeconds / 60);
     const seconds = differenceInSeconds % 60;
 
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+      2,
+      "0"
+    )}`;
   }, []);
-
 
   const fetchWeeklyQuestions = useCallback(async () => {
     try {
@@ -51,19 +60,18 @@ const useWeeklyQuestion = () => {
         params: { date: date.toISOString() },
       });
 
-      const { questions, startTime, answeredCount ,scores} = response.data;
-      console.log(questions)
-      
+      const { questions, startTime, answeredCount, scores } = response.data;
+      console.log(questions);
+
       setAnsweredCount(answeredCount);
       setQuestions(questions);
       setCurrentQuestion(questions[answeredCount] || null);
 
-
-      if(questions?.length<=answeredCount){
-        setScores(scores)
-        navigate("/weekly-question/completed")
+      if (questions?.length <= answeredCount) {
+        setScores(scores);
+        navigate("/weekly-question/completed");
       }
-      
+
       if (startTime) {
         const startDate = new Date(startTime);
         setTime(calculateTimeDifference(startDate));
@@ -83,18 +91,16 @@ const useWeeklyQuestion = () => {
     }
   }, [calculateTimeDifference]);
 
-
   useEffect(() => {
-    if(!questions){
+    if (!questions) {
       fetchWeeklyQuestions();
     }
   }, [fetchWeeklyQuestions]);
 
-
   const handleSubmitAnswer = useCallback(
     async (selectedOption: string) => {
       if (!currentQuestion) return;
-      console.log("Current Question Id: ",currentQuestion._id)
+      console.log("Current Question Id: ", currentQuestion._id);
 
       try {
         const response = await userApi.post("/weekly-question", {
@@ -102,9 +108,9 @@ const useWeeklyQuestion = () => {
           response: selectedOption,
         });
 
-        const { correctAnswer,scores } = response.data;
-        console.log(correctAnswer)
-        setScores(scores)
+        const { correctAnswer, scores } = response.data;
+        console.log(correctAnswer);
+        setScores(scores);
 
         setCorrectAnswer(correctAnswer);
         setAnsweredCount((prevCount) => prevCount + 1);
@@ -118,8 +124,8 @@ const useWeeklyQuestion = () => {
 
   const handleNextQuestion = useCallback(() => {
     if (questions) {
-      if(questions?.length<=answeredCount){
-        navigate("completed")
+      if (questions?.length <= answeredCount) {
+        navigate("completed");
       }
       setCorrectAnswer(null);
       setCurrentQuestion(questions[answeredCount] || null);
@@ -137,7 +143,7 @@ const useWeeklyQuestion = () => {
     currentQuestion,
     correctAnswer,
     time: memoizedTime,
-      handleSubmitAnswer,
+    handleSubmitAnswer,
     handleNextQuestion,
   };
 };

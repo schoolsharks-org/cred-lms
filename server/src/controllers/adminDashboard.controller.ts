@@ -19,6 +19,8 @@ function getSundayOfCurrentWeek(date: Date): Date {
   sunday.setUTCHours(23, 59, 59, 999);
   return sunday;
 }
+
+
 async function handleUserScores() {
   const TodayDate = new Date();
   const startOfWeek = getMondayOfCurrentWeek(TodayDate);
@@ -72,6 +74,10 @@ async function handleUserScores() {
 
   return { TopScore: TopScorers, BelowAverageScore: belowAvgScorers };
 }
+
+
+
+
 
 async function getSevenDaysInactiveUsersCount() {
   const sevenDaysAgo = new Date();
@@ -141,20 +147,14 @@ async function getUserCountForEachDepartment() {
     },
   ]);
 
-  return { userCount: departmentCounts };
+  return departmentCounts ;
 }
 
 export const handleAdminDashboard = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<void> => {
-  try {
-    if (!req.user) {
-      next(new AppError("Unauthorized", 401));
-      return;
-    }
-
+) => {
     const [
       userScores,
       sevenDaysInactiveUsers,
@@ -167,13 +167,10 @@ export const handleAdminDashboard = async (
       getUserCountForEachDepartment(),
     ]);
 
-    res.json({
+    return res.json({
       userScores,
       sevenDaysInactiveUsers,
       fifteenDaysInactiveUsers,
       userCountofDepartment,
     });
-  } catch (error) {
-    next(error);
-  }
 };

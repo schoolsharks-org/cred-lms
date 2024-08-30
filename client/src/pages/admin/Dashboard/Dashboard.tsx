@@ -1,47 +1,20 @@
-import { ArrowForward, SaveAlt, Search, Settings } from "@mui/icons-material";
+import useAdminDashboard from "@/hooks/useAdminDashboard";
+import { SaveAlt, Search, Settings } from "@mui/icons-material";
 import { Button, IconButton, Stack, Typography, useTheme } from "@mui/material";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import DashboardSidebar from "./DashboardSidebar";
 
 const departments = ["Sales", "Credit", "Collection", "Operations", "Others"];
 
-const data = [
-  {
-    name: "Total no. of \nemployees",
-    data: [500, 450, 200, 350, 100],
-  },
-  {
-    name: "Inactive \nlast 7 days",
-    data: [500, 450, 200, 350, 100],
-  },
-  {
-    name: "Inactive \nlast 15 days",
-    data: [500, 450, 200, 350, 100],
-  },
-  {
-    name: "No. of weekly \nmodules",
-    data: [500, 450, 200, 350, 100],
-  },
-  {
-    name: "Modules \ncompleted",
-    data: [500, 450, 200, 350, 100],
-  },
-];
-
-const scorelist = [
-  { name: "Karan Verma", percentage: 95 },
-  { name: "Karan Verma", percentage: 95 },
-  { name: "Karan Verma", percentage: 95 },
-  { name: "Karan Verma", percentage: 95 },
-  { name: "Karan Verma", percentage: 95 },
-  { name: "Karan Verma", percentage: 95 },
-  { name: "Karan Verma", percentage: 95 },
-  { name: "Karan Verma", percentage: 95 },
-  { name: "Karan Verma", percentage: 95 },
-  { name: "Karan Verma", percentage: 95 },
-];
 const Dashboard = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const {fetchDashboardData,topScorers,belowAverageScorers,dashboardData:data}=useAdminDashboard()
+  
+  useEffect(()=>{
+    fetchDashboardData()
+  },[])
 
   return (
     <Stack bgcolor={theme.palette.primary.main} minHeight={"100vh"}>
@@ -165,24 +138,7 @@ const Dashboard = () => {
           </Stack>
         </Stack>
         <Stack minWidth={"376px"} gap="20px">
-          <ScoreList name={"Top Scorers"} data={scorelist} />
-          <ScoreList name={"Below Average Scorers"} data={scorelist.slice(5)} />
-          <Button
-            variant="outlined"  
-            endIcon={<ArrowForward />}
-            sx={{
-              border: "2px solid #ffffff",
-              color: "#fff",
-              textTransform: "none",
-              justifyContent: "space-between",
-              fontSize: "1.25rem",
-              "&:hover": {
-                border: "2px solid #ffffff",
-              },
-            }}
-          >
-            Create Module
-          </Button>
+          <DashboardSidebar topScorers={topScorers} belowAverageScorers={belowAverageScorers}/>
         </Stack>
       </Stack>
     </Stack>
@@ -190,6 +146,8 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+
 
 const TableCell = ({ text, bold }: { text: string; bold?: boolean }) => (
   <Stack
@@ -209,35 +167,3 @@ const TableCell = ({ text, bold }: { text: string; bold?: boolean }) => (
   </Stack>
 );
 
-interface ScorelistData {
-  name: string;
-  percentage: number;
-}
-
-const ScoreList = ({ name, data }: { name: String; data: ScorelistData[] }) => {
-  const theme = useTheme();
-  return (
-    <Stack bgcolor={theme.palette.secondary.main}>
-      <Typography
-        bgcolor={theme.palette.primary.main}
-        color={"#ffffff"}
-        width={"max-content"}
-        fontSize={"1.25rem"}
-        padding={"5px 16px"}
-      >
-        {name}
-      </Typography>
-      <Stack gap={"5px"} padding={"20px"}>
-        {data.map((_, index) => (
-          <Stack key={index} direction={"row"} gap="12px">
-            <Typography>{index + 1}.</Typography>
-            <Typography flex="1" fontWeight={"600"}>
-              Karan Verma
-            </Typography>
-            <Typography>95%</Typography>
-          </Stack>
-        ))}
-      </Stack>
-    </Stack>
-  );
-};

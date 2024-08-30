@@ -2,6 +2,7 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 import { Question, QuestionSchema } from "./questions.model"; 
 
 interface WeeklyQuestionI extends Document {
+  moduleName:string;
   date: Date;
   weeklyQuestionModule: Question[]; 
   totalScore: number;
@@ -10,6 +11,10 @@ interface WeeklyQuestionI extends Document {
 
 const weeklyQuestionSchema: Schema<WeeklyQuestionI> = new Schema<WeeklyQuestionI>(
   {
+    moduleName:{
+      type:String,
+      required:true
+    },
     date: {
       type: Date,
       required: true,
