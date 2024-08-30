@@ -150,6 +150,19 @@ async function getUserCountForEachDepartment() {
   return departmentCounts ;
 }
 
+async function getWeeklyModulesCountForEachDepartment() {
+  const departmentModuleCount = await WeeklyQuestion.aggregate([
+    {
+      $group: {
+        _id: "$department",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+  console.log("departmentModuleCount: ", departmentModuleCount);
+  return { departmentModuleCount: departmentModuleCount };
+}
+
 export const handleAdminDashboard = async (
   req: Request,
   res: Response,
@@ -160,11 +173,13 @@ export const handleAdminDashboard = async (
       sevenDaysInactiveUsers,
       fifteenDaysInactiveUsers,
       userCountofDepartment,
+      moduleCountOfEachDepartment,
     ] = await Promise.all([
       handleUserScores(),
       getSevenDaysInactiveUsersCount(),
       getFifteenDaysInactiveUsersCount(),
       getUserCountForEachDepartment(),
+      getWeeklyModulesCountForEachDepartment(),
     ]);
 
     return res.json({
@@ -172,5 +187,6 @@ export const handleAdminDashboard = async (
       sevenDaysInactiveUsers,
       fifteenDaysInactiveUsers,
       userCountofDepartment,
+      moduleCountOfEachDepartment,
     });
 };
