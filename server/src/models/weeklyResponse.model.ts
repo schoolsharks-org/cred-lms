@@ -4,9 +4,10 @@ import User from "./user.model";
 
 interface weeklyResponseI extends Document {
   user: mongoose.Schema.Types.ObjectId;
-  startTime:Date;
-  score:number,
-  weeklyQuestion:mongoose.Schema.Types.ObjectId;
+  startTime: Date;
+  score: number;
+  endTime: Date;
+  weeklyQuestion: mongoose.Schema.Types.ObjectId;
   userResponse: Array<{
     _id: mongoose.Schema.Types.ObjectId;
     response: string;
@@ -16,22 +17,25 @@ interface weeklyResponseI extends Document {
 const weeklyResponseSchema: Schema<weeklyResponseI> =
   new Schema<weeklyResponseI>(
     {
-      weeklyQuestion:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:WeeklyQuestion
+      weeklyQuestion: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: WeeklyQuestion,
       },
       user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: User,
         required: true,
       },
-      startTime:{
-        type:Date,
-        required:true
+      startTime: {
+        type: Date,
+        required: true,
       },
-      score:{
-        type:Number,
-        default:0,
+      endTime: {
+        type: Date,
+      },
+      score: {
+        type: Number,
+        default: 0,
       },
       userResponse: [
         {

@@ -16,6 +16,7 @@ import {
   getWeeklyQuestion,
   respondToWeeklyQuestion,
 } from "../../controllers/WeeklyQuestionController";
+import { TrackLevels } from "../../controllers/trackLevel.controller";
 const router = express.Router();
 
 router.route("/login").post(asyncHandler(handleLoginUser));
@@ -29,10 +30,11 @@ router
   .route("/daily-question")
   .get(authMiddleware, asyncHandler(getDailyQuestion))
   .post(authMiddleware, asyncHandler(respondToDailyQuestion));
-  
+
 router
   .route("/weekly-question")
   .get(authMiddleware, asyncHandler(getWeeklyQuestion))
   .post(authMiddleware, asyncHandler(respondToWeeklyQuestion));
+router.route("/track-levels").get(authMiddleware, asyncHandler(TrackLevels));
 
 export default router;

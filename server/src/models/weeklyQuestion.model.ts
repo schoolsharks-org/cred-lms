@@ -7,6 +7,7 @@ interface WeeklyQuestionI extends Document {
   totalScore: number;
   totalAnswers: number;
   department: String;
+  moduleName: String;
 }
 
 const weeklyQuestionSchema: Schema<WeeklyQuestionI> =
@@ -14,6 +15,10 @@ const weeklyQuestionSchema: Schema<WeeklyQuestionI> =
     {
       date: {
         type: Date,
+        required: true,
+      },
+      moduleName: {
+        type: String,
         required: true,
       },
       weeklyQuestionModule: {
