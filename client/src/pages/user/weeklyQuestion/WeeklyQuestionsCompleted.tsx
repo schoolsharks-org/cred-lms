@@ -1,6 +1,6 @@
 import { Box, Stack, Typography, useTheme } from "@mui/material";
 import weeklyQuestionBadge from "@/assets/user/weekly-question-badge.png";
-import useWeeklyQuestion from "@/hooks/useWeeklyQuestion";
+import useWeeklyQuestion from "@/hooks/users/useWeeklyQuestion";
 import { Navigate } from "react-router-dom";
 import Loader from "@/components/Loader";
 

@@ -1,5 +1,5 @@
 import Loader from "@/components/Loader";
-import useWeeklyQuestion from "@/hooks/useWeeklyQuestion";
+import useWeeklyQuestion from "@/hooks/users/useWeeklyQuestion";
 import { Check, Close } from "@mui/icons-material";
 import { Box, Button, Stack, Typography, useTheme } from "@mui/material";
 
@@ -32,9 +32,9 @@ const WeeklyQuestions = () => {
   }
   return (
     <Stack height="100vh">
-      <Stack width={"max-content"} padding={"16px"}>
+      <Stack padding={"16px"}>
         <Typography fontSize={"2rem"} fontWeight={"600"}>
-          Caption
+        Samuruddhi loan ka GYAN
         </Typography>
         <Box
           sx={{

@@ -16,7 +16,7 @@ import {
   ArrowForwardIos,
 } from "@mui/icons-material";
 import BarGraph from "@/components/user/BarGraph";
-import useDailyQuestion from "@/hooks/useDailyQuestion";
+import useDailyQuestion from "@/hooks/users/useDailyQuestion";
 import Loader from "@/components/Loader";
 
 const DailyQuestion = () => {

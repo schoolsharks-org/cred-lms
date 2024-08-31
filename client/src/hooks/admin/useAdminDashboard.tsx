@@ -49,11 +49,11 @@ const useAdminDashboard = () => {
             },
             {
                 name: "No. of weekly \nmodules",
-                data: [500, 450, 200, 350, 100],
+                data: [0, 0, 0, 0, 1],
               },
               {
                 name: "Modules \ncompleted",
-                data: [500, 450, 200, 350, 100],
+                data: [0, 0, 0, 0, 0],
               },
         ];
 

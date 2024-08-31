@@ -28,10 +28,10 @@ const WeeklyQuestionCard = () => {
       >
         <Stack direction={"row"} justifyContent={"space-between"}>
           <Typography fontSize={"1.25rem"} fontWeight={"700"}>
-            Caption
+            Samuruddhi loan ka GYAN
           </Typography>
           <Typography fontSize={"1.25rem"} fontWeight={"600"}>
-            20 Aug
+            26 Aug
           </Typography>
         </Stack>
         <Stack

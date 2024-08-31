@@ -6,7 +6,7 @@ import TrackLevels from "./TrackLevels"
 
 const HomeMain = () => {
   return (
-    <Stack paddingBottom={"120px"}>
+    <Stack paddingBottom={"48px"}>
       <Header/>
       <DailyQuestion/>
       <WeeklyQuestionCard/>

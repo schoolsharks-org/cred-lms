@@ -1,4 +1,4 @@
-import useAdminDashboard from "@/hooks/useAdminDashboard";
+import useAdminDashboard from "@/hooks/admin/useAdminDashboard";
 import { SaveAlt, Search, Settings } from "@mui/icons-material";
 import { Button, IconButton, Stack, Typography, useTheme } from "@mui/material";
 import { useEffect } from "react";
