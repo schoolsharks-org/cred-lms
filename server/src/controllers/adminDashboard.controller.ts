@@ -40,7 +40,6 @@ async function handleUserScores() {
   if (weeklyQuestions) {
     for (const response of userWeeklyTopScorers) {
       const user = await User.findOne({ _id: response.user }).select("name");
-
       if (user) {
         TopScorers.push({
           Name: user.name,

@@ -9,113 +9,78 @@ export const handleScoreboard = async (
   next: NextFunction
 ): Promise<void> => {
   if (!req.user) {
-    next(new AppError("Unauthorized", 401));
-    return;
+    return next(new AppError("Unauthorized", 401));
   }
 
-  const users = await User.find({})
-    .select("_id score name")
-    .sort({ score: -1 })
-    .limit(10);
+  try {
+    const users = await User.find({})
+      .select("_id score name")
+      .sort({ score: -1 })
+      .limit(10);
 
-  const scoreboard = [];
-  let rank = 1;
-  for (const user of users) {
-    const weeklyResponses = await WeeklyResponse.find({ user: user._id });
+    const scoreboard = [];
+    let rank = 1;
 
-    if (!weeklyResponses) {
-      return next(new AppError("There are no responses from this user", 400));
-    }
+    for (const user of users) {
+      const totalEngagedTimeOfUser = await calculateTotalEngagedTime(user._id.toString());
 
-    const totalTimeEngaged = [];
-    for (const weeklyResponse of weeklyResponses) {
-      const startDate = new Date(weeklyResponse.startTime);
-      const endDate = new Date(weeklyResponse.endTime);
-
-      const timeDifferenceInMilliseconds: number =
-        endDate.getTime() - startDate.getTime();
-
-      const timeDifferenceInMinutes: number =
-        timeDifferenceInMilliseconds / (1000 * 60);
-
-      totalTimeEngaged.push(timeDifferenceInMinutes);
-    }
-
-    const totalEngagedTimeOfUser = totalTimeEngaged.reduce(
-      (accumulator, currentValue) => accumulator + currentValue,
-      0
-    );
-
-    const response = [
-      {
+      scoreboard.push({
         rank: rank,
         name: user.name,
         timeInMints: totalEngagedTimeOfUser,
         points: user.score,
-      },
-    ];
+      });
+      rank++;
+    }
 
-    scoreboard.push(response);
-    rank += 1;
+    const { _id: userId } = req.user;
+    const currentUserScore = await User.findOne({ _id: userId }).select(
+      "name score"
+    );
+
+    if (!currentUserScore) {
+      return next(new AppError("Current user not found", 404));
+    }
+
+    const totalEngagedTimeOfCurrentUser = await calculateTotalEngagedTime(
+      userId.toString()
+    );
+
+    const userRanks = await User.find({})
+      .select("_id score")
+      .sort({ score: -1 });
+
+    let currentUserRank = userRanks.findIndex(
+      (user) => user._id.toString() === userId.toString()
+    ) + 1;
+
+    const currentUserDetails = {
+      rank: currentUserRank,
+      name: "You",
+      timeInMints: totalEngagedTimeOfCurrentUser,
+      points: currentUserScore.score,
+    };
+
+    res.status(200).json({ scoreboard, currentUserDetails });
+  } catch (error) {
+    next(error);
   }
+};
 
-  const { _id: userId } = req.user;
-  const currentUserScore = await User.findOne({ _id: userId }).select(
-    "name score"
-  );
-
-  if (!currentUserScore) {
-    scoreboard.push({
-      user: userId,
-      name: req.user.name,
-      score: 0,
-    });
-    return;
-  }
+const calculateTotalEngagedTime = async (userId: string) => {
   const weeklyResponses = await WeeklyResponse.find({ user: userId });
 
-  if (!weeklyResponses) {
+  if (!weeklyResponses || weeklyResponses.length === 0) {
+    return 0; 
   }
 
-  const totalUserTime = [];
-  for (const weeklyResponse of weeklyResponses) {
+  return weeklyResponses.reduce((totalTime, weeklyResponse) => {
     const startDate = new Date(weeklyResponse.startTime);
     const endDate = new Date(weeklyResponse.endTime);
 
-    const timeDifferenceInMilliseconds: number =
-      endDate.getTime() - startDate.getTime();
+    const timeDifferenceInMinutes =
+      (endDate.getTime() - startDate.getTime()) / (1000 * 60);
 
-    const timeDifferenceInMinutes: number =
-      timeDifferenceInMilliseconds / (1000 * 60);
-
-    totalUserTime.push(timeDifferenceInMinutes);
-  }
-
-  const totalEngagedTimeOfCurrentUser = totalUserTime.reduce(
-    (accumulator, currentValue) => accumulator + currentValue,
-    0
-  );
-
-  let currentUserRank = -1;
-  const userRanks = await User.find({})
-    .select("_id score name")
-    .sort({ score: -1 });
-
-  for (const userRank of userRanks) {
-    if (userRank._id == userId) {
-      currentUserRank = 1;
-    }
-    currentUserRank += 1;
-  }
-
-  console.log("currentUserRank: ", currentUserRank);
-
-  const currentUserDetails = {
-    rank: currentUserRank,
-    name: "You",
-    timeInMints: totalEngagedTimeOfCurrentUser,
-    score: currentUserScore?.score,
-  };
-
-  res.status(200).json({ scoreboard, currentUserDetails });
+    return totalTime + timeDifferenceInMinutes;
+  }, 0);
 };
