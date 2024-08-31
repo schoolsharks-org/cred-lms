@@ -24,6 +24,10 @@ export interface DailyQuestion {
       OptionA: number;
       OptionB: number;
     };
+    Operations:{
+      OptionA:number;
+      OptionB:number;
+    }
     Others: {
       OptionA: number;
       OptionB: number;

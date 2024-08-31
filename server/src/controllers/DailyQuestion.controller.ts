@@ -39,7 +39,8 @@ export const getDailyQuestion = async (
       user: userId,
       dailyQuestion: dailyQuestion._id,
     });
-
+    
+    console.log(dailyQuestion.departmentResponses)
     const response = {
       question: dailyQuestion.questionPrompt,
       options: {
@@ -51,6 +52,7 @@ export const getDailyQuestion = async (
         Sales: dailyQuestion.departmentResponses.Sales,
         Credit: dailyQuestion.departmentResponses.Credit,
         Collection: dailyQuestion.departmentResponses.Collection,
+        Operations:dailyQuestion.departmentResponses.Operations,
         Others: dailyQuestion.departmentResponses.Others,
       } : undefined,
     };
@@ -111,6 +113,7 @@ export const respondToDailyQuestion = async (
           Sales: dailyQuestion.departmentResponses.Sales,
           Credit: dailyQuestion.departmentResponses.Credit,
           Collection: dailyQuestion.departmentResponses.Collection,
+          Operations:dailyQuestion.departmentResponses.Operations,
           Others: dailyQuestion.departmentResponses.Others,
         },
       };
@@ -149,6 +152,7 @@ export const respondToDailyQuestion = async (
         Sales: dailyQuestion.departmentResponses.Sales,
         Credit: dailyQuestion.departmentResponses.Credit,
         Collection: dailyQuestion.departmentResponses.Collection,
+        Operations:dailyQuestion.departmentResponses.Operations,
         Others: dailyQuestion.departmentResponses.Others,
       },
       score:score+5

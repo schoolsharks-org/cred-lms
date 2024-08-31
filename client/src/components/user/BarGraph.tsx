@@ -43,7 +43,7 @@ const BarGraph = ({ data }: { data: any }) => {
             fontSize={"12px"}
             color="#000"
             position="top"
-            formatter={(value: any) => `${value}%`}
+            formatter={(value: any) => `${value}`}
           />
         </Bar>
         <Bar dataKey="b" fill="#000000">
@@ -52,7 +52,7 @@ const BarGraph = ({ data }: { data: any }) => {
             fontSize={"12px"}
             color="#000"
             position="top"
-            formatter={(value: any) => `${value}%`}
+            formatter={(value: any) => `${value}`}
           />
         </Bar>
       </BarChart>

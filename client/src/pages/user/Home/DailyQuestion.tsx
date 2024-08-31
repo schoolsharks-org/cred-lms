@@ -163,7 +163,7 @@ const DailyQuestion = () => {
                           bgcolor: "#D53951",
                         }}
                       />
-                      <Typography fontWeight={"600"}>YES</Typography>
+                      <Typography fontWeight={"600"}>{dailyQuestionData?.options.OptionA}</Typography>
                     </Stack>
                     <Stack direction={"row"} gap={"5px"}>
                       <Box
@@ -173,7 +173,7 @@ const DailyQuestion = () => {
                           bgcolor: "#000000",
                         }}
                       />
-                      <Typography fontWeight={"600"}>NO</Typography>
+                      <Typography fontWeight={"600"}>{dailyQuestionData?.options.OptionB}</Typography>
                     </Stack>
                   </Stack>
                 </Stack>

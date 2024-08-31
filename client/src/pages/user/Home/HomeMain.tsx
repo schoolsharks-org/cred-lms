@@ -2,6 +2,7 @@ import { Stack } from "@mui/material"
 import Header from "./Header"
 import DailyQuestion from "./DailyQuestion"
 import WeeklyQuestionCard from "./WeeklyQuestionCard"
+import TrackLevels from "./TrackLevels"
 
 const HomeMain = () => {
   return (
@@ -9,6 +10,7 @@ const HomeMain = () => {
       <Header/>
       <DailyQuestion/>
       <WeeklyQuestionCard/>
+      <TrackLevels/>
     </Stack>
   )
 }

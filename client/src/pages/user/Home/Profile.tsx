@@ -13,37 +13,37 @@ import EditIcon from "@mui/icons-material/Edit";
 const badges = [
   {
     name: "Microfinance Star",
-    completion: 50,
-    icon: badge,
-    unlocked:true
-  },
-  {
-    name: "Microfinance Star",
-    completion: 100,
-    icon: badge,
-    unlocked:true
-  },
-  {
-    name: "Microfinance Star",
-    completion: 50,
+    completion: 0,
     icon: badge,
     unlocked:false
   },
   {
     name: "Microfinance Star",
-    completion: 50,
+    completion: 0,
     icon: badge,
     unlocked:false
   },
   {
     name: "Microfinance Star",
-    completion: 50,
+    completion: 0,
     icon: badge,
     unlocked:false
   },
   {
     name: "Microfinance Star",
-    completion: 50,
+    completion: 0,
+    icon: badge,
+    unlocked:false
+  },
+  {
+    name: "Microfinance Star",
+    completion: 0,
+    icon: badge,
+    unlocked:false
+  },
+  {
+    name: "Microfinance Star",
+    completion: 0,
     icon: badge,
     unlocked:false
   },

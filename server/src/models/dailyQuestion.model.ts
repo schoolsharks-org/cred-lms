@@ -59,42 +59,62 @@ const dailyQuestionSchema: Schema<DailyQuestionI> = new Schema<DailyQuestionI>(
         OptionA: {
           type: Number,
           required: true,
+          default:0,
         },
         OptionB: {
           type: Number,
           required: true,
+          default:0,
         },
       },
       Credit: {
         OptionA: {
           type: Number,
           required: true,
+          default:0,
         },
         OptionB: {
           type: Number,
           required: true,
+          default:0,
         },
       },
       Collection: {
         OptionA: {
           type: Number,
           required: true,
+          default:0,
         },
         OptionB: {
           type: Number,
           required: true,
+          default:0,
         },
       },
       Others: {
         OptionA: {
           type: Number,
           required: true,
+          default:0,
         },
         OptionB: {
           type: Number,
           required: true,
+          default:0,
         },
       },
+      Operations:{
+        OptionA: {
+          type: Number,
+          required: true,
+          default:0,
+        },
+        OptionB: {
+          type: Number,
+          required: true,
+          default:0,
+        },
+      }
     },
   },
   {

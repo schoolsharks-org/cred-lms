@@ -35,6 +35,7 @@ router
   .route("/weekly-question")
   .get(authMiddleware, asyncHandler(getWeeklyQuestion))
   .post(authMiddleware, asyncHandler(respondToWeeklyQuestion));
+  
 router.route("/track-levels").get(authMiddleware, asyncHandler(TrackLevels));
 
 export default router;
