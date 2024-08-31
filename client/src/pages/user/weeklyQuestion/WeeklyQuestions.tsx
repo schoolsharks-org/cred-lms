@@ -1,12 +1,13 @@
 import Loader from "@/components/Loader";
 import useWeeklyQuestion from "@/hooks/users/useWeeklyQuestion";
 import { Check, Close } from "@mui/icons-material";
-import { Box, Button, Stack, Typography, useTheme } from "@mui/material";
+import { Box, Button, CircularProgress, Stack, Typography, useTheme } from "@mui/material";
 
 const WeeklyQuestions = () => {
   const theme = useTheme();
   const {
     loading,
+    submissionLoading,
     currentQuestion,
     correctAnswer,
     time,
@@ -117,7 +118,7 @@ const WeeklyQuestions = () => {
           bgcolor={theme.palette.secondary.main}
           height={"100px"}
         >
-          {correctAnswer ? (
+          {submissionLoading ? <Stack width={"100%"} alignItems={"center"} justifyContent={"center"} ><CircularProgress/></Stack>:correctAnswer ? (
             <Button
               variant="contained"
               onClick={handleNextQuestion}

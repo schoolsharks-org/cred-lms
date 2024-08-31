@@ -27,11 +27,15 @@ const useWeeklyQuestion = () => {
 
   const [error, setError] = useState<null | string>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [submissionLoading,setSubmissionLoading]=useState<boolean>(false)
   const [questions, setQuestions] = useState<Question[] | null>(null);
   const [answeredCount, setAnsweredCount] = useState<number>(0);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [correctAnswer, setCorrectAnswer] = useState<null | string>(null);
   const [time, setTime] = useState<string>("00:00");
+
+
+
   const [scores, setScores] = useState({
     userScore: 0,
     averageScore: 0,
@@ -101,8 +105,9 @@ const useWeeklyQuestion = () => {
     async (selectedOption: string) => {
       if (!currentQuestion) return;
       console.log("Current Question Id: ", currentQuestion._id);
-
+      
       try {
+        setSubmissionLoading(true)
         const response = await userApi.post("/weekly-question", {
           questionId: currentQuestion._id,
           response: selectedOption,
@@ -117,6 +122,9 @@ const useWeeklyQuestion = () => {
       } catch (error) {
         console.error(error);
         setError("Failed to submit the answer.");
+      }
+      finally{
+        setSubmissionLoading(false)
       }
     },
     [currentQuestion]
@@ -136,6 +144,7 @@ const useWeeklyQuestion = () => {
 
   return {
     error,
+    submissionLoading,
     loading,
     scores,
     totalQuestions: questions?.length ?? 0,
