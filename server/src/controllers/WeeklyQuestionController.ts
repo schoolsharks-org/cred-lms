@@ -24,7 +24,6 @@ export const getWeeklyQuestion = async (
   const { _id: userId } = req.user;
   const { date } = req.query;
 
-  console.log("Date:", date);
   const TodayDate = new Date(date as string);
   const startOfWeek = getMondayOfCurrentWeek(TodayDate);
 
@@ -149,7 +148,9 @@ export const respondToWeeklyQuestion = async (
     weeklyQuestions.totalAnswers += 1;
     weeklyQuestions.totalScore += existingUserResponse.score;
     console.log(weeklyQuestions.totalAnswers);
-
+    const endTime = new Date();
+    existingUserResponse.endTime = endTime;
+    await existingUserResponse.save();
     await weeklyQuestions.save();
   }
 

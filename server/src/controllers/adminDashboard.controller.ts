@@ -20,7 +20,6 @@ function getSundayOfCurrentWeek(date: Date): Date {
   return sunday;
 }
 
-
 async function handleUserScores() {
   const TodayDate = new Date();
   const startOfWeek = getMondayOfCurrentWeek(TodayDate);
@@ -74,10 +73,6 @@ async function handleUserScores() {
 
   return { TopScore: TopScorers, BelowAverageScore: belowAvgScorers };
 }
-
-
-
-
 
 async function getSevenDaysInactiveUsersCount() {
   const sevenDaysAgo = new Date();
@@ -147,46 +142,37 @@ async function getUserCountForEachDepartment() {
     },
   ]);
 
-  return departmentCounts ;
+  return departmentCounts;
 }
 
-async function getWeeklyModulesCountForEachDepartment() {
-  const departmentModuleCount = await WeeklyQuestion.aggregate([
-    {
-      $group: {
-        _id: "$department",
-        count: { $sum: 1 },
-      },
-    },
-  ]);
-  console.log("departmentModuleCount: ", departmentModuleCount);
-  return { departmentModuleCount: departmentModuleCount };
-}
+async function calculateCompletionPercentage() {}
 
 export const handleAdminDashboard = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-    const [
-      userScores,
-      sevenDaysInactiveUsers,
-      fifteenDaysInactiveUsers,
-      userCountofDepartment,
-      moduleCountOfEachDepartment,
-    ] = await Promise.all([
-      handleUserScores(),
-      getSevenDaysInactiveUsersCount(),
-      getFifteenDaysInactiveUsersCount(),
-      getUserCountForEachDepartment(),
-      getWeeklyModulesCountForEachDepartment(),
-    ]);
+  const [
+    userScores,
+    sevenDaysInactiveUsers,
+    fifteenDaysInactiveUsers,
+    userCountofDepartment,
+    moduleCountOfEachDepartment,
+    // modulesCompleted,
+  ] = await Promise.all([
+    handleUserScores(),
+    getSevenDaysInactiveUsersCount(),
+    getFifteenDaysInactiveUsersCount(),
+    getUserCountForEachDepartment(),
+    // getWeeklyModulesCountForEachDepartment(),
+    calculateCompletionPercentage(),
+  ]);
 
-    return res.json({
-      userScores,
-      sevenDaysInactiveUsers,
-      fifteenDaysInactiveUsers,
-      userCountofDepartment,
-      moduleCountOfEachDepartment,
-    });
+  return res.json({
+    userScores,
+    sevenDaysInactiveUsers,
+    fifteenDaysInactiveUsers,
+    userCountofDepartment,
+    moduleCountOfEachDepartment,
+  });
 };
