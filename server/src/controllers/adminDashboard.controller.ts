@@ -144,18 +144,7 @@ async function getUserCountForEachDepartment() {
   return { userCount: departmentCounts };
 }
 
-async function getWeeklyModulesCountForEachDepartment() {
-  const departmentModuleCount = await WeeklyQuestion.aggregate([
-    {
-      $group: {
-        _id: "$department",
-        count: { $sum: 1 },
-      },
-    },
-  ]);
-  console.log("departmentModuleCount: ", departmentModuleCount);
-  return { departmentModuleCount: departmentModuleCount };
-}
+async function calculateCompletionPercentage() {}
 
 export const handleAdminDashboard = async (
   req: Request,
@@ -169,25 +158,28 @@ export const handleAdminDashboard = async (
     }
 
     const [
-      userScores,
-      sevenDaysInactiveUsers,
-      fifteenDaysInactiveUsers,
-      userCountofDepartment,
-      moduleCountOfEachDepartment,
+      // userScores,
+      // sevenDaysInactiveUsers,
+      // fifteenDaysInactiveUsers,
+      // userCountofDepartment,
+      // moduleCountOfEachDepartment,
+      modulesCompleted,
     ] = await Promise.all([
-      handleUserScores(),
-      getSevenDaysInactiveUsersCount(),
-      getFifteenDaysInactiveUsersCount(),
-      getUserCountForEachDepartment(),
-      getWeeklyModulesCountForEachDepartment(),
+      // handleUserScores(),
+      // getSevenDaysInactiveUsersCount(),
+      // getFifteenDaysInactiveUsersCount(),
+      // getUserCountForEachDepartment(),
+      // getWeeklyModulesCountForEachDepartment(),
+      calculateCompletionPercentage(),
     ]);
 
     res.json({
-      userScores,
-      sevenDaysInactiveUsers,
-      fifteenDaysInactiveUsers,
-      userCountofDepartment,
-      moduleCountOfEachDepartment,
+      // userScores,
+      // sevenDaysInactiveUsers,
+      // fifteenDaysInactiveUsers,
+      // userCountofDepartment,
+      // moduleCountOfEachDepartment,
+      modulesCompleted,
     });
   } catch (error) {
     next(error);
