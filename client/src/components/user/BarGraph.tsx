@@ -11,14 +11,16 @@ import {
 const BarGraph = ({ data }: { data: any }) => {
 
   if(!data){
-    return;
+    return null;
   }
+  
   const formattedData = Object.entries(data).map(([key, value]: any) => ({
     name: key,
     a: value.OptionA,
     b: value.OptionB,
   }));
 
+  console.log(formattedData)
   return (
     <ResponsiveContainer width="100%" height={300}>
       <BarChart

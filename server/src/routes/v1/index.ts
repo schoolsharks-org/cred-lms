@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.use("/users", userRoutes);
 router.use("/question", questionRoutes);
+
 router.use("/admin", adminRoutes);
 
 export default router;

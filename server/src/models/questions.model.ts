@@ -21,7 +21,12 @@ export interface Question extends Document {
   images: string[];
   optionA: string;
   optionB: string;
+  optionTexts:{
+    optionA:string;
+    optionB:string;
+  };
   correctOption: string;
+  correctAnswerDescription:string;
   score: number;
   createdAt: Date;
 }
@@ -45,6 +50,13 @@ export const QuestionSchema: Schema<Question> = new Schema<Question>(
       type: String,
       required: true,
     },
+    optionTexts: {
+      type: {
+        optionA: { type: String, required: true },
+        optionB: { type: String, required: true },
+      },
+      required: true,
+    },
     optionA: {
       type: String,
       required: true,
@@ -54,6 +66,9 @@ export const QuestionSchema: Schema<Question> = new Schema<Question>(
       type: String,
       required: true,
       // enum: Object.values(Options),
+    },
+    correctAnswerDescription:{
+      type:String,
     },
     score: {
       type: Number,

@@ -2,12 +2,12 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 import { Question, QuestionSchema } from "./questions.model";
 
 interface WeeklyQuestionI extends Document {
+  moduleName:string;
   date: Date;
   weeklyQuestionModule: Question[];
   totalScore: number;
   totalAnswers: number;
   department: String;
-  moduleName: String;
 }
 
 const weeklyQuestionSchema: Schema<WeeklyQuestionI> =

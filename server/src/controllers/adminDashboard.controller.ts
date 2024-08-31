@@ -19,6 +19,7 @@ function getSundayOfCurrentWeek(date: Date): Date {
   sunday.setUTCHours(23, 59, 59, 999);
   return sunday;
 }
+
 async function handleUserScores() {
   const TodayDate = new Date();
   const startOfWeek = getMondayOfCurrentWeek(TodayDate);
@@ -141,7 +142,7 @@ async function getUserCountForEachDepartment() {
     },
   ]);
 
-  return { userCount: departmentCounts };
+  return departmentCounts;
 }
 
 async function calculateCompletionPercentage() {}
@@ -150,38 +151,28 @@ export const handleAdminDashboard = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<void> => {
-  try {
-    if (!req.user) {
-      next(new AppError("Unauthorized", 401));
-      return;
-    }
+) => {
+  const [
+    userScores,
+    sevenDaysInactiveUsers,
+    fifteenDaysInactiveUsers,
+    userCountofDepartment,
+    moduleCountOfEachDepartment,
+    // modulesCompleted,
+  ] = await Promise.all([
+    handleUserScores(),
+    getSevenDaysInactiveUsersCount(),
+    getFifteenDaysInactiveUsersCount(),
+    getUserCountForEachDepartment(),
+    // getWeeklyModulesCountForEachDepartment(),
+    calculateCompletionPercentage(),
+  ]);
 
-    const [
-      // userScores,
-      // sevenDaysInactiveUsers,
-      // fifteenDaysInactiveUsers,
-      // userCountofDepartment,
-      // moduleCountOfEachDepartment,
-      modulesCompleted,
-    ] = await Promise.all([
-      // handleUserScores(),
-      // getSevenDaysInactiveUsersCount(),
-      // getFifteenDaysInactiveUsersCount(),
-      // getUserCountForEachDepartment(),
-      // getWeeklyModulesCountForEachDepartment(),
-      calculateCompletionPercentage(),
-    ]);
-
-    res.json({
-      // userScores,
-      // sevenDaysInactiveUsers,
-      // fifteenDaysInactiveUsers,
-      // userCountofDepartment,
-      // moduleCountOfEachDepartment,
-      modulesCompleted,
-    });
-  } catch (error) {
-    next(error);
-  }
+  return res.json({
+    userScores,
+    sevenDaysInactiveUsers,
+    fifteenDaysInactiveUsers,
+    userCountofDepartment,
+    moduleCountOfEachDepartment,
+  });
 };

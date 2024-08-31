@@ -7,7 +7,7 @@ const router = express.Router();
 
 router
   .route("/admin-dashboard")
-  .get(authMiddleware, asyncHandler(handleAdminDashboard));
+  .get(asyncHandler(handleAdminDashboard));
 
 router
   .route("/employee-stats")
