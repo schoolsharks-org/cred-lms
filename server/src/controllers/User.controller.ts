@@ -3,6 +3,7 @@ import User, { Department } from "../models/user.model";
 import mongoose from "mongoose";
 import AppError from "../utils/appError";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { sendEmail } from "../services/emailService";
 const nodemailer = require("nodemailer");
 const generateAccessAndRefreshTokens = async (
   userId: mongoose.Types.ObjectId
@@ -28,79 +29,174 @@ const generateAccessAndRefreshTokens = async (
   }
 };
 
-const handleLoginUser = async (
+// const handleLoginUser = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   const { phone, password, userMail } = req.body;
+
+//   if (!phone && !password) {
+//     return next(new AppError("All Fields Required", 400));
+//   }
+
+//   const user = await User.findOne({ contact: phone.toString() });
+
+//   if (!user) {
+//     return next(new AppError("User does not exist", 404));
+//   }
+
+//   const isPasswordValid = await user.isPasswordCorrect(password);
+
+//   if (!isPasswordValid) {
+//     return next(new AppError("Invalid user credentials", 401));
+//   }
+
+//   const verificationCode = Math.floor(1000 + Math.random() * 9000).toString();
+//   console.log("verificationCode: ", verificationCode);
+//   const transporter = await nodemailer.createTransport({
+//     service: "gmail",
+//     port: 587,
+//     secure: false,
+//     auth: {
+//       user: process.env.EMAIL_USER,
+//       pass: process.env.EMAIL_PASS,
+//     },
+//   });
+
+//   const mailOptions = {
+//     from: `"CRED DOST" <${process.env.EMAIL_USER}>`,
+//     to: userMail,
+//     subject: "Your Verification Code",
+//     html: `<p>Your verification code is <strong>${verificationCode}</strong></p>`,
+//   };
+
+//   try {
+//     const info = await transporter.sendMail(mailOptions);
+//     console.log("Verification email sent: %s", info.messageId);
+//   } catch (error) {
+//     console.error("Error sending verification email:", error);
+//   }
+
+//   const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+//     user._id
+//   );
+
+//   const loggedInUser = await User.findById(user._id).select(
+//     "-password -refreshToken"
+//   );
+
+//   const options: CookieOptions = {
+//     httpOnly: true,
+//     secure: process.env.NODE_ENV === "production",
+//     // sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+//   };
+
+//   return res
+//     .status(200)
+//     .cookie("accessToken", accessToken, options)
+//     .cookie("refreshToken", refreshToken, options)
+//     .json({
+//       user: loggedInUser,
+//       accessToken,
+//       refreshToken,
+//     });
+// };
+
+
+const handleSendOtp = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const { phone, password, userMail } = req.body;
+  const { email } = req.body;
 
-  if (!phone && !password) {
-    return next(new AppError("All Fields Required", 400));
+  if (!email) {
+    return next(new AppError("Email is required", 400));
   }
 
-  const user = await User.findOne({ contact: phone.toString() });
+  const user = await User.findOne({ email });
 
   if (!user) {
     return next(new AppError("User does not exist", 404));
   }
 
-  const isPasswordValid = await user.isPasswordCorrect(password);
+  const otp = Math.floor(1000 + Math.random() * 9000);
+  const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // OTP valid for 10 minutes
 
-  if (!isPasswordValid) {
-    return next(new AppError("Invalid user credentials", 401));
-  }
-
-  const verificationCode = Math.floor(1000 + Math.random() * 9000).toString();
-  console.log("verificationCode: ", verificationCode);
-  const transporter = await nodemailer.createTransport({
-    service: "gmail",
-    port: 587,
-    secure: false,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-
-  const mailOptions = {
-    from: `"CRED DOST" <${process.env.EMAIL_USER}>`,
-    to: userMail,
-    subject: "Your Verification Code",
-    html: `<p>Your verification code is <strong>${verificationCode}</strong></p>`,
+  // Update user's otpData in the database
+  user.otpData = {
+    otp,
+    expiry: otpExpiry,
   };
+  await user.save();
 
+  // Send the OTP to the user's email
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log("Verification email sent: %s", info.messageId);
+    await sendEmail({
+      to: email,
+      subject: "Your Verification Code",
+      html: `<p>Your verification code is <strong>${otp}</strong></p>`,
+    });
+    return res.status(200).json({ status: "OTP_SENT", message: "OTP sent successfully" });
   } catch (error) {
-    console.error("Error sending verification email:", error);
+    console.log(error)
+    return next(new AppError("Failed to send OTP", 500));
+  }
+};
+
+
+
+const handleVerifyOtp = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { email, otp } = req.body;
+
+  if (!email || !otp) {
+    return next(new AppError("Email and OTP are required", 400));
   }
 
-  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
-    user._id
-  );
+  const user = await User.findOne({ email });
 
-  const loggedInUser = await User.findById(user._id).select(
-    "-password -refreshToken"
-  );
+  if (!user) {
+    return next(new AppError("User does not exist", 404));
+  }
 
-  const options: CookieOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    // sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-  };
+  if (
+    user.otpData &&
+    user.otpData.otp === parseInt(otp) &&
+    user.otpData.expiry > new Date()
+  ) {
 
-  return res
-    .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
-    .json({
-      user: loggedInUser,
-      accessToken,
-      refreshToken,
-    });
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+      user._id
+    );
+
+    const loggedInUser = await User.findById(user._id).select(
+      "-password -refreshToken -otpData"
+    );
+
+    const options: CookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    };
+
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json({
+        user: loggedInUser,
+        accessToken,
+        refreshToken,
+      });
+  } else {
+    return next(new AppError("Invalid or expired OTP", 401));
+  }
 };
+
 
 const handleRegisterUser = async (
   req: Request,
@@ -264,7 +360,9 @@ const handleGetUser = async (
 };
 
 export {
-  handleLoginUser,
+  // handleLoginUser,
+  handleSendOtp,
+  handleVerifyOtp,
   handleRegisterUser,
   handleLogoutUser,
   handleRefreshAccessToken,

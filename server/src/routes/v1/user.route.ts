@@ -2,10 +2,11 @@ import express from "express";
 import asyncHandler from "../../utils/asyncHandler";
 import {
   handleGetUser,
-  handleLoginUser,
   handleLogoutUser,
   handleRefreshAccessToken,
   handleRegisterUser,
+  handleSendOtp,
+  handleVerifyOtp,
 } from "../../controllers/User.controller";
 import {
   getDailyQuestion,
@@ -20,7 +21,10 @@ import { TrackLevels } from "../../controllers/trackLevel.controller";
 import { handleScoreboard } from "../../controllers/scoreboard.controller";
 const router = express.Router();
 
-router.route("/login").post(asyncHandler(handleLoginUser));
+
+// router.route("/login").post(asyncHandler(handleLoginUser));
+router.route("/send-otp").post(asyncHandler(handleSendOtp));
+router.route("/verify-otp").post(asyncHandler(handleVerifyOtp));
 router.route("/register").post(asyncHandler(handleRegisterUser));
 router.route("/refresh-token").post(asyncHandler(handleRefreshAccessToken));
 router.route("/logout").post(authMiddleware, asyncHandler(handleLogoutUser));

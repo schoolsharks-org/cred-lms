@@ -42,8 +42,8 @@ const WeeklyQuestionsCompleted = () => {
             padding={"2px 12px"}
             alignItems={"flex-end"}
           >
-            <Typography fontWeight={"500"}>Your Score - {scores.userScore}%</Typography>
-            <Typography fontWeight={"500"}>Average Score - {scores.averageScore}%</Typography>
+            <Typography fontWeight={"500"}>Your Score - {Math.round(scores.userScore*100/(scores.maxScore))}%</Typography>
+            <Typography fontWeight={"500"}>Average Score - {Math.round(scores.averageScore*100/(scores.maxScore))}%</Typography>
           </Stack>
         </Stack>
 
@@ -73,7 +73,7 @@ const WeeklyQuestionsCompleted = () => {
                 borderBottom: "20px solid #ff0000",
                 position: "absolute",
                 bottom: "0",
-                left: `${scores.userScore??0}%`,
+                left: `${Math.round(scores.userScore*100/(scores.maxScore))??0}%`,
                 transform: "translateX(-50%)",
               }}
             >
@@ -98,7 +98,7 @@ const WeeklyQuestionsCompleted = () => {
                 borderBottom: "20px solid #000000",
                 position: "absolute",
                 bottom: "0",
-                left: `${scores.averageScore??0}%`,
+                left: `${Math.round(scores.averageScore*100/(scores.maxScore))??0}%`,
                 transform: "translateX(-50%)",
               }}
             >
@@ -143,7 +143,8 @@ const WeeklyQuestionsCompleted = () => {
         <Box sx={{ height: "1px", bgcolor: "#ffffff7b", marginTop: "34px" }} />
         <Stack padding={"20px"}>
           <Typography fontSize={"1.5rem"} fontWeight={"500"} marginTop={"34px"}>
-            You have earned 80 points. 20 points away from your next reward.
+            You have earned {scores.userScore} points.  
+            n points away from your next reward.
           </Typography>
         </Stack>
       </Stack>

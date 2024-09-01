@@ -6,6 +6,7 @@ import UserLayout from "./UserLayout";
 import { Stack } from "@mui/material";
 import Onboard from "./Onboard";
 import SignIn from "./SignIn";
+import VerifyOtp from "./VerifyOtp"; 
 import { AppDispatch, RootState } from "@/store/store";
 import { getUser } from "@/store/user/userActions";
 import Loader from "@/components/Loader";
@@ -14,12 +15,11 @@ import WeeklyQuestionsCompleted from "./weeklyQuestion/WeeklyQuestionsCompleted"
 import Score from "./Score/Score";
 import Profile from "./Home/Profile";
 import Rewards from "./Home/Rewards";
+import { authStatus } from "@/store/user/userSlice";
 
 const UserMain = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { authenticated, loading } = useSelector(
-    (state: RootState) => state.user
-  );
+  const { authStatus:status, loading } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     dispatch(getUser());
@@ -32,34 +32,36 @@ const UserMain = () => {
   return (
     <Stack maxWidth={"480px"} width={"100%"} margin={"auto"}>
       <Routes>
-        <Route
-          path="/onboard"
-          element={authenticated ? <Navigate to="/home" /> : <Onboard />}
-        />
-        <Route
-          path="/sign-in"
-          element={authenticated ? <Navigate to="/home" /> : <SignIn />}
-        />
+        {status === authStatus.UNAUTHENTICATED && (
+          <>
+            <Route path="/onboard" element={<Onboard />} />
+            <Route path="/sign-in" element={<SignIn />} />
+            <Route path="*" element={<Navigate to="/onboard" />} />
+          </>
+        )}
 
-        {authenticated ? (
+        {status === authStatus.OTP_SENT && (
+          <>
+            <Route path="/verify-otp" element={<VerifyOtp />} />
+            <Route path="*" element={<Navigate to="/verify-otp" />} />
+          </>
+        )}
+
+        {status === authStatus.AUTHENTICATED && (
           <>
             <Route element={<UserLayout />}>
               <Route path="/home" element={<HomeMain />} />
-              <Route path="/score" element={<Score/>} />
-              <Route path="/weekly-question/completed" element={<WeeklyQuestionsCompleted/>} />
-              <Route path="/offer" element={<Rewards />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route path="/score" element={<Score />} />
               <Route
                 path="/weekly-question/completed"
                 element={<WeeklyQuestionsCompleted />}
               />
+              <Route path="/offer" element={<Rewards />} />
+              <Route path="/profile" element={<Profile />} />
             </Route>
             <Route path="/weekly-question" element={<WeeklyQuestions />} />
-
             <Route path="*" element={<Navigate to="/home" />} />
           </>
-        ) : (
-          <Route path="*" element={<Navigate to="/onboard" />} />
         )}
       </Routes>
     </Stack>

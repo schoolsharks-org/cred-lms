@@ -21,6 +21,7 @@ export interface User extends Document {
   score: number;
   dailyQuestionResponse: string;
   refreshToken: string;
+  otpData:{otp:number,expiry:Date};
   createdAt: Date;
   isPasswordCorrect(password: string): Promise<boolean>;
   generateAccessToken(): string;
@@ -75,6 +76,13 @@ const UserSchema: Schema<User> = new Schema<User>(
       type: String,
       trim: true,
     },
+    otpData:{
+      type:{
+        otp:Number,
+        expiry:Date
+      },
+      default:null
+    }
   },
   {
     timestamps: true,

@@ -1,6 +1,6 @@
 import { Box, Button, Stack, Typography, useTheme } from "@mui/material";
 import battleIcon from "@/assets/user/weekly-question-battle-icon.png";
-import { ArrowForward } from "@mui/icons-material";
+import { ArrowForward, Lock, LockOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 const WeeklyQuestionCard = () => {
@@ -20,6 +20,11 @@ const WeeklyQuestionCard = () => {
         </Typography>
         <img src={battleIcon} alt="Battle" style={{ width: "55px" }} />
       </Stack>
+      <Stack position={"relative"}>
+      <Stack position={"absolute"} alignItems={"center"} justifyContent={"center"} width={"100%"} height={"100%"} sx={{backdropFilter:"blur(3px)",zIndex:"10",bgcolor:"#0000004a"}} gap={"10px"}>
+        <LockOutlined sx={{color:"#fff",fontSize:"3rem"}}/>
+        <Typography color={"#fff"} fontSize={"1.5rem"} fontWeight={"600"}>Will be unlocked on Monday</Typography>
+      </Stack> 
       <Stack
         bgcolor={theme.palette.secondary.main}
         margin={"0 5px"}
@@ -60,6 +65,7 @@ const WeeklyQuestionCard = () => {
       >
         Let's Play
       </Button>
+      </Stack>
 
       {/* Lines */}
       <Box sx={{position:"absolute",width:"1px",filter:"blur(2px)",height:"100vh",transform:"rotate(47deg)",bgcolor:"#ffffff",top:"-50%",left:"-35%",zIndex:"1"}}/>

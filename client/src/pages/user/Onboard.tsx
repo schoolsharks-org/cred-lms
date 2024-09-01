@@ -1,5 +1,6 @@
 import { Button, Stack, Typography, useTheme } from "@mui/material";
 import wgabLogo from "@/assets/wgab-logo.png";
+import sflLogo from "@/assets/SFL_logo.png"
 import { useNavigate } from "react-router-dom";
 
 const Onboard = () => {
@@ -8,15 +9,17 @@ const Onboard = () => {
   return (
     <Stack height={"100vh"} paddingBottom={"28px"}>
       <Stack alignItems={"center"} marginTop={"160px"}>
-        <Typography color="#363636" fontWeight={"600"} fontSize={"4rem"}>
+        {/* <Typography color="#363636" fontWeight={"600"} fontSize={"4rem"}>
           Cred Dost
-        </Typography>
+        </Typography> */}
+        <img src={sflLogo} alt="" style={{width:"160px",borderRadius:"2px"}} />
         <Typography
           fontSize={"1.25rem"}
           fontWeight={"400"}
+          marginTop={"14px"}
           color={theme.palette.text.secondary}
         >
-          For Satin Finserv
+          For Satin Finserv ltd. 
         </Typography>
       </Stack>
       <Stack marginTop={"auto"} padding={"20px"}>

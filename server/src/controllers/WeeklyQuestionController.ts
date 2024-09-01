@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import WeeklyQuestion from "../models/weeklyQuestion.model";
 import WeeklyResponse from "../models/weeklyResponse.model";
 import AppError from "../utils/appError";
+import User from "../models/user.model";
 
 function getMondayOfCurrentWeek(date: Date): Date {
   const dayOfWeek = date.getUTCDay();
@@ -56,6 +57,8 @@ export const getWeeklyQuestion = async (
     });
     userResponse.save();
   }
+  
+  const maxScore=weeklyQuestions.weeklyQuestionModule.reduce((a,b)=>a+b.score,0)
 
   res.status(200).json({
     questions: weeklyQuestions.weeklyQuestionModule,
@@ -65,6 +68,7 @@ export const getWeeklyQuestion = async (
       answeredCount === weeklyQuestions.weeklyQuestionModule.length
         ? {
             userScore: userResponse.score,
+            maxScore:maxScore,
             averageScore:
               weeklyQuestions.totalScore / weeklyQuestions.totalAnswers,
           }
@@ -140,19 +144,27 @@ export const respondToWeeklyQuestion = async (
   });
 
   await existingUserResponse.save();
-
+  
   if (
     existingUserResponse.userResponse.length ===
     weeklyQuestions.weeklyQuestionModule.length
   ) {
     weeklyQuestions.totalAnswers += 1;
+    console.log("Total Answers",weeklyQuestions.totalAnswers)
     weeklyQuestions.totalScore += existingUserResponse.score;
-    console.log(weeklyQuestions.totalAnswers);
     const endTime = new Date();
     existingUserResponse.endTime = endTime;
+
+    await User.findOneAndUpdate(
+      { _id: userId },
+      { $inc: { score: existingUserResponse.score } },
+      { new: true } 
+    );
     await existingUserResponse.save();
     await weeklyQuestions.save();
   }
+
+  const maxScore=weeklyQuestions.weeklyQuestionModule.reduce((a,b)=>a+b.score,0)
 
   res.status(200).json({
     message: "Response stored successfully",
@@ -163,6 +175,7 @@ export const respondToWeeklyQuestion = async (
       weeklyQuestions.weeklyQuestionModule.length
         ? {
             userScore: existingUserResponse.score,
+            maxScore:maxScore,
             averageScore:
               weeklyQuestions.totalScore / weeklyQuestions.totalAnswers,
           }

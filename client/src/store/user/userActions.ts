@@ -2,29 +2,67 @@
 import userApi from "@/api/userApi";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-export const loginUser = createAsyncThunk(
-  "user/login",
+// export const loginUser = createAsyncThunk(
+//   "user/login",
+//   async (
+//     credentials: { phone: string; password: string },
+//     { rejectWithValue }
+//   ) => {
+//     try {
+//       const response = await userApi.post("/login", credentials, {
+//         withCredentials: true,
+//       });
+
+//       const { user } = response.data;
+
+//       return {
+//         name: user.name,
+//         score: user.score,
+//         email: user.email,
+//         department: user.department,
+//         address: user.address,
+//       };
+//     } catch (error: any) {
+//       return rejectWithValue(
+//         error.response?.data?.message || "Failed to login"
+//       );
+//     }
+//   }
+// );
+
+export const sendOtp = createAsyncThunk(
+  "user/sendOtp",
+  async (email: string, { rejectWithValue }) => {
+    try {
+      const response = await userApi.post("/send-otp", { email });
+
+      if (response.status === 200) {
+        return "OTP_SENT";
+      }
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to send OTP"
+      );
+    }
+  }
+);
+
+export const verifyOtp = createAsyncThunk(
+  "user/verifyOtp",
   async (
-    credentials: { phone: string; password: string },
+    { email, otp }: { email: string; otp: string },
     { rejectWithValue }
   ) => {
     try {
-      const response = await userApi.post("/login", credentials, {
-        withCredentials: true,
-      });
+      const response = await userApi.post("/verify-otp", { email, otp });
 
-      const { user } = response.data;
+      const { name, score, address, email: userEmail, department } =
+        response.data.user;
 
-      return {
-        name: user.name,
-        score: user.score,
-        email: user.email,
-        department: user.department,
-        address: user.address,
-      };
+      return { name, score, address, email: userEmail, department };
     } catch (error: any) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to login"
+        error.response?.data?.message || "Failed to verify OTP"
       );
     }
   }

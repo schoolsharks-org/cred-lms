@@ -55,7 +55,6 @@ export const QuestionSchema: Schema<Question> = new Schema<Question>(
         optionA: { type: String, required: true },
         optionB: { type: String, required: true },
       },
-      required: true,
     },
     optionA: {
       type: String,

@@ -38,6 +38,7 @@ const useWeeklyQuestion = () => {
 
   const [scores, setScores] = useState({
     userScore: 0,
+    maxScore:0,
     averageScore: 0,
   });
 
