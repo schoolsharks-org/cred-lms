@@ -21,10 +21,10 @@ const WeeklyQuestionCard = () => {
         <img src={battleIcon} alt="Battle" style={{ width: "55px" }} />
       </Stack>
       <Stack position={"relative"}>
-      <Stack position={"absolute"} alignItems={"center"} justifyContent={"center"} width={"100%"} height={"100%"} sx={{backdropFilter:"blur(3px)",zIndex:"10",bgcolor:"#0000004a"}} gap={"10px"}>
+      {/* <Stack position={"absolute"} alignItems={"center"} justifyContent={"center"} width={"100%"} height={"100%"} sx={{backdropFilter:"blur(3px)",zIndex:"10",bgcolor:"#0000004a"}} gap={"10px"}>
         <LockOutlined sx={{color:"#fff",fontSize:"3rem"}}/>
         <Typography color={"#fff"} fontSize={"1.5rem"} fontWeight={"600"}>Will be unlocked on Monday</Typography>
-      </Stack> 
+      </Stack>  */}
       <Stack
         bgcolor={theme.palette.secondary.main}
         margin={"0 5px"}

@@ -19,6 +19,8 @@ import "./weeklySangram.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MarkerCicle from "@/components/user/MarkerCicle";
+import useWeeklyStats from "@/hooks/admin/useWeeklyStats";
+import Loader from "@/components/Loader";
 
 const months: string[] = [
   "January",
@@ -38,11 +40,20 @@ const months: string[] = [
 const WeeklySangram = () => {
   const theme = useTheme();
   const [selectedMonth, setSelectedMonth] = useState<string>("august");
+
   const navigate = useNavigate();
+  const currentYear = new Date().getFullYear();
+  const monthIndex =
+    months.findIndex((month) => month.toLowerCase() === selectedMonth) + 1;
+  const { data, loading, error } = useWeeklyStats(monthIndex, currentYear);
 
   const handleMonthChange = (event: SelectChangeEvent<string>) => {
     setSelectedMonth(event.target.value);
   };
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <Stack className="weekly-sangram-page">
@@ -79,10 +90,15 @@ const WeeklySangram = () => {
 
       {/* Modules */}
       <Stack padding={"0 24px"}>
-        <ModuleCard
-          name="Module 1 - Samuruddhi loan ka GYAN"
-          date={"5th Aug"}
-        />
+        {!data.length ? <Typography>No Data Available</Typography> : null}
+        {data.map((module, index) => (
+          <ModuleCard
+            key={index}
+            name={"Module " + (index + 1) + "-" + module.moduleName}
+            data={module.departmentStats}
+            date={module.date}
+          />
+        ))}
       </Stack>
     </Stack>
   );
@@ -90,11 +106,10 @@ const WeeklySangram = () => {
 
 export default WeeklySangram;
 
-
-
 interface ModuleCardProps {
   name: string;
   date: string;
+  data: any[];
 }
 
 const header = [
@@ -126,7 +141,7 @@ const header = [
     ),
   },
   {
-    text: "Collections",
+    text: "Collection",
     icon: (
       <MarkerCicle width="12px" color="#AA75CB" left={0} positioned={true} />
     ),
@@ -144,13 +159,10 @@ const header = [
     ),
   },
 ];
-const data = [
-  ["Engagement", "70%", "69%", "60%", "54%", "80%", "60%"],
-  ["Time", "4min", "10min", "5min", "3min", "4min", "4min"],
-  ["Score", "18%", "32%", "60%", "54%", "80%", "60%"],
-];
-const ModuleCard: React.FC<ModuleCardProps> = ({ name, date }) => {
+
+const ModuleCard: React.FC<ModuleCardProps> = ({ name, date, data }) => {
   const theme = useTheme();
+
   return (
     <Stack
       border={`2px solid ${theme.palette.primary.main}`}
@@ -178,95 +190,116 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ name, date }) => {
         </Typography>
       </Stack>
 
-      <Stack
-        height={"16px"}
-        border="1px solid #000"
-        bgcolor={"#fff"}
-        borderRadius={"12px"}
-        marginTop={"48px"}
-        position={"relative"}
-      >
-        <MarkerCicle width="20px" color="#2874BA" left={10} />
-        <MarkerCicle width="20px" color="#FFDD00" left={20} />
-        <MarkerCicle width="20px" color="#AA75CB" left={30} />
-        <MarkerCicle width="20px" color="#000000" left={40} />
-        <MarkerCicle width="20px" color="#32FF21" left={80} />
-        <Box
-          sx={{
-            width: 0,
-            height: 0,
-            borderLeft: "10px solid transparent",
-            borderRight: "10px solid transparent",
-            borderBottom: "20px solid #F40009",
-            position: "absolute",
-            bottom: "0",
-            left: `${35}%`,
-            transform: "translateX(-50%)",
-          }}
-        />
-
-        <Stack
-          direction={"row"}
-          justifyContent={"space-between"}
-          position={"absolute"}
-          bottom={"-160%"}
-          width={"100%"}
-          color={theme.palette.text.secondary}
-        >
-          <Typography>0%</Typography>
-          <Typography>50%</Typography>
-          <Typography>100%</Typography>
-        </Stack>
-      </Stack>
-
+      {/* Update Table Structure Here */}
       <Stack padding={"36px"} marginTop={"32px"} position={"relative"}>
-        <Table sx={{zIndex:"2"}}>
+        <Table sx={{ zIndex: "2" }}>
           <TableHead>
             <TableRow>
-              {header.map((header, index) => (
+              <TableCell sx={{ fontWeight: "bold", border: "1px solid black" }}>
+                Departments
+              </TableCell>
+              {data.map((item, index) => {
+                const col = header.find(
+                  (headerItem) => headerItem.text === item.department
+                );
+                return (
+                  <TableCell
+                    key={index}
+                    sx={{
+                      fontWeight: "bold",
+                      border: "1px solid black",
+                      position: "relative",
+                    }}
+                  >
+                    <Stack
+                      direction={"row"}
+                      alignItems={"center"}
+                      justifyContent={"center"}
+                      gap={"12px"}
+                    >
+                      {col?.icon}
+                      {col?.text}
+                    </Stack>
+                  </TableCell>
+                );
+              })}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <TableRow>
+              <TableCell sx={{ fontWeight: "bold", border: "1px solid black" }}>
+                Engagement
+              </TableCell>
+              {data.map((item, index) => (
                 <TableCell
+                  align="center"
                   key={index}
-                  sx={{
-                    fontWeight: "bold",
-                    border: "1px solid black",
-                    position: "relative",
-                  }}
+                  sx={{ border: "1px solid black" }}
                 >
-                  <Stack direction={"row"} alignItems={"center"} gap={"12px"}>
-                    {header.icon}
-                    {header.text}
-                  </Stack>
+                  {item.engagement}%
                 </TableCell>
               ))}
             </TableRow>
-          </TableHead>
-          <TableBody >
-            {data.map((row, rowIndex) => (
-              <TableRow key={rowIndex}>
-                {row.map((cell, cellIndex) => (
-                  <TableCell
-                    key={cellIndex}
-                    sx={{
-                      fontWeight: cellIndex === 0 ? "bold" : "normal",
-                      border: "1px solid black",
-                    }}
-                  >
-                    {cell}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
+
+            <TableRow>
+              <TableCell sx={{ fontWeight: "bold", border: "1px solid black" }}>
+                Time
+              </TableCell>
+              {data.map((item, index) => (
+                <TableCell
+                  align="center"
+                  key={index}
+                  sx={{ border: "1px solid black" }}
+                >
+                  {item.averageTime !== "NaN:NaN" ? item.averageTime : "N/A"}
+                </TableCell>
+              ))}
+            </TableRow>
+
+            <TableRow>
+              <TableCell sx={{ fontWeight: "bold", border: "1px solid black" }}>
+                Score
+              </TableCell>
+              {data.map((item, index) => (
+                <TableCell
+                  align="center"
+                  key={index}
+                  sx={{ border: "1px solid black" }}
+                >
+                  {item.averageScore !== null ? item.averageScore : "N/A"}
+                </TableCell>
+              ))}
+            </TableRow>
           </TableBody>
         </Table>
-        <Box sx={{position:"absolute",left:"50%",top:"50%",width:"100%",height:"100%",filter:"blur(50px)",bgcolor:"#ffffff",borderRadius:"50%",transform:"translateX(-50%) translateY(-50%) ",zIndex:"1"}}/>
+
+        <Box
+          sx={{
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            width: "100%",
+            height: "100%",
+            filter: "blur(50px)",
+            bgcolor: "#ffffff",
+            borderRadius: "50%",
+            transform: "translateX(-50%) translateY(-50%) ",
+            zIndex: "1",
+          }}
+        />
       </Stack>
-        <Stack direction={"row"} alignItems="center" justifyContent={"flex-end"}>
-          <Typography fontWeight={"600"} fontSize={"1.25rem"} color={theme.palette.text.secondary}>
-            Download Full Report
-          </Typography>
-          <IconButton>
-            <SaveAlt/>
-          </IconButton>
+
+      <Stack direction={"row"} alignItems="center" justifyContent={"flex-end"}>
+        <Typography
+          fontWeight={"600"}
+          fontSize={"1.25rem"}
+          color={theme.palette.text.secondary}
+        >
+          Download Full Report
+        </Typography>
+        <IconButton>
+          <SaveAlt />
+        </IconButton>
       </Stack>
     </Stack>
   );

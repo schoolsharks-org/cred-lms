@@ -58,7 +58,7 @@ const ScoreList = ({ name, data }: { name: String; data: ScorelistData[] | null}
             <Typography flex="1" fontWeight={"600"}>
               {item.Name}
             </Typography>
-            <Typography>{item.Score}%</Typography>
+            <Typography>{item.Score.toFixed(1)}%</Typography>
           </Stack>
         ))}
       </Stack>
