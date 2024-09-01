@@ -77,7 +77,7 @@ const WeeklyQuestions = () => {
         </Stack>
         <Stack
           bgcolor={theme.palette.secondary.main}
-          padding={"20px"}
+          padding={"40px 20px"}
           flex={"1"}
           marginTop={"12px"}
           justifyContent={"center"}
@@ -97,7 +97,7 @@ const WeeklyQuestions = () => {
           </Stack>
           {currentQuestion?.optionTexts &&
           <Stack>
-            <Box height={`2px`} bgcolor={theme.palette.primary.main} margin={"24px 0 38px"}/>
+            <Box height={`2px`} bgcolor={theme.palette.primary.main} margin={"8px 0 24px"}/>
             <Typography fontSize="1.25rem" fontWeight={"500"}><b>Option A - </b> {currentQuestion.optionTexts.optionA}</Typography>
             <Typography fontSize="1.25rem" fontWeight={"500"} marginTop={"12px"}><b>Option B - </b> {currentQuestion.optionTexts.optionB}</Typography>
           </Stack>
@@ -130,6 +130,7 @@ const WeeklyQuestions = () => {
                 color:"#000",
                 bgcolor:"transparent",
                 width:"100%",
+                fontWeight:"800",
                 "&:hover":{
                   bgcolor:"transparent"
                 }

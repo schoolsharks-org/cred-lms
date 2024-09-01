@@ -6,13 +6,13 @@ import Loader from "@/components/Loader";
 
 const WeeklyQuestionsCompleted = () => {
   const theme = useTheme();
-  const { scores,answered,totalQuestions ,loading} = useWeeklyQuestion();
+  const { scores, answered, totalQuestions, loading } = useWeeklyQuestion();
 
-  if(loading){
-    return <Loader/>
+  if (loading) {
+    return <Loader />;
   }
-  if(answered<totalQuestions){
-    return <Navigate to="/weekly-question"/>
+  if (answered < totalQuestions) {
+    return <Navigate to="/weekly-question" />;
   }
   return (
     <Stack minHeight={"100vh"}>
@@ -40,10 +40,37 @@ const WeeklyQuestionsCompleted = () => {
           <Stack
             border={"1px solid #ffffff7b"}
             padding={"2px 12px"}
-            alignItems={"flex-end"}
           >
-            <Typography fontWeight={"500"}>Your Score - {Math.round(scores.userScore*100/(scores.maxScore))}%</Typography>
-            <Typography fontWeight={"500"}>Average Score - {Math.round(scores.averageScore*100/(scores.maxScore))}%</Typography>
+            <Stack direction={"row"} gap={"8px"}>
+              <Box
+                sx={{
+                  width: 0,
+                  height: 0,
+                  borderLeft: "10px solid transparent",
+                  borderRight: "10px solid transparent",
+                  borderBottom: "20px solid #000000",
+                }}
+              />
+              <Typography fontWeight={"500"}>
+                Your Score -{" "}
+                {Math.round((scores.userScore * 100) / scores.maxScore)}%
+              </Typography>
+            </Stack>
+            <Stack direction={"row"} gap={"8px"}>
+            <Box
+                sx={{
+                  width: 0,
+                  height: 0,
+                  borderLeft: "10px solid transparent",
+                  borderRight: "10px solid transparent",
+                  borderBottom: "20px solid #ff0000",
+                }}
+              />
+            <Typography fontWeight={"500"}>
+              Average Score -{" "}
+              {Math.round((scores.averageScore * 100) / scores.maxScore)}%
+            </Typography>
+            </Stack>
           </Stack>
         </Stack>
 
@@ -73,21 +100,12 @@ const WeeklyQuestionsCompleted = () => {
                 borderBottom: "20px solid #ff0000",
                 position: "absolute",
                 bottom: "0",
-                left: `${Math.round(scores.userScore*100/(scores.maxScore))??0}%`,
+                left: `${
+                  Math.round((scores.userScore * 100) / scores.maxScore) ?? 0
+                }%`,
                 transform: "translateX(-50%)",
               }}
             >
-              <Typography
-                fontSize="0.9rem"
-                sx={{
-                  position: "absolute",
-                  top: "100%",
-                  left: "0",
-                  transform: "translateX(-50%) translateY(20px)",
-                }}
-              >
-                You
-              </Typography>
             </Box>
             <Box
               sx={{
@@ -98,21 +116,12 @@ const WeeklyQuestionsCompleted = () => {
                 borderBottom: "20px solid #000000",
                 position: "absolute",
                 bottom: "0",
-                left: `${Math.round(scores.averageScore*100/(scores.maxScore))??0}%`,
+                left: `${
+                  Math.round((scores.averageScore * 100) / scores.maxScore) ?? 0
+                }%`,
                 transform: "translateX(-50%)",
               }}
             >
-              <Typography
-                fontSize="0.9rem"
-                sx={{
-                  position: "absolute",
-                  top: "100%",
-                  left: "0",
-                  transform: "translateX(-50%) translateY(20px)",
-                }}
-              >
-                Average
-              </Typography>
             </Box>
 
             <Typography
@@ -143,8 +152,8 @@ const WeeklyQuestionsCompleted = () => {
         <Box sx={{ height: "1px", bgcolor: "#ffffff7b", marginTop: "34px" }} />
         <Stack padding={"20px"}>
           <Typography fontSize={"1.5rem"} fontWeight={"500"} marginTop={"34px"}>
-            You have earned {scores.userScore} points.  
-            n points away from your next reward.
+            You have earned {scores.userScore} points. n points away from your
+            next reward.
           </Typography>
         </Stack>
       </Stack>

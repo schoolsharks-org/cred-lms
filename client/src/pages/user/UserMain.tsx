@@ -13,8 +13,8 @@ import Loader from "@/components/Loader";
 import WeeklyQuestions from "./weeklyQuestion/WeeklyQuestions";
 import WeeklyQuestionsCompleted from "./weeklyQuestion/WeeklyQuestionsCompleted";
 import Score from "./Score/Score";
-import Profile from "./Home/Profile";
-import Rewards from "./Home/Rewards";
+import Profile from "./Profile/Profile";
+import Rewards from "./Rewards/Rewards";
 import { authStatus } from "@/store/user/userSlice";
 
 const UserMain = () => {

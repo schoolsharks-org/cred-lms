@@ -1,5 +1,5 @@
 import { RootState } from "@/store/store";
-import { LockOutlined, Search } from "@mui/icons-material";
+import { LockOpen, LockOutlined, Search } from "@mui/icons-material";
 import {
   Stack,
   Typography,
@@ -22,6 +22,7 @@ const Rewards = () => {
       tag: "Tech & Accessory",
       expiry: "8 days",
       points: "15",
+      unlocked:false,
     },
 
     {
@@ -30,8 +31,9 @@ const Rewards = () => {
       content:
         "Achieve 25 points and get a high-quality hoodie with the company logo.",
       tag: "Lifestyle",
-      expiry: "2 months",
+      expiry: "8 weeks",
       points: "25",
+      unlocked:false,
     },
     {
       title: "Fine Dine Experience",
@@ -39,8 +41,9 @@ const Rewards = () => {
       content:
         "Gain 40 points and get a voucher for a meal at a top restaurant.",
       tag: "Leisure & Entertaintment",
-      expiry: "2 months",
+      expiry: "2 weeks",
       points: "25",
+      unlocked:false,
     },
   ];
   return (
@@ -111,7 +114,7 @@ const Rewards = () => {
             direction={"column"}
             padding={"16px"}
             margin={"10px"}
-            bgcolor={theme.palette.secondary.main}
+            bgcolor={reward.unlocked?theme.palette.secondary.main:"#E8E8E8"}
             border={"1px solid #796E6E"}
             borderRadius={"10px"}
           >
@@ -119,7 +122,7 @@ const Rewards = () => {
               <Typography fontWeight={"700"} fontSize={"1.25rem"}>
                 {reward.title}
               </Typography>
-              <LockOutlined />
+              {reward.unlocked?<LockOpen/>:<LockOutlined />}
             </Stack>
             <Typography
               fontSize={"0.7rem"}
