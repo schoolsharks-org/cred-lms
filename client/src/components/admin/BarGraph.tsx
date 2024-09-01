@@ -20,7 +20,6 @@ import {
       b: value.OptionB,
     }));
   
-    console.log(formattedData)
     return (
       <ResponsiveContainer width="100%" height={400}>
         <BarChart

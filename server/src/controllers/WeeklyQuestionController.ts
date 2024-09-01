@@ -59,7 +59,8 @@ export const getWeeklyQuestion = async (
   }
   
   const maxScore=weeklyQuestions.weeklyQuestionModule.reduce((a,b)=>a+b.score,0)
-
+  const totalScore=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalScore==="number").reduce((a,b)=>a+b.totalScore,0)
+  const totalAnswers=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalScore==="number").reduce((a,b)=>a+b.totalAnswers,0)
   res.status(200).json({
     questions: weeklyQuestions.weeklyQuestionModule,
     startTime: userResponse.startTime,
@@ -70,7 +71,7 @@ export const getWeeklyQuestion = async (
             userScore: userResponse.score,
             maxScore:maxScore,
             averageScore:
-              weeklyQuestions.totalScore / weeklyQuestions.totalAnswers,
+              totalScore / totalAnswers,
           }
         : undefined,
   });
@@ -86,8 +87,9 @@ export const respondToWeeklyQuestion = async (
     return;
   }
 
+
   const { questionId, response } = req.body;
-  const userId = req.user._id;
+  const {_id:userId,department:userDepartment} = req.user;
 
   const today = new Date();
   const startOfWeek = getMondayOfCurrentWeek(today);
@@ -95,19 +97,20 @@ export const respondToWeeklyQuestion = async (
   const weeklyQuestions = await WeeklyQuestion.findOne({
     date: startOfWeek,
   });
+  
 
   if (!weeklyQuestions) {
     return next(new AppError("No weekly questions found for this week", 404));
   }
-
+  
   const question = weeklyQuestions.weeklyQuestionModule.find(
     (element) => element.id.toString() === questionId.toString()
   );
-
+  
   if (!question) {
     return next(new AppError("Invalid question ID", 400));
   }
-
+  
   let existingUserResponse = await WeeklyResponse.findOne({
     user: userId,
     weeklyQuestion: weeklyQuestions._id,
@@ -149,10 +152,13 @@ export const respondToWeeklyQuestion = async (
     existingUserResponse.userResponse.length ===
     weeklyQuestions.weeklyQuestionModule.length
   ) {
-    weeklyQuestions.totalAnswers += 1;
-    console.log("Total Answers",weeklyQuestions.totalAnswers)
-    weeklyQuestions.totalScore += existingUserResponse.score;
+    
+    weeklyQuestions.analytics[userDepartment].totalScore+=existingUserResponse.score;
+    weeklyQuestions.analytics[userDepartment].totalAnswers += 1;
+    
     const endTime = new Date();
+    weeklyQuestions.analytics[userDepartment].totalTime+=(endTime.getTime()-existingUserResponse.startTime.getTime())/1000
+
     existingUserResponse.endTime = endTime;
 
     await User.findOneAndUpdate(
@@ -165,7 +171,9 @@ export const respondToWeeklyQuestion = async (
   }
 
   const maxScore=weeklyQuestions.weeklyQuestionModule.reduce((a,b)=>a+b.score,0)
-
+  const totalScore=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalScore==="number").reduce((a,b)=>a+b.totalScore,0)
+  const totalAnswers=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalAnswers==="number").reduce((a,b)=>a+b.totalAnswers,0)
+  
   res.status(200).json({
     message: "Response stored successfully",
     correctAnswer: question.correctOption,
@@ -177,7 +185,7 @@ export const respondToWeeklyQuestion = async (
             userScore: existingUserResponse.score,
             maxScore:maxScore,
             averageScore:
-              weeklyQuestions.totalScore / weeklyQuestions.totalAnswers,
+              totalScore / totalAnswers,
           }
         : undefined,
   });

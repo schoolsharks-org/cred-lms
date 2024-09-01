@@ -19,7 +19,6 @@ export const getDailyQuestion = async (
     const { date } = req.query;
     const { _id: userId } = req.user;
     
-    console.log("Date",date)
 
     const requestedDate = moment.tz(date as string, "DD/MM/YYYY, hh:mm:ss A", "Asia/Kolkata");
     const startOfDay = requestedDate.clone().startOf('day').toDate();

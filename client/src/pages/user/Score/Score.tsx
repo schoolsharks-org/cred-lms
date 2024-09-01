@@ -11,7 +11,6 @@ const Score = () => {
   const theme = useTheme();
   const {scoreboardData,currentUser,formatTime}=useScoreboard()
   useEffect(()=>{
-    console.log(scoreboardData)
   },[scoreboardData])
 
 

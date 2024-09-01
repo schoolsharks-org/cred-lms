@@ -38,12 +38,13 @@ async function handleUserScores() {
 
   const TopScorers = [];
   if (weeklyQuestions) {
+    const totalScore=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalScore==="number").reduce((a,b)=>a+b.totalScore,0)
     for (const response of userWeeklyTopScorers) {
       const user = await User.findOne({ _id: response.user }).select("name");
       if (user) {
         TopScorers.push({
           Name: user.name,
-          Score: (response.score * 100) / weeklyQuestions.totalScore,
+          Score: (response.score * 100) / totalScore,
         });
       }
     }
@@ -62,9 +63,10 @@ async function handleUserScores() {
       const user = await User.findOne({ _id: response.user }).select("name");
 
       if (user) {
+        const totalScore=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalScore==="number").reduce((a,b)=>a+b.totalScore,0)
         belowAvgScorers.push({
           Name: user.name,
-          Score: (response.score * 100) / weeklyQuestions.totalScore,
+          Score: (response.score * 100) / totalScore,
         });
       }
     }
@@ -131,7 +133,7 @@ async function getFifteenDaysInactiveUsersCount() {
   return lastFifteenDaysInactiveUsers;
 }
 
-async function getUserCountForEachDepartment() {
+export async function getUserCountForEachDepartment() {
   const departmentCounts = await User.aggregate([
     {
       $group: {

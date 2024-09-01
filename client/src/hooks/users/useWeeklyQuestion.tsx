@@ -66,7 +66,6 @@ const useWeeklyQuestion = () => {
       });
 
       const { questions, startTime, answeredCount, scores } = response.data;
-      console.log(questions);
 
       setAnsweredCount(answeredCount);
       setQuestions(questions);
@@ -105,7 +104,6 @@ const useWeeklyQuestion = () => {
   const handleSubmitAnswer = useCallback(
     async (selectedOption: string) => {
       if (!currentQuestion) return;
-      console.log("Current Question Id: ", currentQuestion._id);
       
       try {
         setSubmissionLoading(true)
@@ -115,7 +113,6 @@ const useWeeklyQuestion = () => {
         });
 
         const { correctAnswer, scores } = response.data;
-        console.log(correctAnswer);
         setScores(scores);
 
         setCorrectAnswer(correctAnswer);

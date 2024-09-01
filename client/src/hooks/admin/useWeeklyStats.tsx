@@ -16,7 +16,6 @@ const useWeeklyStats = (month: number, year: number) => {
       });
 
       if (response && response.data) {
-        console.log(response.data)
         setData(response.data);
       }
     } catch (err) {
