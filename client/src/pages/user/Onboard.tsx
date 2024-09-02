@@ -1,6 +1,6 @@
 import { Button, Stack, Typography, useTheme } from "@mui/material";
 import wgabLogo from "@/assets/wgab-logo.png";
-import sflLogo from "@/assets/SFL_logo.png"
+import sflLogo from "@/assets/sfl_logo_vertical.png"
 import { useNavigate } from "react-router-dom";
 
 const Onboard = () => {
@@ -12,7 +12,7 @@ const Onboard = () => {
         {/* <Typography color="#363636" fontWeight={"600"} fontSize={"4rem"}>
           Cred Dost
         </Typography> */}
-        <img src={sflLogo} alt="" style={{width:"160px",borderRadius:"2px"}} />
+        <img src={sflLogo} alt="" style={{width:"220px"}} />
         <Typography
           fontSize={"1.25rem"}
           fontWeight={"400"}

@@ -21,9 +21,6 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.use(helmet());
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
     origin: process.env.FRONTEND_URL || "http://localhost:5173", 
@@ -34,13 +31,16 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+
+app.use(cookieParser());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/v1', v1Routes);
 
 if (process.env.NODE_ENV === "production") {
-    const buildPath = path.join(__dirname, '..',"..", 'client', 'dist');
+    const buildPath = path.join(__dirname, '..', '..', 'client', 'dist');
     app.use(express.static(buildPath));
 
     app.get('*', (req, res) => {
@@ -54,4 +54,5 @@ app.use(errorHandlerMiddleware);
 const args = process.argv.slice(2);
 const portArgIndex = args.indexOf('--port');
 const PORT = portArgIndex !== -1 ? Number(args[portArgIndex + 1]) : Number(process.env.PORT) || 8084;
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -1,6 +1,7 @@
 import { Stack, Typography } from "@mui/material"
-import weeklyModileGif from "@/assets/weekly-module.gif"
+import weeklyModileGif from "@/assets/user/weekly-module.gif"
 import {motion} from "framer-motion"
+
 
 const InitialAnimation = () => {
   return (
