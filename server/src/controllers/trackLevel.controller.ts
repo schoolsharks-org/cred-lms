@@ -58,8 +58,10 @@ async function fetchStatusForWeeks(userId: string): Promise<MonthStatus> {
       const questionId = weeklyQuestionsMap.get(mondayString)!._id;
       const weeklyResponse = await WeeklyResponse.findOne({
         user: new mongoose.Types.ObjectId(userId),
-        question: questionId,
+        weeklyQuestion: questionId,
       });
+      console.log(questionId,weeklyResponse)
+
       status = weeklyResponse ? 'COMPLETED' : 'IN_PROGRESS';
     }
 
