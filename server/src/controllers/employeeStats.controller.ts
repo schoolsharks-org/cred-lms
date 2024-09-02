@@ -41,7 +41,7 @@ export const hanldeWeeklySangramStats = async (
     },
   });
 
-  console.log(startDate, " ", endDate);
+  console.log(weeklyQuestions)
 
   const departmentCountsArray = await getUserCountForEachDepartment();
 
