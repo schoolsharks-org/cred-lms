@@ -38,7 +38,9 @@ async function handleUserScores() {
 
   const TopScorers = [];
   if (weeklyQuestions) {
-    const totalScore=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalScore==="number").reduce((a,b)=>a+b.totalScore,0)
+    const totalScore = Object.values(weeklyQuestions.toObject().analytics)
+      .filter((item) => typeof item.totalScore === "number")
+      .reduce((a, b) => a + b.totalScore, 0);
     for (const response of userWeeklyTopScorers) {
       const user = await User.findOne({ _id: response.user }).select("name");
       if (user) {
@@ -63,7 +65,9 @@ async function handleUserScores() {
       const user = await User.findOne({ _id: response.user }).select("name");
 
       if (user) {
-        const totalScore=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalScore==="number").reduce((a,b)=>a+b.totalScore,0)
+        const totalScore = Object.values(weeklyQuestions.toObject().analytics)
+          .filter((item) => typeof item.totalScore === "number")
+          .reduce((a, b) => a + b.totalScore, 0);
         belowAvgScorers.push({
           Name: user.name,
           Score: (response.score * 100) / totalScore,
@@ -134,7 +138,7 @@ async function getFifteenDaysInactiveUsersCount() {
 }
 
 export async function getUserCountForEachDepartment() {
-  const departmentCounts = await User.aggregate([
+  const departmentUserCounts = await User.aggregate([
     {
       $group: {
         _id: "$department",
@@ -142,11 +146,85 @@ export async function getUserCountForEachDepartment() {
       },
     },
   ]);
-
-  return departmentCounts;
+  // console.log("departmentUserCounts: ", departmentUserCounts);
+  return departmentUserCounts;
 }
 
-async function calculateCompletionPercentage() {}
+async function getTotalModules() {
+  const totalDepartmentModules = await WeeklyQuestion.aggregate([
+    {
+      $group: {
+        _id: "$department",
+        totalModules: { $count: {} },
+      },
+    },
+  ]);
+  // console.log("totalDepartmentModules: ", totalDepartmentModules);
+  return totalDepartmentModules;
+}
+
+async function calculateModulesCompletedPercentage() {
+  const departmentUserCounts = await getUserCountForEachDepartment();
+  const totalDepartmentModules = await getTotalModules();
+  console.log("departmentUserCounts: ", departmentUserCounts);
+  console.log("totalDepartmentModules: ", totalDepartmentModules);
+
+  const totalAnswersResult = await WeeklyQuestion.aggregate([
+    {
+      $group: {
+        _id: null,
+        Sales: { $sum: "$analytics.Sales.totalAnswers" },
+        Operations: { $sum: "$analytics.Operations.totalAnswers" },
+        Collection: { $sum: "$analytics.Collection.totalAnswers" },
+        Credit: { $sum: "$analytics.Credit.totalAnswers" },
+        Others: { $sum: "$analytics.Others.totalAnswers" },
+      },
+    },
+  ]);
+
+  console.log("totalAnswersResult: ", totalAnswersResult);
+
+  const departmentUserCountsMap = departmentUserCounts.reduce((acc, item) => {
+    acc[item._id] = item.count;
+    return acc;
+  }, {});
+
+  const totalDepartmentModulesMap = totalDepartmentModules.reduce(
+    (acc, item) => {
+      acc[item._id] = item.totalModules || 0;
+      return acc;
+    },
+    {}
+  );
+
+  const totalAnswers = totalAnswersResult[0] || {};
+
+  // Calculate completion percentages
+  const completionPercentages = Object.keys(departmentUserCountsMap).map(
+    (department) => {
+      const userCount = departmentUserCountsMap[department];
+      const totalModules = totalDepartmentModulesMap[department] || 0;
+      const totalAnswersForDepartment = totalAnswers[department] || 0;
+
+      if (totalModules === 0 || totalAnswersForDepartment === 0) {
+        return {
+          department,
+          percentage: 0,
+        };
+      }
+
+      const percentage =
+        ((userCount * totalModules) / totalAnswersForDepartment) * 100;
+
+      return {
+        department,
+        percentage,
+      };
+    }
+  );
+
+  return completionPercentages;
+}
 
 export const handleAdminDashboard = async (
   req: Request,
@@ -158,15 +236,15 @@ export const handleAdminDashboard = async (
     sevenDaysInactiveUsers,
     fifteenDaysInactiveUsers,
     userCountofDepartment,
-    moduleCountOfEachDepartment,
-    // modulesCompleted,
+    getTotalDepartmentModules,
+    modulesCompleted,
   ] = await Promise.all([
     handleUserScores(),
     getSevenDaysInactiveUsersCount(),
     getFifteenDaysInactiveUsersCount(),
     getUserCountForEachDepartment(),
-    // getWeeklyModulesCountForEachDepartment(),
-    calculateCompletionPercentage(),
+    getTotalModules(),
+    calculateModulesCompletedPercentage(),
   ]);
 
   return res.json({
@@ -174,6 +252,7 @@ export const handleAdminDashboard = async (
     sevenDaysInactiveUsers,
     fifteenDaysInactiveUsers,
     userCountofDepartment,
-    moduleCountOfEachDepartment,
+    getTotalDepartmentModules,
+    modulesCompleted,
   });
 };
