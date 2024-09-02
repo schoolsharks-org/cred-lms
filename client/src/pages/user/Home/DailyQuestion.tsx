@@ -17,6 +17,8 @@ import {
 } from "@mui/icons-material";
 import BarGraph from "@/components/user/BarGraph";
 import useDailyQuestion from "@/hooks/users/useDailyQuestion";
+import aawazGif from "@/assets/user/awaz.gif"
+
 import Loader from "@/components/Loader";
 
 const DailyQuestion = () => {
@@ -49,6 +51,7 @@ const DailyQuestion = () => {
           <Typography color={"#FFFFFF"} fontSize={"2.5rem"} fontWeight={"600"}>
             Apki Awaaz{" "}
           </Typography>
+          <img src={aawazGif} alt="" style={{width:"80px",}}/>
         </Stack>
         <Typography color={"#FFFFFF"}>
           Give your vote and earn 5 points
