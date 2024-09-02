@@ -70,7 +70,7 @@ const Rewards = () => {
           />
         </Stack>
         <Typography fontSize={"0.7rem"} marginTop={"8px"} maxWidth={"95%"}>
-          Rewards in "Cred Dost" are subject to availability and may change
+          Rewards in "SFL Sangram" are subject to availability and may change
           without notice. School sharks is not responsible for third-party
           products or services provided as rewards.
         </Typography>

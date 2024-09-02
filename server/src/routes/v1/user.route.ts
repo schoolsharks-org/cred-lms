@@ -17,7 +17,7 @@ import {
   getWeeklyQuestion,
   respondToWeeklyQuestion,
 } from "../../controllers/WeeklyQuestionController";
-import { TrackLevels } from "../../controllers/trackLevel.controller";
+import { handleTrackLevels } from "../../controllers/trackLevel.controller";
 import { handleScoreboard } from "../../controllers/scoreboard.controller";
 const router = express.Router();
 
@@ -41,7 +41,7 @@ router
   .get(authMiddleware, asyncHandler(getWeeklyQuestion))
   .post(authMiddleware, asyncHandler(respondToWeeklyQuestion));
   
-router.route("/track-levels").get(authMiddleware, asyncHandler(TrackLevels));
+router.route("/track-levels").get(authMiddleware, asyncHandler(handleTrackLevels));
 
 router.route("/scoreboard").get(authMiddleware, asyncHandler(handleScoreboard));
 export default router;

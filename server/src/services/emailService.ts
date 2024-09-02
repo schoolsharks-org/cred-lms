@@ -20,7 +20,7 @@ export const sendEmail = async (emailOptions: EmailOptions): Promise<void> => {
 
   
   const mailOptions = {
-    from: `"CRED DOST" <${process.env.EMAIL_USER}>`, 
+    from: `"SFL SANGRAM" <${process.env.EMAIL_USER}>`, 
     to: emailOptions.to, 
     subject: emailOptions.subject, 
     html: emailOptions.html, 

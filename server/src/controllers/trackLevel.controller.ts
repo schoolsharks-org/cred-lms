@@ -1,86 +1,94 @@
-import { Request, Response, NextFunction } from "express";
-import AppError from "../utils/appError";
-import WeeklyResponse from "../models/weeklyResponse.model";
-import WeeklyQuestion from "../models/weeklyQuestion.model";
+import mongoose from 'mongoose';
+import { NextFunction, Request, Response } from "express";
+import AppError from '../utils/appError';
+import WeeklyResponse from '../models/weeklyResponse.model';
+import WeeklyQuestion from '../models/weeklyQuestion.model';
 
-function getMondays(year: any, month: any) {
-  const mondays = [];
-
-  const firstDay = new Date(year, month, 1);
-  console.log("firstDay: ", firstDay);
-  const dayOfWeek = firstDay.getDay();
-  console.log("dayOfWeek: ", dayOfWeek);
-  let firstMonday;
-  if (dayOfWeek === 0) {
-    firstMonday = new Date(year, month, 2);
-    console.log("firstMonday: ", firstMonday);
-  } else {
-    const daysToAdd = dayOfWeek === 1 ? 0 : 9 - dayOfWeek;
-    firstMonday = new Date(year, month, 1 + daysToAdd);
-    console.log("firstMonday: ", firstMonday);
-  }
-
-  console.log("firstMonday: ", firstMonday);
-  let currentMonday = firstMonday;
-  while (currentMonday.getMonth() === month) {
-    mondays.push(new Date(currentMonday));
-
-    currentMonday.setDate(currentMonday.getDate() + 7);
-  }
-  console.log("modays: ", mondays);
-  const formattedMondays = mondays.map(
-    (date) => date.toISOString().split("T")[0]
-  );
-  console.log("formattedMondays: ", formattedMondays);
-  return formattedMondays;
+interface WeeklyStatus {
+  week: string;
+  status: 'TO_BE_LAUNCHED' | 'IN_PROGRESS' | 'COMPLETED';
+  date: string;
 }
 
-export const TrackLevels = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+interface MonthStatus {
+  month: string;
+  year: number;
+  weeks: WeeklyStatus[];
+}
+
+function getMondaysOfMonth(year: number, month: number): Date[] {
+  const mondays: Date[] = [];
+  const date = new Date(Date.UTC(year, month - 1, 1));
+  while (date.getUTCMonth() === month - 1) {
+    if (date.getUTCDay() === 1) {
+      mondays.push(new Date(date));
+    }
+    date.setUTCDate(date.getUTCDate() + 1);
+  }
+  return mondays.reverse(); 
+}
+
+function getMonthName(monthIndex: number): string {
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return monthNames[monthIndex];
+}
+
+async function fetchStatusForWeeks(userId: string): Promise<MonthStatus> {
+  const today = new Date();
+  const year = today.getUTCFullYear();
+  const month = today.getUTCMonth() + 1; // JS month is 0-indexed
+  const mondays = getMondaysOfMonth(year, month);
+  
+  const startOfMonth = new Date(Date.UTC(year, month - 1, 1));
+  const endOfMonth = new Date(Date.UTC(year, month, 0));
+
+  const weeklyQuestions = await WeeklyQuestion.find({
+    date: { $gte: startOfMonth, $lt: endOfMonth },
+  });
+
+  const weeklyQuestionsMap = new Map(weeklyQuestions.map(q => [q.date.toISOString().split('T')[0], q]));
+
+  const results: WeeklyStatus[] = await Promise.all(mondays.map(async (monday, index) => {
+    const weekNumber = mondays.length - index;
+    const weekLabel = `week-${weekNumber}`;
+    let status: 'TO_BE_LAUNCHED' | 'IN_PROGRESS' | 'COMPLETED' = 'TO_BE_LAUNCHED';
+    const mondayString = monday.toISOString().split('T')[0];
+
+    if (weeklyQuestionsMap.has(mondayString)) {
+      const questionId = weeklyQuestionsMap.get(mondayString)!._id;
+      const weeklyResponse = await WeeklyResponse.findOne({
+        user: new mongoose.Types.ObjectId(userId),
+        question: questionId,
+      });
+      status = weeklyResponse ? 'COMPLETED' : 'IN_PROGRESS';
+    }
+
+    return {
+      week: weekLabel,
+      status,
+      date: mondayString,
+    };
+  }));
+
+  return {
+    month: getMonthName(month - 1),
+    year: year,
+    weeks: results,
+  };
+}
+
+export const handleTrackLevels = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.user) {
     next(new AppError("Unauthorized", 401));
     return;
   }
 
-  const { _id: userId, department } = req.user;
-  const year = 2024;
-  const month = 7;
-  const trackLevel = [];
-  const mondays = getMondays(year, month);
-  let weekNumber = 1;
-  //   let moduleCompleted = true;
-  for (const monday of mondays) {
-    const weeklyQuestion = await WeeklyQuestion.findOne({
-      date: monday,
-      department: department,
-    });
-    if (!weeklyQuestion) {
-      new AppError("No Weekly Module Found", 404);
-      continue;
-    }
-
-    const weeklyResponses = await WeeklyResponse.find({
-      weeklyQuestion: weeklyQuestion._id,
-      user: userId,
-    });
-
-    if (weeklyResponses.length === 0) {
-      trackLevel.push({
-        week: weekNumber,
-        moduleCompletionStatus: false,
-      });
-      weekNumber += 1;
-    } else {
-      trackLevel.push({
-        week: weekNumber,
-        moduleCompletionStatus: true,
-      });
-      weekNumber += 1;
-    }
+  try {
+    const { _id: userId } = req.user;
+    const monthStatus = await fetchStatusForWeeks(userId.toString());
+    res.json({ monthly_status: [monthStatus] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
-
-  res.status(200).json({ TrackLevels: trackLevel });
 };

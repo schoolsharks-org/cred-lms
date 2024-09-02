@@ -56,8 +56,13 @@ export const verifyOtp = createAsyncThunk(
     try {
       const response = await userApi.post("/verify-otp", { email, otp });
 
-      const { name, score, address, email: userEmail, department } =
-        response.data.user;
+      const {
+        name,
+        score,
+        address,
+        email: userEmail,
+        department,
+      } = response.data.user;
 
       return { name, score, address, email: userEmail, department };
     } catch (error: any) {
@@ -83,3 +88,12 @@ export const getUser = createAsyncThunk(
     }
   }
 );
+
+export const getTrackLevels = async () => {
+  try {
+    const response = await userApi.get("/track-levels");
+    return response.data.monthly_status;
+  } catch (error: any) {
+    return error;
+  }
+};

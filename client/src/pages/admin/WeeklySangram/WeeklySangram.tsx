@@ -192,6 +192,47 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ name, date, data }) => {
         </Typography>
       </Stack>
 
+      <Stack
+        height={"16px"}
+        border="1px solid #000"
+        bgcolor={"#fff"}
+        borderRadius={"12px"}
+        marginTop={"48px"}
+        position={"relative"}
+      >
+        <MarkerCicle width="20px" color="#2874BA" left={data.find((item)=>item.department==="Sales").averageScore} />
+        <MarkerCicle width="20px" color="#FFDD00" left={data.find((item)=>item.department==="Credit").averageScore} />
+        <MarkerCicle width="20px" color="#AA75CB" left={data.find((item)=>item.department==="Collection").averageScore} />
+        <MarkerCicle width="20px" color="#000000" left={data.find((item)=>item.department==="Operations").averageScore} />
+        <MarkerCicle width="20px" color="#32FF21" left={data.find((item)=>item.department==="Others").averageScore} />
+        <Box
+          sx={{
+            width: 0,
+            height: 0,
+            borderLeft: "10px solid transparent",
+            borderRight: "10px solid transparent",
+            borderBottom: "20px solid #F40009",
+            position: "absolute",
+            bottom: "0",
+            left: `${data.find((item)=>item.department==="Average").averageScore}%`,
+            transform: "translateX(-50%)",
+          }}
+        />
+
+        <Stack
+          direction={"row"}
+          justifyContent={"space-between"}
+          position={"absolute"}
+          bottom={"-160%"}
+          width={"100%"}
+          color={theme.palette.text.secondary}
+        >
+          <Typography>0%</Typography>
+          <Typography>50%</Typography>
+          <Typography>100%</Typography>
+        </Stack>
+      </Stack>
+
       {/* Update Table Structure Here */}
       <Stack padding={"36px"} marginTop={"32px"} position={"relative"}>
         <Table sx={{ zIndex: "2" }}>
@@ -268,7 +309,7 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ name, date, data }) => {
                   key={index}
                   sx={{ border: "1px solid black" }}
                 >
-                  {item.averageScore !== null ? item.averageScore : "N/A"}
+                  {item.averageScore !== null ? item.averageScore+"%" : "N/A"}
                 </TableCell>
               ))}
             </TableRow>
@@ -306,3 +347,6 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ name, date, data }) => {
     </Stack>
   );
 };
+
+
+
