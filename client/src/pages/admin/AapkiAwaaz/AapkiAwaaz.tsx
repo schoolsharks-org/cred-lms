@@ -1,5 +1,5 @@
 import {
-    Box,
+  Box,
   IconButton,
   MenuItem,
   Select,
@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./aapkiAwaaz.css";
 import BarGraph from "@/components/admin/BarGraph";
+import useDailyStats from "@/hooks/admin/useDailyStats";
 
 const months: string[] = [
   "January",
@@ -31,10 +32,22 @@ const months: string[] = [
 
 const weeks: string[] = ["Week-1", "Week-2", "Week-3", "Week-4"];
 const AapkiAwaaz = () => {
+  
   const theme = useTheme();
   const navigate = useNavigate();
-  const [selectedMonth, setSelectedMonth] = useState<string>("august");
-  const [selectedWeek, setSelectedWeek] = useState<string>("week-1");
+  const [selectedMonth, setSelectedMonth] = useState<string>(
+    months[new Date().getMonth()].toLowerCase()
+  );
+  const [selectedWeek, setSelectedWeek] = useState<string>(
+    `week-${Math.min(Math.ceil(new Date().getDate() / 7), 4)}`
+  );
+  const monthIndex =
+    months.findIndex((month) => month.toLowerCase() === selectedMonth) + 1;
+
+  const weekIndex =
+    weeks.findIndex((week) => week.toLowerCase() === selectedWeek) + 1;
+
+  const { data, loading } = useDailyStats(monthIndex, weekIndex);
 
   return (
     <Stack className="aapki-awaaz-page">
@@ -85,8 +98,20 @@ const AapkiAwaaz = () => {
           </Select>
         </Stack>
       </Stack>
-      <Stack padding={"0 24px"}>
-        <AapkiAwaazCard
+
+        {!data || !data.length?<Typography textAlign={"center"}>No Data Available</Typography>:null}
+      <Stack padding={"0 24px"} gap={"48px"}>
+        {data && data.map((item,index) => (
+          <AapkiAwaazCard
+             key={index}
+            date={item.date}
+            question={"Q-"+(index+1) +" "+ item.question}
+            departments={item.stats}
+            voted={item.Voted}
+            notVoted={item.NotVoted}
+          />
+        ))}
+        {/* <AapkiAwaazCard
           date="8th Aug"
           question="Q. Which one do you think is the most appropriate? "
           departments={{
@@ -96,7 +121,7 @@ const AapkiAwaaz = () => {
             Operations: { OptionA: 70, OptionB: 30 },
             Others: { OptionA: 70, OptionB: 30 },
           }}
-        />
+        /> */}
       </Stack>
     </Stack>
   );
@@ -107,6 +132,8 @@ export default AapkiAwaaz;
 interface ModuleCardProps {
   date: string;
   question: string;
+  voted:number;
+  notVoted:number;
   departments: {
     Sales: { OptionA: number; OptionB: number };
     Credit: { OptionA: number; OptionB: number };
@@ -119,6 +146,8 @@ const AapkiAwaazCard: React.FC<ModuleCardProps> = ({
   date,
   question,
   departments,
+  voted,
+  notVoted
 }) => {
   const theme = useTheme();
   return (
@@ -163,21 +192,37 @@ const AapkiAwaazCard: React.FC<ModuleCardProps> = ({
         <Stack minHeight={"360px"}>
           <BarGraph data={departments} />
         </Stack>
-        <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
-            <Stack direction={"row"} gap={"20px"}>
-                <Typography fontWeight={"500"} color={theme.palette.text.secondary} fontSize={"1.25rem"}>Voted - 650</Typography>
-                <Typography fontWeight={"500"} color={theme.palette.text.secondary} fontSize={"1.25rem"}>Did'nt Vote - 50</Typography>
+        <Stack
+          direction={"row"}
+          justifyContent={"space-between"}
+          alignItems={"center"}
+        >
+          <Stack direction={"row"} gap={"20px"}>
+            <Typography
+              fontWeight={"500"}
+              color={theme.palette.text.secondary}
+              fontSize={"1.25rem"}
+            >
+              Voted - {voted}
+            </Typography>
+            <Typography
+              fontWeight={"500"}
+              color={theme.palette.text.secondary}
+              fontSize={"1.25rem"}
+            >
+              Did'nt Vote - {notVoted}
+            </Typography>
+          </Stack>
+          <Stack direction={"row"} gap={"20px"}>
+            <Stack direction={"row"} gap={"5px"} fontSize={"1.25rem"}>
+              <Box width="24px" height="24px" bgcolor={"#D53951"} />
+              <Typography fontWeight={"700"}>YES</Typography>
             </Stack>
-            <Stack direction={"row"} gap={"20px"}>
-                <Stack direction={"row"} gap={"5px"} fontSize={"1.25rem"}>
-                    <Box width="24px" height="24px" bgcolor={"#D53951"} />
-                    <Typography fontWeight={"700"}>YES</Typography>
-                </Stack>
-                <Stack direction={"row"} gap={"5px"} fontSize={"1.25rem"}>
-                    <Box width="24px" height="24px" bgcolor={"#000000"} />
-                    <Typography fontWeight={"700"}>NO</Typography>
-                </Stack>
+            <Stack direction={"row"} gap={"5px"} fontSize={"1.25rem"}>
+              <Box width="24px" height="24px" bgcolor={"#000000"} />
+              <Typography fontWeight={"700"}>NO</Typography>
             </Stack>
+          </Stack>
         </Stack>
       </Stack>
     </Stack>

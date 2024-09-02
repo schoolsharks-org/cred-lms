@@ -39,7 +39,9 @@ const months: string[] = [
 
 const WeeklySangram = () => {
   const theme = useTheme();
-  const [selectedMonth, setSelectedMonth] = useState<string>("august");
+  const [selectedMonth, setSelectedMonth] = useState<string>(
+    months[new Date().getMonth()].toLowerCase()
+  );
 
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
@@ -89,7 +91,7 @@ const WeeklySangram = () => {
       </Stack>
 
       {/* Modules */}
-      <Stack padding={"0 24px"}>
+      <Stack padding={"0 24px"} gap={"48px"}>
         {!data.length ? <Typography>No Data Available</Typography> : null}
         {data.map((module, index) => (
           <ModuleCard
