@@ -78,7 +78,7 @@ const DailyQuestion = () => {
           <IconButton onClick={prevDay} >
             <ArrowBackIos />
           </IconButton>
-          <Typography fontSize={"2rem"} fontWeight={"500"} lineHeight={"2rem"}>
+          <Typography fontSize={"1.5rem"} fontWeight={"500"} lineHeight={"2rem"}>
             {dailyQuestionData?.question}
           </Typography>
           <IconButton disabled={checkTodayDate(date)} onClick={forwardDay}>

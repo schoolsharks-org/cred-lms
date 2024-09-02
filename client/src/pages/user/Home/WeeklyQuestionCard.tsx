@@ -2,13 +2,25 @@ import { Box, Button, Stack, Typography, useTheme } from "@mui/material";
 import battleIcon from "@/assets/user/weekly-question-battle-icon.png";
 import { ArrowForward } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import InitialAnimation from "../weeklyQuestion/InitialAnimation";
 
 const WeeklyQuestionCard = () => {
   const theme = useTheme();
   const navigate=useNavigate()
-  return (
-    <Stack bgcolor={"#000000"} marginTop={"43px"} position={"relative"} overflow={"hidden"}>
+  const [animationVisible, setAnimationVisible]=useState<boolean>(false)
 
+  const openModule=()=>{
+    setAnimationVisible(true)
+    setTimeout(()=>{
+      navigate("/weekly-question")
+    },3500)
+  }
+  return (
+    <>
+    {animationVisible && <Stack position={"fixed"} width="100%" height={"100%"} top="0" left="0" sx={{zIndex:"9999"}}><InitialAnimation/></Stack>}
+    <Stack bgcolor={"#000000"} marginTop={"43px"} position={"relative"} overflow={"hidden"}>
+      
       <Stack
         direction={"row"}
         padding={"20px"}
@@ -51,7 +63,7 @@ const WeeklyQuestionCard = () => {
         </Stack>
       </Stack>
       <Button
-        onClick={()=>navigate("/weekly-question")}
+        onClick={()=>openModule()}
         endIcon={<ArrowForward />}
         variant="contained"
         sx={{
@@ -72,6 +84,7 @@ const WeeklyQuestionCard = () => {
       <Box sx={{position:"absolute",width:"1px",filter:"blur(2px)",height:"100vh",transform:"rotate(47deg)",bgcolor:"#ffffff",top:"-50%",left:"-20%",zIndex:"1"}}/>
       <Box sx={{position:"absolute",width:"1px",filter:"blur(2px)",height:"100vh",transform:"rotate(47deg)",bgcolor:"#ffffff",top:"-50%",left:"40%",zIndex:"1"}}/>
     </Stack>
+    </>
   );
 };
 

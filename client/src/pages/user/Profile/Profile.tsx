@@ -7,46 +7,23 @@ import {
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import badge from "../../../assets/user/weekly-question-badge.png";
+import badge1 from "../../../assets/badges/badge-1.png";
+import badge2 from "../../../assets/badges/badge-2.png";
 import EditIcon from "@mui/icons-material/Edit";
 
 const badges = [
   {
     name: "Microfinance Star",
     completion: 0,
-    icon: badge,
+    icon: badge2,
     unlocked:false
   },
   {
-    name: "Microfinance Star",
+    name: "Client Relationship Master",
     completion: 0,
-    icon: badge,
+    icon: badge2,
     unlocked:false
-  },
-  {
-    name: "Microfinance Star",
-    completion: 0,
-    icon: badge,
-    unlocked:false
-  },
-  {
-    name: "Microfinance Star",
-    completion: 0,
-    icon: badge,
-    unlocked:false
-  },
-  {
-    name: "Microfinance Star",
-    completion: 0,
-    icon: badge,
-    unlocked:false
-  },
-  {
-    name: "Microfinance Star",
-    completion: 0,
-    icon: badge,
-    unlocked:false
-  },
+  }
 ];
 const Profile = () => {
   const theme = useTheme();
@@ -81,7 +58,7 @@ const Profile = () => {
             justifyContent={"space-between"}
             alignItems={"center"}
           >
-            <Typography fontWeight={"700"} fontSize={"20px"}>
+            <Typography fontWeight={"700"} fontSize={"1.5rem"}>
               Personal Details
             </Typography>
             <IconButton>
@@ -171,11 +148,11 @@ const Profile = () => {
           </Typography>
           <Stack direction={"row"} flexWrap={"wrap"} gap={"12px"} marginTop={"12px"}>
             {badges.map((badge,index)=>(
-              <Stack key={index} bgcolor={badge.unlocked?"#fff":"#C9C9C9"} alignItems={"center"} flexGrow={"1"} padding={"20px"} boxShadow={badge.unlocked?"0 0 10px #0000003c":"none"} sx={{ filter: badge.unlocked ? "none" : "grayscale(100%)" }}>
-                <Typography color={"#363636"} fontWeight={"700"}>{badge.name}</Typography>
-                <img src={badge.icon} alt="" style={{width:"100%",maxWidth:"120px"}}/>
-                <Stack width={"100%"} marginTop="12px">
-                  <Stack direction={"row"} justifyContent={"space-between"}>
+              <Stack flex={"1"} key={index} bgcolor={badge.unlocked?"#fff":"#C9C9C9"} alignItems={"center"} flexGrow={"1"} padding={"20px"} boxShadow={badge.unlocked?"0 0 10px #0000003c":"none"} sx={{ filter: badge.unlocked ? "none" : "grayscale(100%)" }}>
+                <Typography color={"#363636"} fontWeight={"700"} textAlign={"center"}>{badge.name}</Typography>
+                <img src={badge.icon} alt="" style={{width:"100%",maxWidth:"120px",marginTop:"15px"}}/>
+                <Stack width={"100%"} marginTop="12px"flex={"1"}>
+                  <Stack direction={"row"} justifyContent={"space-between"} marginTop={"auto"}>
                     {badge.completion===100?<Typography margin="auto" fontSize={"12px"} fontWeight={"600"}>Completed 100%</Typography>:
                     <>
                     <Typography fontSize={"12px"} fontWeight={"600"}>Next</Typography>
@@ -191,6 +168,9 @@ const Profile = () => {
             ))}
           </Stack>
         </Stack>
+      </Stack>
+      <Stack>
+        
       </Stack>
     </Stack>
   );

@@ -41,14 +41,14 @@ const WeeklyQuestionsCompleted = () => {
             border={"1px solid #ffffff7b"}
             padding={"2px 12px"}
           >
-            <Stack direction={"row"} gap={"8px"}>
+            <Stack direction={"row"} gap={"8px"} alignItems={"center"}>
               <Box
                 sx={{
                   width: 0,
                   height: 0,
-                  borderLeft: "10px solid transparent",
-                  borderRight: "10px solid transparent",
-                  borderBottom: "20px solid #000000",
+                  borderLeft: "9px solid transparent",
+                  borderRight: "9px solid transparent",
+                  borderBottom: "15px solid #000000",
                 }}
               />
               <Typography fontWeight={"500"}>
@@ -56,14 +56,14 @@ const WeeklyQuestionsCompleted = () => {
                 {Math.round((scores.userScore * 100) / scores.maxScore)}%
               </Typography>
             </Stack>
-            <Stack direction={"row"} gap={"8px"}>
+            <Stack direction={"row"} gap={"8px"} alignItems={"center"}>
             <Box
                 sx={{
                   width: 0,
                   height: 0,
-                  borderLeft: "10px solid transparent",
-                  borderRight: "10px solid transparent",
-                  borderBottom: "20px solid #ff0000",
+                  borderLeft: "9px solid transparent",
+                  borderRight: "9px solid transparent",
+                  borderBottom: "15px solid #ff0000",
                 }}
               />
             <Typography fontWeight={"500"}>
@@ -152,7 +152,7 @@ const WeeklyQuestionsCompleted = () => {
         <Box sx={{ height: "1px", bgcolor: "#ffffff7b", marginTop: "34px" }} />
         <Stack padding={"20px"}>
           <Typography fontSize={"1.5rem"} fontWeight={"500"} marginTop={"34px"}>
-            You have earned {scores.userScore} points. n points away from your
+            You have earned {scores.userScore} points. 80 points away from your
             next reward.
           </Typography>
         </Stack>

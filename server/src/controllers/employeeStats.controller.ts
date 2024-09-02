@@ -46,8 +46,8 @@ export const hanldeWeeklySangramStats = async (
   const departmentCountsArray = await getUserCountForEachDepartment();
 
   const departmentMemberCounts: Record<string, number> = {};
-  departmentCountsArray.forEach(({ _id, count }) => {
-    departmentMemberCounts[_id] = count;
+  departmentCountsArray.forEach(({ department, count }) => {
+    departmentMemberCounts[department] = count;
   });
 
   const stats = weeklyQuestions.map((weeklyQuestion) => {

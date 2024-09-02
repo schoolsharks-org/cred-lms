@@ -48,6 +48,7 @@ const ScoreList = ({ name, data }: { name: String; data: ScorelistData[] | null}
         width={"max-content"}
         fontSize={"1.25rem"}
         padding={"5px 16px"}
+        fontWeight={"500"}
       >
         {name}
       </Typography>

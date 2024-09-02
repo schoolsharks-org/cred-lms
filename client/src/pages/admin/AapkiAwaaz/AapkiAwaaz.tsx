@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import "./aapkiAwaaz.css";
 import BarGraph from "@/components/admin/BarGraph";
 import useDailyStats from "@/hooks/admin/useDailyStats";
+import Loader from "@/components/Loader";
 
 const months: string[] = [
   "January",
@@ -49,6 +50,10 @@ const AapkiAwaaz = () => {
 
   const { data, loading } = useDailyStats(monthIndex, weekIndex);
 
+  if(loading){
+    return <Loader/>
+  }
+  
   return (
     <Stack className="aapki-awaaz-page">
       <Header />

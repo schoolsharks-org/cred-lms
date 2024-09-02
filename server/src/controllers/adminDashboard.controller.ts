@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import AppError from "../utils/appError";
 import WeeklyResponse from "../models/weeklyResponse.model";
 import User from "../models/user.model";
 import WeeklyQuestion from "../models/weeklyQuestion.model";
@@ -159,15 +158,14 @@ async function getTotalModules() {
       },
     },
   ]);
-  // console.log("totalDepartmentModules: ", totalDepartmentModules);
-  return totalDepartmentModules;
+  return totalDepartmentModules.map(item => ({
+    _id: item._id,
+    count: item.totalModules
+  }));
 }
-
 async function calculateModulesCompletedPercentage() {
   const departmentUserCounts = await getUserCountForEachDepartment();
   const totalDepartmentModules = await getTotalModules();
-  console.log("departmentUserCounts: ", departmentUserCounts);
-  console.log("totalDepartmentModules: ", totalDepartmentModules);
 
   const totalAnswersResult = await WeeklyQuestion.aggregate([
     {
@@ -182,49 +180,42 @@ async function calculateModulesCompletedPercentage() {
     },
   ]);
 
-  console.log("totalAnswersResult: ", totalAnswersResult);
-
-  const departmentUserCountsMap = departmentUserCounts.reduce((acc, item) => {
-    acc[item._id] = item.count;
+  // Convert departmentUserCounts to a map for easier lookup
+  const departmentUserCountsMap = departmentUserCounts.reduce<{ [key: string]: number }>((acc, item) => {
+    acc[item.department] = item.count;
     return acc;
   }, {});
 
-  const totalDepartmentModulesMap = totalDepartmentModules.reduce(
-    (acc, item) => {
-      acc[item._id] = item.totalModules || 0;
-      return acc;
-    },
-    {}
-  );
+  // Convert totalDepartmentModules to a map for easier lookup
+  const totalDepartmentModulesMap = totalDepartmentModules.reduce<{ [key: string]: number }>((acc, item) => {
+    acc[item.count] = item.count || 0;
+    return acc;
+  }, {});
 
-  const totalAnswers = totalAnswersResult[0] || {};
+  // Extract total answers per department from aggregation result
+  const totalAnswers: { [key: string]: number } = totalAnswersResult[0] || {};
 
-  // Calculate completion percentages
-  const completionPercentages = Object.keys(departmentUserCountsMap).map(
-    (department) => {
-      const userCount = departmentUserCountsMap[department];
-      const totalModules = totalDepartmentModulesMap[department] || 0;
-      const totalAnswersForDepartment = totalAnswers[department] || 0;
+  // Calculate completion percentages for each department
+  const completionPercentages = Object.keys(departmentUserCountsMap).map((department) => {
+    const userCount = departmentUserCountsMap[department];
+    const totalModules = totalDepartmentModulesMap[department] || 0;
+    const totalAnswersForDepartment = totalAnswers[department] || 0;
 
-      if (totalModules === 0 || totalAnswersForDepartment === 0) {
-        return {
-          department,
-          percentage: 0,
-        };
-      }
+    const percentage =
+      totalModules === 0 || totalAnswersForDepartment === 0
+        ? 0
+        : ((userCount * totalModules) / totalAnswersForDepartment) * 100;
 
-      const percentage =
-        ((userCount * totalModules) / totalAnswersForDepartment) * 100;
-
-      return {
-        department,
-        percentage,
-      };
-    }
-  );
+    return {
+      department,
+      count: percentage,
+    };
+  });
 
   return completionPercentages;
 }
+
+
 
 export const handleAdminDashboard = async (
   req: Request,

@@ -4,17 +4,23 @@ import { Button, IconButton, Stack, Typography, useTheme } from "@mui/material";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardSidebar from "./DashboardSidebar";
+import Loader from "@/components/Loader";
 
 const departments = ["Sales", "Credit", "Collection", "Operations", "Others"];
 
 const Dashboard = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const {fetchDashboardData,topScorers,belowAverageScorers,dashboardData:data}=useAdminDashboard()
+  const {fetchDashboardData,topScorers,belowAverageScorers,dashboardData:data,loading}=useAdminDashboard()
   
   useEffect(()=>{
     fetchDashboardData()
   },[])
+
+  if(loading){
+    return <Loader/>
+  }
+    
 
   return (
     <Stack bgcolor={theme.palette.primary.main} minHeight={"100vh"}>
@@ -47,7 +53,7 @@ const Dashboard = () => {
             justifyContent={"space-between"}
             alignItems={"center"}
           >
-            <Typography color={"#fff"} fontWeight={"500"}>
+            <Typography color={"#fff"} fontSize={"1.25rem"} fontWeight={"600"}>
               Matrix
             </Typography>
             <Stack direction={"row"} alignItems="center">
