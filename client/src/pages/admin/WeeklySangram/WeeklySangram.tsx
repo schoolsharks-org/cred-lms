@@ -45,7 +45,7 @@ const WeeklySangram = () => {
   const currentYear = new Date().getFullYear();
   const monthIndex =
     months.findIndex((month) => month.toLowerCase() === selectedMonth) + 1;
-  const { data, loading, error } = useWeeklyStats(monthIndex, currentYear);
+  const { data, loading } = useWeeklyStats(monthIndex, currentYear);
 
   const handleMonthChange = (event: SelectChangeEvent<string>) => {
     setSelectedMonth(event.target.value);

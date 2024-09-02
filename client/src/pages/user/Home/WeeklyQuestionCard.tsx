@@ -1,6 +1,6 @@
 import { Box, Button, Stack, Typography, useTheme } from "@mui/material";
 import battleIcon from "@/assets/user/weekly-question-battle-icon.png";
-import { ArrowForward, Lock, LockOutlined } from "@mui/icons-material";
+import { ArrowForward } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 const WeeklyQuestionCard = () => {
