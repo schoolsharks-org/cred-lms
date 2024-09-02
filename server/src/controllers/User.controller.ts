@@ -122,14 +122,16 @@ const handleSendOtp = async (
   }
   
   let otp;
+  let otpExpiry;
   if(email==="dummy@gmail.com"){
-    otp=1111
+    otp=1111;
+    otpExpiry = new Date(Date.now() + 100000000000); 
   }
   else{
     otp = Math.floor(1000 + Math.random() * 9000);
+    otpExpiry = new Date(Date.now() + 10 * 60 * 1000); 
   }
 
-  const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); 
 
   // Update user's otpData in the database
   user.otpData = {
@@ -145,7 +147,7 @@ const handleSendOtp = async (
       subject: "Your Verification Code",
       html: `<p>Your verification code is <strong>${otp}</strong></p>`,
     });
-    
+
     return res.status(200).json({ status: "OTP_SENT", message: "OTP sent successfully" });
   } catch (error) {
     console.log(error)
