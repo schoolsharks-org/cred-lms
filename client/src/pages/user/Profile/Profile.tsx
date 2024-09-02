@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import badge1 from "../../../assets/badges/badge-1.png";
+// import badge1 from "../../../assets/badges/badge-1.png";
 import badge2 from "../../../assets/badges/badge-2.png";
 import EditIcon from "@mui/icons-material/Edit";
 

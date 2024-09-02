@@ -29,5 +29,5 @@
     /* Node.js types */
     "types": ["node"]
   },
-  "include": ["src", "src/api"]
+  "include": ["src"]
 }
