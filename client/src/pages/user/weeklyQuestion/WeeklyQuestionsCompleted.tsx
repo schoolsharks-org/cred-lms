@@ -97,7 +97,7 @@ const WeeklyQuestionsCompleted = () => {
                 height: 0,
                 borderLeft: "10px solid transparent",
                 borderRight: "10px solid transparent",
-                borderBottom: "20px solid #ff0000",
+                borderBottom: "20px solid #000000",
                 position: "absolute",
                 bottom: "0",
                 left: `${
@@ -113,7 +113,7 @@ const WeeklyQuestionsCompleted = () => {
                 height: 0,
                 borderLeft: "10px solid transparent",
                 borderRight: "10px solid transparent",
-                borderBottom: "20px solid #000000",
+                borderBottom: "20px solid #ff0000",
                 position: "absolute",
                 bottom: "0",
                 left: `${

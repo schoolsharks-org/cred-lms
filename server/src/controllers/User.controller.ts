@@ -123,6 +123,8 @@ const handleSendOtp = async (
   
   let otp;
   let otpExpiry;
+  console.log(email)
+  console.log(user.otpData)
   if(email==="dummy@gmail.com"){
     otp=1111;
     otpExpiry = new Date(Date.now() + 100000000000); 
