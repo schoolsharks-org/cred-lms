@@ -77,6 +77,9 @@ export const getWeeklyQuestion = async (
   });
 };
 
+
+
+
 export const respondToWeeklyQuestion = async (
   req: Request,
   res: Response,
@@ -148,32 +151,30 @@ export const respondToWeeklyQuestion = async (
 
   await existingUserResponse.save();
   
-  if (
-    existingUserResponse.userResponse.length ===
-    weeklyQuestions.weeklyQuestionModule.length
-  ) {
-    
-    weeklyQuestions.analytics[userDepartment].totalScore+=existingUserResponse.score;
-    weeklyQuestions.analytics[userDepartment].totalAnswers += 1;
-    
+  if (existingUserResponse.userResponse.length === weeklyQuestions.weeklyQuestionModule.length) {
     const endTime = new Date();
-    weeklyQuestions.analytics[userDepartment].totalTime+=(endTime.getTime()-existingUserResponse.startTime.getTime())/1000
 
-    existingUserResponse.endTime = endTime;
+    await WeeklyQuestion.findByIdAndUpdate(weeklyQuestions._id, {
+      $inc: {
+        [`analytics.${userDepartment}.totalScore`]: existingUserResponse.score,
+        [`analytics.${userDepartment}.totalAnswers`]: 1,
+        [`analytics.${userDepartment}.totalTime`]: (endTime.getTime() - existingUserResponse.startTime.getTime()) / 1000,
+      },
+    });
 
-    await User.findOneAndUpdate(
-      { _id: userId },
-      { $inc: { score: existingUserResponse.score } },
-      { new: true } 
-    );
-    await existingUserResponse.save();
-    await weeklyQuestions.save();
+    if (!existingUserResponse.endTime) {
+      existingUserResponse.endTime = endTime;
+      await existingUserResponse.save();
+    }
+
+    await User.findByIdAndUpdate(userId, {
+      $inc: { score: existingUserResponse.score },
+    });
   }
 
   const maxScore=weeklyQuestions.weeklyQuestionModule.reduce((a,b)=>a+b.score,0)
   const totalScore=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalScore==="number").reduce((a,b)=>a+b.totalScore,0)
   const totalAnswers=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalAnswers==="number").reduce((a,b)=>a+b.totalAnswers,0)
-  
   res.status(200).json({
     message: "Response stored successfully",
     correctAnswer: question.correctOption,
