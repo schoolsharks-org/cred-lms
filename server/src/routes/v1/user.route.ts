@@ -19,8 +19,11 @@ import {
 } from "../../controllers/WeeklyQuestionController";
 import { handleTrackLevels } from "../../controllers/trackLevel.controller";
 import { handleScoreboard } from "../../controllers/scoreboard.controller";
+import {
+  fetchAllDailyUpdate,
+  fetchModule,
+} from "../../controllers/dailyUpdate.controller";
 const router = express.Router();
-
 
 // router.route("/login").post(asyncHandler(handleLoginUser));
 router.route("/send-otp").post(asyncHandler(handleSendOtp));
@@ -40,8 +43,14 @@ router
   .route("/weekly-question")
   .get(authMiddleware, asyncHandler(getWeeklyQuestion))
   .post(authMiddleware, asyncHandler(respondToWeeklyQuestion));
-  
-router.route("/track-levels").get(authMiddleware, asyncHandler(handleTrackLevels));
+
+router
+  .route("/track-levels")
+  .get(authMiddleware, asyncHandler(handleTrackLevels));
 
 router.route("/scoreboard").get(authMiddleware, asyncHandler(handleScoreboard));
+router
+  .route("/daily-updates")
+  .get(authMiddleware, asyncHandler(fetchAllDailyUpdate));
+router.route("/module").get(authMiddleware, asyncHandler(fetchModule));
 export default router;
