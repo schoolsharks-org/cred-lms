@@ -6,7 +6,7 @@ import UserLayout from "./UserLayout";
 import { Stack } from "@mui/material";
 import Onboard from "./Onboard";
 import SignIn from "./SignIn";
-import VerifyOtp from "./VerifyOtp"; 
+import VerifyOtp from "./VerifyOtp";
 import { AppDispatch, RootState } from "@/store/store";
 import { getUser } from "@/store/user/userActions";
 import Loader from "@/components/Loader";
@@ -16,10 +16,14 @@ import Score from "./Score/Score";
 import Profile from "./Profile/Profile";
 import Rewards from "./Rewards/Rewards";
 import { authStatus } from "@/store/user/userSlice";
+import DailyUpdates from "./DailyUpdates/DailyUpdates";
+import DailyUpdateModule from "./DailyUpdates/DailyUpdateModule";
 
 const UserMain = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { authStatus:status, loading } = useSelector((state: RootState) => state.user);
+  const { authStatus: status, loading } = useSelector(
+    (state: RootState) => state.user
+  );
 
   useEffect(() => {
     dispatch(getUser());
@@ -61,6 +65,11 @@ const UserMain = () => {
             </Route>
             <Route path="/weekly-question" element={<WeeklyQuestions />} />
             <Route path="*" element={<Navigate to="/home" />} />
+            <Route path="/daily-updates" element={<DailyUpdates />} />
+            <Route
+              path="/daily-update-module"
+              element={<DailyUpdateModule />}
+            />
           </>
         )}
       </Routes>
