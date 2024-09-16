@@ -3,7 +3,7 @@ import { useState } from "react";
 import module1 from "../../../assets/Module1.png";
 import module2 from "../../../assets/Module2.png";
 import module3 from "../../../assets/Module3.png";
-const DailyUpdateModule = () => {
+const HelpSectionModule = () => {
   const theme = useTheme();
   const [selectedIndex, setSelectedIndex] = useState(0); // State for tracking the current index
   const array = [
@@ -100,4 +100,4 @@ const DailyUpdateModule = () => {
   );
 };
 
-export default DailyUpdateModule;
+export default HelpSectionModule;

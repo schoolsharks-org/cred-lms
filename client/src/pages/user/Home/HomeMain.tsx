@@ -3,14 +3,14 @@ import Header from "./Header";
 import DailyQuestion from "./DailyQuestion";
 import WeeklyQuestionCard from "./WeeklyQuestionCard";
 import TrackLevels from "./TrackLevels";
-import DailyUpdatesCard from "./DailyUpdatesCard";
+import HelpSectionCard from "./HelpSectionCard";
 
 const HomeMain = () => {
   return (
     <Stack paddingBottom={"48px"}>
       <Header />
       <DailyQuestion />
-      <DailyUpdatesCard />
+      <HelpSectionCard />
       <WeeklyQuestionCard />
       <TrackLevels />
     </Stack>

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import DailyUpdate from "../models/dailyUpdate.model";
 
-export const fetchAllDailyUpdate = async (
+export const fetchHelpSection = async (
   req: Request,
   res: Response,
   next: NextFunction

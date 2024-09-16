@@ -4,9 +4,12 @@ import Slider from "react-slick";
 import { useNavigate } from "react-router-dom";
 import { getDailyUpdates } from "@/store/user/userActions";
 import React, { useEffect, useState } from "react";
-
-const DailyUpdates = () => {
-  const [dailyUpdates, setDailyUpdates] = useState([]);
+interface DailyUpdate {
+  title: string;
+  image: string;
+}
+const HelpSection = () => {
+  const [dailyUpdates, setDailyUpdates] = useState<DailyUpdate[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,7 +50,7 @@ const DailyUpdates = () => {
   const navigate = useNavigate();
   const openModule = () => {
     setTimeout(() => {
-      navigate("/daily-update-module");
+      navigate("/help-section-module");
     }, 3500);
   };
 
@@ -115,11 +118,11 @@ const DailyUpdates = () => {
                   fontWeight={"600"}
                   maxWidth={"70%"}
                 >
-                  {/* {item} */}
+                  {item.title}
                 </Typography>
                 <img
-                  // src={item.img}
-                  // alt={item.title}
+                  src={item.image}
+                  alt={item.title}
                   style={{
                     width: "300px", // Image width
                     height: "300px", // Image height
@@ -158,4 +161,4 @@ const DailyUpdates = () => {
   );
 };
 
-export default DailyUpdates;
+export default HelpSection;

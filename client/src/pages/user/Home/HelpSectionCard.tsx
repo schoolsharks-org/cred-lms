@@ -2,13 +2,13 @@ import { Stack, Typography, useTheme } from "@mui/material";
 import arrow from "../../../assets/arrow-right.png";
 import { useNavigate } from "react-router-dom";
 
-const DailyUpdatesCard = () => {
+const HelpSectionCard = () => {
   const theme = useTheme();
   const navigate = useNavigate();
 
   const openDailyUpdates = () => {
     setTimeout(() => {
-      navigate("/daily-updates");
+      navigate("/help-section");
     }, 200);
   };
 
@@ -44,4 +44,4 @@ const DailyUpdatesCard = () => {
   );
 };
 
-export default DailyUpdatesCard;
+export default HelpSectionCard;

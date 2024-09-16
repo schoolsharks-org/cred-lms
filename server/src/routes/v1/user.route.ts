@@ -20,9 +20,9 @@ import {
 import { handleTrackLevels } from "../../controllers/trackLevel.controller";
 import { handleScoreboard } from "../../controllers/scoreboard.controller";
 import {
-  fetchAllDailyUpdate,
+  fetchHelpSection,
   fetchModule,
-} from "../../controllers/dailyUpdate.controller";
+} from "../../controllers/HelpSection.controller";
 const router = express.Router();
 
 // router.route("/login").post(asyncHandler(handleLoginUser));
@@ -50,7 +50,9 @@ router
 
 router.route("/scoreboard").get(authMiddleware, asyncHandler(handleScoreboard));
 router
-  .route("/daily-updates")
-  .get(authMiddleware, asyncHandler(fetchAllDailyUpdate));
-router.route("/module").get(authMiddleware, asyncHandler(fetchModule));
+  .route("/help-section")
+  .get(authMiddleware, asyncHandler(fetchHelpSection));
+router
+  .route("/help-section-module")
+  .get(authMiddleware, asyncHandler(fetchModule));
 export default router;

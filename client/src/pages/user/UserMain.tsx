@@ -16,8 +16,9 @@ import Score from "./Score/Score";
 import Profile from "./Profile/Profile";
 import Rewards from "./Rewards/Rewards";
 import { authStatus } from "@/store/user/userSlice";
-import DailyUpdates from "./DailyUpdates/DailyUpdates";
-import DailyUpdateModule from "./DailyUpdates/DailyUpdateModule";
+
+import HelpSection from "./HelpSection/HelpSection";
+import HelpSectionModule from "./HelpSection/HelpSectionModule";
 
 const UserMain = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -65,10 +66,10 @@ const UserMain = () => {
             </Route>
             <Route path="/weekly-question" element={<WeeklyQuestions />} />
             <Route path="*" element={<Navigate to="/home" />} />
-            <Route path="/daily-updates" element={<DailyUpdates />} />
+            <Route path="/help-section" element={<HelpSection />} />
             <Route
-              path="/daily-update-module"
-              element={<DailyUpdateModule />}
+              path="/help-section-module"
+              element={<HelpSectionModule />}
             />
           </>
         )}
