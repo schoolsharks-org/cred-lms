@@ -26,7 +26,7 @@ const DailyUpdateModule = () => {
       <Stack height={"100vh"} padding={"20px"}>
         {/* Title */}
         <Stack width={"max-content"} padding={"12px"}>
-          <Typography fontSize={"1.5rem"} fontWeight={"500"} maxWidth={"80%"}>
+          <Typography fontSize={"1.5rem"} fontWeight={"600"} maxWidth={"80%"}>
             New E-NACH process Via Aadhaar
           </Typography>
           <Box
@@ -41,7 +41,7 @@ const DailyUpdateModule = () => {
 
         {/* Number Navigation */}
         <Stack direction="row" spacing={1} marginTop={"10px"}>
-          <Typography fontSize={"1rem"} fontWeight={"500"}>
+          <Typography fontSize={"1.5rem"} fontWeight={"600"}>
             Step-
           </Typography>
           {array.map((item, index) => (
@@ -49,6 +49,11 @@ const DailyUpdateModule = () => {
               key={index}
               variant={selectedIndex === index ? "contained" : "outlined"}
               //   color="primary"
+              sx={{
+                borderColor: "black", // Set border color to black for outlined buttons
+                minWidth: "40px",
+                color: selectedIndex === index ? "white" : "black",
+              }}
               onClick={() => setSelectedIndex(index)} // Update selectedIndex on click
             >
               {index + 1}

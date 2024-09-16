@@ -8,7 +8,7 @@ export const fetchAllDailyUpdate = async (
 ) => {
   const fetchUpdates = await DailyUpdate.find({}).select("title image");
 
-  return res.json({ DailyUpdates: fetchUpdates });
+  return res.json(fetchUpdates);
 };
 
 export const fetchModule = async (

@@ -1,22 +1,47 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Stack, Typography, Box, useTheme, Card } from "@mui/material";
 import Slider from "react-slick";
 import { useNavigate } from "react-router-dom";
+import { getDailyUpdates } from "@/store/user/userActions";
+import React, { useEffect, useState } from "react";
 
 const DailyUpdates = () => {
-  const array = [
-    {
-      title: "New E-NACH process Via Adhaar",
-      img: "https://via.placeholder.com/150", // sample image link
-    },
-    {
-      title: "B",
-      img: "https://via.placeholder.com/150", // sample image link
-    },
-    {
-      title: "C",
-      img: "https://via.placeholder.com/150", // sample image link
-    },
-  ];
+  const [dailyUpdates, setDailyUpdates] = useState([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDailyUpdates = async () => {
+      try {
+        const response = await getDailyUpdates();
+        console.log("response: ", response);
+        // console.log("response.data: ", response.data);
+        setDailyUpdates(response);
+      } catch (error: any) {
+        setError(
+          error.response?.data?.message || "Failed to fetch daily updates"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDailyUpdates();
+  }, []);
+  // const array = [
+  //   {
+  //     title: "New E-NACH process Via Adhaar",
+  //     img: "https://via.placeholder.com/150", // sample image link
+  //   },
+  //   {
+  //     title: "B",
+  //     img: "https://via.placeholder.com/150", // sample image link
+  //   },
+  //   {
+  //     title: "C",
+  //     img: "https://via.placeholder.com/150", // sample image link
+  //   },
+  // ];
 
   const theme = useTheme();
   const navigate = useNavigate();
@@ -34,6 +59,14 @@ const DailyUpdates = () => {
     slidesToScroll: 1,
     arrows: true, // Optional: Adds left and right navigation arrows
   };
+
+  if (loading) {
+    return <Typography>Loading...</Typography>;
+  }
+
+  if (error) {
+    return <Typography>Error: {error}</Typography>;
+  }
 
   return (
     <>
@@ -59,7 +92,7 @@ const DailyUpdates = () => {
         {/* Horizontal Slider for cards */}
         <Stack width={"100%"} padding={"5px"}>
           <Slider {...settings}>
-            {array.map((item, index) => (
+            {dailyUpdates.map((item, index) => (
               <Card
                 onClick={() => openModule()}
                 key={index}
@@ -82,11 +115,11 @@ const DailyUpdates = () => {
                   fontWeight={"600"}
                   maxWidth={"70%"}
                 >
-                  {item.title}
+                  {/* {item} */}
                 </Typography>
                 <img
-                  src={item.img}
-                  alt={item.title}
+                  // src={item.img}
+                  // alt={item.title}
                   style={{
                     width: "300px", // Image width
                     height: "300px", // Image height
