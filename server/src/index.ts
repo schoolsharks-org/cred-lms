@@ -37,6 +37,12 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use((req, res, next) => {
+    res.setHeader("Content-Security-Policy", "img-src 'self' https://res.cloudinary.com data:;");
+    next();
+  });
+
+  
 app.use('/api/v1', v1Routes);
 
 if (process.env.NODE_ENV === "production") {
