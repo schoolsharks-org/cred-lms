@@ -13,7 +13,7 @@ const WeeklyQuestionCard = () => {
   const openModule=()=>{
     setAnimationVisible(true)
     setTimeout(()=>{
-      navigate("/weekly-question")
+      navigate("/weekly-question/insights")
     },3500)
   }
   return (

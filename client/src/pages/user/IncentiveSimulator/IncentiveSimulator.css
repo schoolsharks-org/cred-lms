@@ -1,0 +1,45 @@
+.incentive-simulator-page .MuiSelect-select{
+    background-color: #000000 !important;
+    border-radius: 0 !important;
+    color: #ffffff;
+    width: max-content;
+}
+
+.incentive-simulator-page .MuiOutlinedInput-notchedOutline{
+    border: none !important;
+    border-radius: 0 !important;
+}
+
+.incentive-simulator-page .MuiInputBase-root{
+    border: none !important;
+    border-radius: 0 !important;
+    width: max-content;
+}
+
+.incentive-simulator-page .MuiInputBase-root svg{
+    color: #ffffff;
+}
+
+.incentive-simulator-page .MuiSlider-thumb{
+    height: 100%;
+    width: 4px;
+    background-color: #000000;
+    border-radius: 0;
+    transform: translateY(-20px);
+}
+.incentive-simulator-page .MuiSlider-thumb::before {
+    content: "";
+    position: absolute; 
+    border-left: 4px solid transparent;  
+    border-right: 4px solid transparent; 
+    border-bottom: 8px solid #ffffff;    
+    height: 0;                           
+    width: 0;                            
+    transform: translateY(-250%) rotate(180deg);         
+}
+.incentive-simulator-page .MuiSlider-rail {
+   display: none;       
+}
+.incentive-simulator-page .MuiSlider-track {
+   display: none;       
+}

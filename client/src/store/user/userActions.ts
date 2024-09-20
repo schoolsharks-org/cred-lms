@@ -97,3 +97,13 @@ export const getTrackLevels = async () => {
     return error;
   }
 };
+
+export const getDailyUpdates = async () => {
+  try {
+    const response = await userApi.get("/help-section");
+    return response.data;
+  } catch (error: any) {
+    return error;
+  }
+};
+

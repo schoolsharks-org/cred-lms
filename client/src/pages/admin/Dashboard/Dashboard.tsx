@@ -5,22 +5,36 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardSidebar from "./DashboardSidebar";
 import Loader from "@/components/Loader";
+import MarkerCicle from "@/components/user/MarkerCicle";
+import {BLACK,BLUE,GREEN,PURPLE,YELLOW} from "@/utils/departmentColors"
 
-const departments = ["Sales", "Credit", "Collection", "Operations", "Others"];
+// const departments = ["Sales", "Credit", "Collection", "Operations", "Others"];
+const departments = [
+  { name: "Sales" ,icon:<MarkerCicle color={YELLOW} width={"16px"} left={0} positioned={true} bordered={true}/>},
+  { name: "Credit" ,icon:<MarkerCicle color={BLUE} width={"16px"} left={0} positioned={true} bordered={true}/>},
+  { name: "Collection",icon:<MarkerCicle color={PURPLE} width={"16px"} left={0} positioned={true} bordered={true}/> },
+  { name: "Operations",icon:<MarkerCicle color={BLACK} width={"16px"} left={0} positioned={true} bordered={false}/> },
+  { name: "Others" ,icon:<MarkerCicle color={GREEN} width={"16px"} left={0} positioned={true} bordered={false}/>},
+];
 
 const Dashboard = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const {fetchDashboardData,topScorers,belowAverageScorers,dashboardData:data,loading}=useAdminDashboard()
-  
-  useEffect(()=>{
-    fetchDashboardData()
-  },[])
+  const {
+    fetchDashboardData,
+    topScorers,
+    belowAverageScorers,
+    dashboardData: data,
+    loading,
+  } = useAdminDashboard();
 
-  if(loading){
-    return <Loader/>
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  if (loading) {
+    return <Loader />;
   }
-    
 
   return (
     <Stack bgcolor={theme.palette.primary.main} minHeight={"100vh"}>
@@ -46,7 +60,7 @@ const Dashboard = () => {
         </Stack>
       </Stack>
 
-      <Stack direction={"row"} padding={"20px"} gap="20px">
+      <Stack direction={"row"} padding={"8px 20px"} gap="20px">
         <Stack flex={"1"} paddingTop={"32px"}>
           <Stack
             direction={"row"}
@@ -76,7 +90,7 @@ const Dashboard = () => {
             >
               <TableCell text={"Department"} bold={true} />
               {departments.map((department, index) => (
-                <TableCell key={index} text={department} bold={true} />
+                <TableCell key={index} text={department.name} bold={true} startIcon={department.icon}/>
               ))}
             </Stack>
             {data.map((row, index) => (
@@ -85,7 +99,7 @@ const Dashboard = () => {
                 key={index}
                 direction={"row"}
                 gap={"10px"}
-                bgcolor={"#FFB2B5"}
+                bgcolor={index > 4 ? "#D0C5C5" : "#FFB2B5"}
                 border={"1px solid #000"}
                 sx={{ borderWidth: "1px 0 1px 0" }}
               >
@@ -99,7 +113,7 @@ const Dashboard = () => {
           <Stack direction={"row"} marginTop={"10px"} gap={"10px"}>
             <Button
               variant="contained"
-              onClick={()=>navigate("/admin/sabki-awaaz")}
+              onClick={() => navigate("/admin/sabki-awaaz")}
               sx={{
                 bgcolor: theme.palette.secondary.main,
                 padding: "16px",
@@ -121,7 +135,7 @@ const Dashboard = () => {
             </Button>
             <Button
               variant="contained"
-              onClick={()=>navigate("/admin/weekly-sangram")}
+              onClick={() => navigate("/admin/weekly-sangram")}
               sx={{
                 bgcolor: theme.palette.secondary.main,
                 padding: "16px",
@@ -136,6 +150,7 @@ const Dashboard = () => {
                 },
               }}
             >
+              
               <Typography fontSize={"1.5rem"} fontWeight={"700"}>
                 Weekly Sangram
               </Typography>
@@ -144,7 +159,10 @@ const Dashboard = () => {
           </Stack>
         </Stack>
         <Stack minWidth={"376px"} gap="20px">
-          <DashboardSidebar topScorers={topScorers} belowAverageScorers={belowAverageScorers}/>
+          <DashboardSidebar
+            topScorers={topScorers}
+            belowAverageScorers={belowAverageScorers}
+          />
         </Stack>
       </Stack>
     </Stack>
@@ -153,17 +171,27 @@ const Dashboard = () => {
 
 export default Dashboard;
 
-
-
-const TableCell = ({ text, bold }: { text: string; bold?: boolean }) => (
+const TableCell = ({
+  text,
+  bold,
+  startIcon,
+}: {
+  text: string;
+  bold?: boolean;
+  startIcon?: any;
+}) => (
   <Stack
+    direction={"row"}
     border={"1px solid #000"}
-    padding={"12px 16px"}
+    padding={"8px 16px"}
     alignItems={"center"}
     justifyContent={"center"}
     flex={"1"}
+    minHeight={"64px"}
+    gap={"8px"}
     sx={{ borderWidth: "0 1px 0 1px" }}
   >
+    {startIcon}
     <Typography
       fontWeight={bold ? "700" : "500"}
       sx={{ whiteSpace: "pre-line", width: "100%" }}
@@ -172,4 +200,3 @@ const TableCell = ({ text, bold }: { text: string; bold?: boolean }) => (
     </Typography>
   </Stack>
 );
-

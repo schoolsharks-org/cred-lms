@@ -26,7 +26,7 @@ const useAdminDashboard = () => {
     };
 
     const fetchDashboardData = async () => {
-        setLoading(true); // Start loading
+        setLoading(true);
 
         try {
             const response = await getAdminDashboardData();
@@ -61,13 +61,25 @@ const useAdminDashboard = () => {
                     name: "Modules \ncompleted",
                     data: modulesCompleted,
                 },
+                {
+                    name:"Below 80%",
+                    data:modulesCompleted,
+                },
+                {
+                    name:"Reattempted",
+                    data:modulesCompleted,
+                },
+                {
+                    name:">80% After\n reattempt",
+                    data:modulesCompleted,
+                },
             ];
 
             setDashboardData(formattedData);
         } catch (error) {
             console.error("Failed to fetch admin dashboard data:", error);
         } finally {
-            setLoading(false); // End loading
+            setLoading(false); 
         }
     };
 
@@ -75,7 +87,7 @@ const useAdminDashboard = () => {
         topScorers,
         belowAverageScorers,
         dashboardData,
-        loading, // Return loading state
+        loading, 
         fetchDashboardData,
     };
 };

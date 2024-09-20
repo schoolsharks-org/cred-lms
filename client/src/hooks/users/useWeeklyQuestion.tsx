@@ -28,10 +28,17 @@ const useWeeklyQuestion = () => {
   const [error, setError] = useState<null | string>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [submissionLoading,setSubmissionLoading]=useState<boolean>(false)
+
   const [questions, setQuestions] = useState<Question[] | null>(null);
+  const [moduleId,setModuleId]=useState<string|null>(null)
+  const [scoreImprovement,setScoreImprovement]=useState<number|null>()
+  const [insights,setInsights]=useState<string[]>([])
+
   const [answeredCount, setAnsweredCount] = useState<number>(0);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [correctAnswer, setCorrectAnswer] = useState<null | string>(null);
+
+
   const [time, setTime] = useState<string>("00:00");
 
 
@@ -40,6 +47,7 @@ const useWeeklyQuestion = () => {
     userScore: 0,
     maxScore:0,
     averageScore: 0,
+    reattemptScores:[]
   });
 
   const calculateTimeDifference = useCallback((startTime: Date) => {
@@ -57,6 +65,8 @@ const useWeeklyQuestion = () => {
     )}`;
   }, []);
 
+
+
   const fetchWeeklyQuestions = useCallback(async () => {
     try {
       setLoading(true);
@@ -65,17 +75,46 @@ const useWeeklyQuestion = () => {
         params: { date: date.toISOString() },
       });
 
-      const { questions, startTime, answeredCount, scores } = response.data;
+      const { questions, startTime, answeredCount, scores,id } = response.data;
 
       setAnsweredCount(answeredCount);
       setQuestions(questions);
       setCurrentQuestion(questions[answeredCount] || null);
+      setModuleId(id)
+
 
       if (questions?.length <= answeredCount) {
-        setScores(scores);
+        const userScore = scores?.userScore || 0;
+        const maxScore = scores?.maxScore || 0;
+        let averageScore = scores?.averageScore || 0;
+        const reattemptScores = scores?.reattemptScores || [];
+        
+        if (reattemptScores.length > 0) {
+          let percentageChange = 0;
+          if (reattemptScores?.length === 1) {
+            const firstReattemptScore = reattemptScores[0];
+            percentageChange = ((firstReattemptScore - userScore ) / Math.abs(firstReattemptScore)) * 100;
+          }
+          if (reattemptScores?.length === 2) {
+            const firstReattemptScore = reattemptScores[0];
+            const secondReattemptScore = reattemptScores[1];
+            percentageChange = ((secondReattemptScore - firstReattemptScore) / Math.abs(firstReattemptScore)) * 100;
+          }
+          percentageChange = Math.round(percentageChange);
+
+          setScoreImprovement(percentageChange)
+
+        }
+        
+        setScores({ 
+          userScore, 
+          maxScore, 
+          averageScore, 
+          reattemptScores 
+        });
+      
         navigate("/weekly-question/completed");
       }
-
       if (startTime) {
         const startDate = new Date(startTime);
         setTime(calculateTimeDifference(startDate));
@@ -95,11 +134,17 @@ const useWeeklyQuestion = () => {
     }
   }, [calculateTimeDifference]);
 
+
+
+
   useEffect(() => {
     if (!questions) {
       fetchWeeklyQuestions();
     }
   }, [fetchWeeklyQuestions]);
+
+
+
 
   const handleSubmitAnswer = useCallback(
     async (selectedOption: string) => {
@@ -128,6 +173,19 @@ const useWeeklyQuestion = () => {
     [currentQuestion]
   );
 
+
+  const handleReattempt=async()=>{
+    try {
+      const response = await userApi.post("/weekly-question-reattempt",{weeklyQuestion:moduleId}) 
+      if(response.status===200){
+        setAnsweredCount(0)
+      }
+    } catch (error) {
+      console.log("Error:",error)
+    }
+  }
+
+
   const handleNextQuestion = useCallback(() => {
     if (questions) {
       if (questions?.length <= answeredCount) {
@@ -140,6 +198,26 @@ const useWeeklyQuestion = () => {
 
   const memoizedTime = useMemo(() => time, [time]);
 
+
+  const handleFetchInsights=async()=>{
+    try {
+      setLoading(true)
+      const response=await userApi.get("/weekly-question-insights")
+      const {insights:insightsData}=response.data
+      
+      setInsights(insightsData)
+
+    } catch (error) {
+      console.log(error)
+    }
+    finally{
+      setLoading(false)
+    }
+  }
+
+  
+
+
   return {
     error,
     submissionLoading,
@@ -149,9 +227,13 @@ const useWeeklyQuestion = () => {
     answered: answeredCount,
     currentQuestion,
     correctAnswer,
-    time: memoizedTime,
+    time:scores?.reattemptScores?.length>0?"_": memoizedTime,
+    scoreImprovement,
+    insights,
+    handleFetchInsights,
     handleSubmitAnswer,
     handleNextQuestion,
+    handleReattempt
   };
 };
 
