@@ -19,6 +19,7 @@ import { authStatus } from "@/store/user/userSlice";
 import Insights from "./weeklyQuestion/Insights";
 import IncentiveSimulatorMain from "./IncentiveSimulator/IncentiveSimulatorMain";
 import HelpSection from "./HelpSection/HelpSection";
+import HelpSectionModule from "./HelpSection/HelpSectionModule";
 
 const UserMain = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -69,6 +70,10 @@ const UserMain = () => {
             <Route path="/weekly-question/insights" element={<Insights />} />
             <Route path="/incentive-simulator" element={<IncentiveSimulatorMain />} />
             <Route path="/zaroor-dekho" element={<HelpSection />} />
+            <Route
+              path="/zaroor-dekho/:id"
+              element={<HelpSectionModule />}
+            />
             <Route path="*" element={<Navigate to="/home" />} />
           </>
         )}

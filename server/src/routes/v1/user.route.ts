@@ -24,7 +24,6 @@ import { handleScoreboard } from "../../controllers/scoreboard.controller";
 import { fetchHelpSection, fetchModule } from "../../controllers/HelpSection.controller";
 const router = express.Router();
 
-
 // router.route("/login").post(asyncHandler(handleLoginUser));
 router.route("/send-otp").post(asyncHandler(handleSendOtp));
 router.route("/verify-otp").post(asyncHandler(handleVerifyOtp));
@@ -58,4 +57,5 @@ router
   .route("/help-section-module")
   .get(authMiddleware, asyncHandler(fetchModule));
 
+  
 export default router;

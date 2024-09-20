@@ -107,3 +107,12 @@ export const getDailyUpdates = async () => {
   }
 };
 
+
+export const getHelpSectionModule=async(id:string)=>{
+  try {
+    const response = await userApi.get("/help-section-module", { params: { _id: id } });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+}

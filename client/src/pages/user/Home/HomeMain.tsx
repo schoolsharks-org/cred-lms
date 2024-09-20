@@ -16,7 +16,7 @@ const HomeMain = () => {
       <IncentiveSimulatorCard/>
       <TrackLevels/>
     </Stack>
-  )
-}
+  );
+};
 
-export default HomeMain
+export default HomeMain;
