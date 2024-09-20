@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import WeeklyQuestion from "../models/weeklyQuestion.model";
-import WeeklyResponse from "../models/weeklyResponse.model";
+import WeeklyResponse, { MAX_REATTEMPTS } from "../models/weeklyResponse.model";
 import AppError from "../utils/appError";
 import User from "../models/user.model";
 
@@ -57,11 +57,18 @@ export const getWeeklyQuestion = async (
     });
     userResponse.save();
   }
-  
+
+  if(userResponse.reattempts.length>0){
+    answeredCount=userResponse.reattempts[userResponse.reattempts.length-1].answeredCount
+  }  
+
   const maxScore=weeklyQuestions.weeklyQuestionModule.reduce((a,b)=>a+b.score,0)
   const totalScore=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalScore==="number").reduce((a,b)=>a+b.totalScore,0)
   const totalAnswers=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalScore==="number").reduce((a,b)=>a+b.totalAnswers,0)
+
+  
   res.status(200).json({
+    id:weeklyQuestions._id,
     questions: weeklyQuestions.weeklyQuestionModule,
     startTime: userResponse.startTime,
     answeredCount,
@@ -72,6 +79,7 @@ export const getWeeklyQuestion = async (
             maxScore:maxScore,
             averageScore:
               totalScore / totalAnswers,
+            reattemptScores:userResponse.reattempts.map((item)=>item.score)
           }
         : undefined,
   });
@@ -125,8 +133,31 @@ export const respondToWeeklyQuestion = async (
       weeklyQuestion: weeklyQuestions._id,
       startTime: new Date(),
       userResponse: [],
+      reattempts:[]
     });
   }
+
+
+  if (existingUserResponse.reattempts?.length > 0) {
+    const lastReattempt = existingUserResponse.reattempts[existingUserResponse.reattempts.length - 1];
+  
+    if (response === question.correctOption) {
+      lastReattempt.score += question.score;
+    }
+  
+    lastReattempt.answeredCount = (lastReattempt.answeredCount || 0) + 1;
+  
+    await existingUserResponse.save();
+    
+    return res.status(200).json({
+      correctAnswer: question.correctOption,
+      answeredCount: lastReattempt.answeredCount,
+    });
+  }
+  
+
+
+
 
   const alreadyResponded = existingUserResponse.userResponse.find(
     (response) => response._id.toString() === questionId
@@ -175,19 +206,81 @@ export const respondToWeeklyQuestion = async (
   const maxScore=weeklyQuestions.weeklyQuestionModule.reduce((a,b)=>a+b.score,0)
   const totalScore=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalScore==="number").reduce((a,b)=>a+b.totalScore,0)
   const totalAnswers=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalAnswers==="number").reduce((a,b)=>a+b.totalAnswers,0)
+
+  const answeringLastQuestion=existingUserResponse.userResponse.length ===
+weeklyQuestions.weeklyQuestionModule.length
+
   res.status(200).json({
     message: "Response stored successfully",
     correctAnswer: question.correctOption,
     answeredCount: existingUserResponse.userResponse.length,
     scores:
-      existingUserResponse.userResponse.length ===
-      weeklyQuestions.weeklyQuestionModule.length
+    answeringLastQuestion
         ? {
             userScore: existingUserResponse.score,
             maxScore:maxScore,
+            reattempts:existingUserResponse.reattempts,
             averageScore:
               totalScore / totalAnswers,
           }
         : undefined,
   });
 };
+
+
+export const handleReattemptRequest=async(req:Request,res:Response,next:NextFunction)=>{
+  if (!req.user) {
+    next(new AppError("Unauthorized", 401));
+    return;
+  }
+
+  const {weeklyQuestion}=req.body 
+  const { _id: userId } = req.user;
+
+
+  const weeklyResponse=await WeeklyResponse.findOne({weeklyQuestion:weeklyQuestion,user:userId})
+
+  const weeklyQuestions = await WeeklyQuestion.findOne({
+    _id: weeklyQuestion,
+  });
+
+
+  if(!weeklyResponse || !weeklyQuestions){
+    return next(new AppError("Invalid weekly question",400))
+
+  }
+  if((weeklyResponse?.reattempts || []).length >= MAX_REATTEMPTS){
+    return next(new AppError("Maximum reattempts exceeded",400))
+  }
+
+  
+
+  // const maxScore=weeklyQuestions.weeklyQuestionModule.reduce((a,b)=>a+b.score,0)
+
+  // if(weeklyResponse?.score/maxScore >= 0.8){
+  //   return next(new AppError("Your score is already greater than 80%",400))
+  // }
+
+  weeklyResponse?.reattempts.push({score:0,answeredCount:0})
+  weeklyResponse?.save()
+
+  return res.status(200).json({message:`Reattempt ${weeklyResponse?.reattempts.length} requested successfully!`})
+}
+
+
+
+export const fetchWeeklyQuestionInsights=async(req:Request,res:Response,next:NextFunction)=>{
+  const today = new Date();
+  const startOfWeek = getMondayOfCurrentWeek(today);
+
+  const data = await WeeklyQuestion.findOne({
+    date: startOfWeek,
+  }).select("insights");
+
+  if(!data){
+    return next(new AppError("No Weekly Module found",404))
+  }
+
+  res.status(200).json({insights:data?.insights})
+
+}

@@ -2,6 +2,7 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 import { Question, QuestionSchema } from "./questions.model";
 
 interface WeeklyQuestionI extends Document {
+  _id:mongoose.Types.ObjectId;
   moduleName:string;
   date: Date;
   weeklyQuestionModule: Question[];
@@ -9,29 +10,45 @@ interface WeeklyQuestionI extends Document {
     Sales:{
       totalScore:number,
       totalTime:number, // In seconds
-      totalAnswers:number,  
+      totalAnswers:number,
+      belowEighty:number,
+      reattempted:number,
+      progressReattempt:number,
     },
     Operations:{
       totalScore:number,
       totalTime:number,
       totalAnswers:number,  
+      belowEighty:number,
+      reattempted:number,
+      progressReattempt:number
     },
     Collection:{
       totalScore:number,
       totalTime:number,
       totalAnswers:number,  
+      belowEighty:number,
+      reattempted:number,
+      progressReattempt:number
     },
     Credit:{
       totalScore:number,
       totalTime:number,
-      totalAnswers:number,  
+      totalAnswers:number, 
+      belowEighty:number,
+      reattempted:number,
+      progressReattempt:number
     },
     Others:{
       totalScore:number,
       totalTime:number,
-      totalAnswers:number,  
+      totalAnswers:number,
+      belowEighty:number,
+      reattempted:number,
+      progressReattempt:number
     }
   }
+  insights:string[];
   // totalScore: {
   //   Sales:number,
   //   Operations:number,
@@ -71,33 +88,52 @@ const weeklyQuestionSchema: Schema<WeeklyQuestionI> =
         Sales:{
           totalScore:Number,
           totalTime:Number,
-          totalAnswers:Number
+          totalAnswers:Number,
+          belowEighty:Number,
+          reattempted:Number,
+          progressReattempt:Number,
         },
         Operations:{
           totalScore:Number,
           totalTime:Number,
-          totalAnswers:Number
+          totalAnswers:Number,
+          belowEighty:Number,
+          reattempted:Number,
+          progressReattempt:Number,
         },
         Collection:{
           totalScore:Number,
           totalTime:Number,
-          totalAnswers:Number
+          totalAnswers:Number,
+          belowEighty:Number,
+          reattempted:Number,
+          progressReattempt:Number,
         },
         Credit:{
           totalScore:Number,
           totalTime:Number,
-          totalAnswers:Number
+          totalAnswers:Number,
+          belowEighty:Number,
+          reattempted:Number,
+          progressReattempt:Number,
         },
         Others:{
           totalScore:Number,
           totalTime:Number,
-          totalAnswers:Number
+          totalAnswers:Number,
+          belowEighty:Number,
+          reattempted:Number,
+          progressReattempt:Number,
         }
       },
       // totalAnswers: {
       //   type: Number,
       //   required: true,
       // },
+      insights:{
+        type:[String],
+        default:[""]
+      },
       department: {
         type: String,
         required: true,

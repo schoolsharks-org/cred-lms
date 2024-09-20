@@ -12,7 +12,10 @@ interface weeklyResponseI extends Document {
     _id: mongoose.Schema.Types.ObjectId;
     response: string;
   }>;
+  reattempts: [{ score: number,answeredCount:number }];
 }
+
+export const MAX_REATTEMPTS=2
 
 const weeklyResponseSchema: Schema<weeklyResponseI> =
   new Schema<weeklyResponseI>(
@@ -49,6 +52,15 @@ const weeklyResponseSchema: Schema<weeklyResponseI> =
           },
         },
       ],
+      reattempts: {
+        type: [
+          {
+            score: Number,
+            answeredCount:{type:Number,default:0}
+          },
+        ],
+        default: [],
+      },
     },
     {
       timestamps: true,
