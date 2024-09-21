@@ -15,7 +15,7 @@ const IncentiveSimulatorMain = () => {
   return <SalesIncentiveMain/>
 
 
-  else if(department==="Collections"){
+  else if(department==="Collection"){
     return <CollectionsIncentiveMain/>
   }
 

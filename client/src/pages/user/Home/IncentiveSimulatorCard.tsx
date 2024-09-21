@@ -9,7 +9,7 @@ const IncentiveSimulatorCard = () => {
     const navigate=useNavigate()
   const{department}=useSelector((state:RootState)=>state.user)
 
-  if(!["Sales","Collections"].includes(department)){
+  if(!["Sales","Collection"].includes(department)){
     return null;
   }
   return (

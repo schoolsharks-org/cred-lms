@@ -128,7 +128,7 @@ const Rewards = () => {
             margin={"10px"}
             bgcolor={reward.unlocked?theme.palette.secondary.main:"#E8E8E8"}
             border={"1px solid #796E6E"}
-            borderRadius={"10px"}
+            // borderRadius={"10px"}
             position="relative"
             overflow={"hidden"}
           >

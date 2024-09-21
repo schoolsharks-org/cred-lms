@@ -1,31 +1,35 @@
 import { Stack, Typography, Box, useTheme } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-// import badge1 from "../../../assets/badges/badge-1.png";
-import badge2 from "../../../assets/badges/badge-2.png";
+import badge1 from "../../../assets/badges/badge1.png";
+import badge2 from "../../../assets/badges/badge2.png";
 // import EditIcon from "@mui/icons-material/Edit";
 // import certificateImage1 from "@/assets/certificates/certificate-1.png";
 // import { ArrowBack, ArrowForward } from "@mui/icons-material";
 
-const badges = [
-  {
-    name: "Microfinance Star",
-    completion: 0,
-    icon: badge2,
-    unlocked: false,
-  },
-  {
-    name: "Client Relationship Master",
-    completion: 0,
-    icon: badge2,
-    unlocked: false,
-  },
-];
+
 const Profile = () => {
   const theme = useTheme();
   const { name, email, address, department, score } = useSelector(
     (state: RootState) => state.user
   );
+
+  const badges = ["Sales","Collection"].includes(department)?[
+    {
+      name: department==="Sales"?"Business loan guru":"Collection King",
+      completion: 0,
+      icon: badge1,
+      unlocked: false,
+    },
+    {
+      name: department==="Sales"?"SME Star":"Lakshya Legend",
+      completion: 0,
+      icon: badge2,
+      unlocked: false,
+    },
+  ]:undefined;
+
+
   return (
     <Stack height={"100vh"} padding={"20px"}>
       <Stack width={"max-content"} padding={"12px"}>
@@ -148,7 +152,7 @@ const Profile = () => {
             gap={"12px"}
             marginTop={"12px"}
           >
-            {badges.map((badge, index) => (
+            {badges?.map((badge, index) => (
               <Stack
                 flex={"1"}
                 key={index}
@@ -164,19 +168,22 @@ const Profile = () => {
                   fontWeight={"700"}
                   textAlign={"center"}
                   minHeight={"3rem"}
+                  lineHeight={"1rem"}
                 >
                   {badge.name}
                 </Typography>
+                <Stack flex={"1"} marginTop={"12px"}>
                 <img
                   src={badge.icon}
                   alt=""
                   style={{
                     width: "100%",
                     maxWidth: "120px",
-                    marginTop: "15px",
+                    marginTop: "auto",
                   }}
                 />
-                <Stack width={"100%"} marginTop="12px" flex={"1"}>
+                </Stack>
+                <Stack width={"100%"} marginTop="12px">
                   <Stack
                     direction={"row"}
                     justifyContent={"space-between"}

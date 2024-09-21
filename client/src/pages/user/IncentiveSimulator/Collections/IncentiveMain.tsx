@@ -86,7 +86,7 @@ const IncentiveMain = () => {
 
   useEffect(() => {
     const e = {} as Event;
-    handleChange(e, 50, 50);
+    handleChange(e, 0, 0);
   }, []);
 
   return (
@@ -118,7 +118,7 @@ const IncentiveMain = () => {
           }}
         >
           <Slider
-            defaultValue={50}
+            defaultValue={0}
             aria-label="Default"
             onChange={handleChange}
             sx={{ position: "absolute", zIndex: "1",bottom:"0" }}

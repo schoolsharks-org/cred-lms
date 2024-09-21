@@ -53,7 +53,7 @@ const IncentiveMain = () => {
 
   useEffect(()=>{
     const e={} as Event
-    handleChange(e,50,50)
+    handleChange(e,0,0)
   },[])
 
 
@@ -80,7 +80,7 @@ const IncentiveMain = () => {
               "linear-gradient(90deg, #FFFFFF 0%, rgba(255, 178, 181, 0.83) 100%)",
             }}
         >
-           <Slider defaultValue={50} aria-label="Default" onChange={handleChange} sx={{position:"absolute",zIndex:"1",bottom:"0"}} />
+           <Slider defaultValue={0} aria-label="Default" onChange={handleChange} sx={{position:"absolute",zIndex:"1",bottom:"0"}} />
            <Stack alignItems={"center"} sx={{position:"absolute",bottom:"-200%"}}>
             <Typography fontWeight={"600"}>{data[category].startValue}L</Typography>
             <Typography fontSize={"0.7rem"}>(Level 1)</Typography>

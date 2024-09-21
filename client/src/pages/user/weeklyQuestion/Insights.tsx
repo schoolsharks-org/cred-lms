@@ -26,7 +26,7 @@ const Insights = () => {
   const { handleFetchInsights, insights, loading } = useWeeklyQuestion();
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [currentInsightIndex, setCurrentInsightIndex] = useState<number>(0);
-  const [isPaused, setIsPaused] = useState<boolean>(true);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
   const synth = window.speechSynthesis;
 
   
@@ -145,14 +145,15 @@ const Insights = () => {
           endIcon={<ArrowForward style={{ fontSize: "1.8rem" }} />}
           onClick={() => setDialogOpen(true)}
           sx={{
-            bgcolor: "#ffffff",
-            color: "#000000",
+            bgcolor: "#000000",
+            color: "#ffffff",
             fontSize: "2rem",
             fontWeight: "500",
             justifyContent: "space-between",
             textTransform: "none",
             padding: "12px 24px",
-            "&:hover": { bgcolor: "#ffffff" },
+            borderRadius:"0",
+            "&:hover": { bgcolor: "#000000" },
           }}
         >
           Take the test
