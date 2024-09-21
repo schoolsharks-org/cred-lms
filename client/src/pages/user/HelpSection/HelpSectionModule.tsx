@@ -12,7 +12,7 @@ import Slider from "react-slick";
 import { getHelpSectionModule } from "@/store/user/userActions";
 import { useNavigate, useParams } from "react-router-dom";
 import Loader from "@/components/Loader";
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, Pause, VolumeUpOutlined } from "@mui/icons-material";
 
 const HelpSectionModule = () => {
   const theme = useTheme();
@@ -24,6 +24,71 @@ const HelpSectionModule = () => {
   const [data, setData] = useState<any>();
   const [title, setTitle] = useState<string>();
 
+  const [isPaused, setIsPaused] = useState<boolean>(false);
+  const synth = window.speechSynthesis;
+
+  useEffect(() => {
+    // Ensure voices are loaded before attempting to use them
+    const handleVoicesChanged = () => {
+      if (data?.length > 0 && selectedIndex < data?.length && !isPaused) {
+        speakStep(data[selectedIndex].steps);
+      }
+    };
+  
+    // Add an event listener for voices to ensure they are loaded
+    if (synth.onvoiceschanged !== undefined) {
+      synth.onvoiceschanged = handleVoicesChanged;
+    }
+  }, [data, selectedIndex, isPaused]);
+  
+  const speakStep = (step: string) => {
+    if (synth.speaking) {
+      synth.cancel(); // Cancel current speech before starting new one
+    }
+  
+    if (!isPaused && step) {
+      const utterance = new SpeechSynthesisUtterance(step);
+      const voices = synth.getVoices(); 
+      const indianVoice = voices.find(
+        (v) => v.lang === "en-IN" || v.name.includes("India")
+      );
+  
+      if (indianVoice) {
+        utterance.voice = indianVoice;
+      }
+  
+      utterance.onend = () => {
+        console.log("Speech finished for:", step);
+      };
+  
+      utterance.onerror = (e) => {
+        console.error("SpeechSynthesis error:", e);
+      };
+  
+      synth.speak(utterance); // Start speaking the step
+    }
+  };
+  
+  const pauseAudio = () => {
+    if (synth.speaking && !synth.paused) {
+      synth.pause(); // Pause the speech
+      setIsPaused(true); // Update the paused state
+    }
+  };
+  
+  const restartAudio = () => {
+    if (synth.paused) {
+      synth.resume(); // Resume the paused speech
+      setIsPaused(false); // Update the paused state
+    } else {
+      // If not paused, start from the current step
+      synth.cancel(); 
+      setIsPaused(false);
+      speakStep(data[selectedIndex]?.steps);
+    }
+  };
+  
+
   const settings = {
     infinite: false,
     speed: 500,
@@ -32,7 +97,11 @@ const HelpSectionModule = () => {
     arrows: true,
     afterChange: (currentSlide: number) => {
       setSelectedIndex(currentSlide);
-      // Scroll the button into view
+      if (!isPaused) {
+        speakStep(data[currentSlide].steps); 
+      } else {
+        pauseAudio();
+      }
       buttonsRef.current[currentSlide]?.scrollIntoView({
         behavior: "smooth",
         block: "nearest",
@@ -128,7 +197,7 @@ const HelpSectionModule = () => {
             }}
           >
             <Stack direction={"row"} gap={"4px"}>
-              {data.map((_: any, index: number) => (
+              {data?.map((_: any, index: number) => (
                 <Button
                   key={index}
                   ref={(el) => (buttonsRef.current[index] = el)} // Assign button ref
@@ -159,7 +228,7 @@ const HelpSectionModule = () => {
                   transition: "all 0.3s ease",
                 }}
               >
-                <Card
+                  <Card
                   sx={{
                     backgroundColor: "#800000",
                     padding: "20px",
@@ -171,6 +240,37 @@ const HelpSectionModule = () => {
                     transition: "all 0.1s ease",
                   }}
                 >
+                  <Stack
+                    direction={"row"}
+                    bgcolor={theme.palette.primary.main}
+                    alignItems={"center"}
+                    padding={"8px 24px 8px 8px"}
+                  >
+                    {isPaused ? (
+                      <IconButton onClick={() => restartAudio()}>
+                        <VolumeUpOutlined
+                          sx={{ color: "#ffffff", fontSize: "1.8rem" }}
+                        />
+                      </IconButton>
+                    ) : (
+                      <IconButton onClick={() => pauseAudio()}>
+                        <Pause sx={{ color: "#ffffff", fontSize: "1.8rem" }} />
+                      </IconButton>
+                    )}
+
+                    <Box sx={{ height: "5px", flex: 1, bgcolor: "#ffffff79" }}>
+                      <Box
+                        sx={{
+                          height: "100%",
+                          width: `${
+                            (selectedIndex * 100) / data?.length
+                          }%`,
+                          bgcolor: "#ffffff",
+                          transition: "all 0.3s ease",
+                        }}
+                      />
+                    </Box>
+                  </Stack>
                   <img
                     src={item.img}
                     alt={item.steps}
