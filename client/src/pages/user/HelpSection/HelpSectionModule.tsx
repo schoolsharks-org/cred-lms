@@ -71,7 +71,7 @@ const HelpSectionModule = () => {
   }
   return (
     <>
-      <Stack height={"100vh"} padding={"16px"}>
+      <Stack height={"100vh"} padding={"12px"}>
         <Stack direction={"row"} marginTop={"24px"}>
           <Stack>
             <IconButton onClick={() => navigate(-1)}>
@@ -158,10 +158,10 @@ const HelpSectionModule = () => {
 
         {/* Card with dynamic content */}
 
-        <Stack width={"100%"} padding={"5px"}>
+        <Stack width={"110%"} padding={"5px"} marginLeft={"-32px"} marginTop={"16px"}>
           <Slider ref={sliderRef} {...settings}>
             {data?.map((item: any, index: number) => (
-              <Stack padding={"5px"} sx={{scale:index===selectedIndex?"1":"0.95",transition:"all 0.3s ease"}}>
+              <Stack padding={"5px"} sx={{scale:index===selectedIndex?"1":"0.95",transition:"all 0.3s ease",minWidth:"300px"}}>
                 <Card
                   key={index}
                   sx={{
