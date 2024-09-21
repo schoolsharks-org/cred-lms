@@ -66,8 +66,8 @@ const UserMain = () => {
                 element={<WeeklyQuestionsCompleted />}
               />
             </Route>
-            <Route path="/weekly-question" element={<WeeklyQuestions />} />
             <Route path="/weekly-question/insights" element={<Insights />} />
+            <Route path="/weekly-question" element={<WeeklyQuestions />} />
             <Route path="/incentive-simulator" element={<IncentiveSimulatorMain />} />
             <Route path="/zaroor-dekho" element={<HelpSection />} />
             <Route

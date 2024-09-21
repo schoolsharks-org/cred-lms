@@ -1,11 +1,11 @@
-import { Stack, Typography, Box, useTheme, IconButton } from "@mui/material";
+import { Stack, Typography, Box, useTheme } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 // import badge1 from "../../../assets/badges/badge-1.png";
 import badge2 from "../../../assets/badges/badge-2.png";
-import EditIcon from "@mui/icons-material/Edit";
-import certificateImage1 from "@/assets/certificates/certificate-1.png";
-import { ArrowBack, ArrowForward } from "@mui/icons-material";
+// import EditIcon from "@mui/icons-material/Edit";
+// import certificateImage1 from "@/assets/certificates/certificate-1.png";
+// import { ArrowBack, ArrowForward } from "@mui/icons-material";
 
 const badges = [
   {
@@ -57,9 +57,9 @@ const Profile = () => {
             <Typography fontWeight={"700"} fontSize={"1.5rem"}>
               Personal Details
             </Typography>
-            <IconButton>
+            {/* <IconButton>
               <EditIcon sx={{ color: theme.palette.primary.main }} />
-            </IconButton>
+            </IconButton> */}
           </Stack>
 
           <Typography
@@ -134,7 +134,7 @@ const Profile = () => {
           </Typography>
         </Stack>
         <Stack
-          margin={"20px 0"}
+          margin={"20px 0 128px"}
           padding={"20px"}
           justifyContent={"center"}
           bgcolor={theme.palette.secondary.main}
@@ -163,6 +163,7 @@ const Profile = () => {
                   color={"#363636"}
                   fontWeight={"700"}
                   textAlign={"center"}
+                  minHeight={"3rem"}
                 >
                   {badge.name}
                 </Typography>
@@ -217,7 +218,7 @@ const Profile = () => {
             ))}
           </Stack>
         </Stack>
-        <Stack
+        {/* <Stack
           bgcolor={theme.palette.secondary.main}
           marginBottom={"128px"}
           padding={"20px"}
@@ -240,7 +241,7 @@ const Profile = () => {
               sx={{ color: theme.palette.text.secondary, fontSize: "1rem" }}
             />
           </Stack>
-        </Stack>
+        </Stack> */}
       </Stack>
     </Stack>
   );

@@ -109,6 +109,7 @@ const WeeklyQuestions = () => {
             fontSize={"1.25rem"}
             fontWeight={"400"}
             sx={{ opacity: "0.75" }}
+            textAlign={"center"}
           >
             {correctAnswer && `Correct Answer - ${currentQuestion?.correctAnswerDescription ?? `Option ${correctAnswer}`}`}
           </Typography>

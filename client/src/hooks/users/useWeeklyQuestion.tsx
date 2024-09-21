@@ -82,7 +82,6 @@ const useWeeklyQuestion = () => {
       setCurrentQuestion(questions[answeredCount] || null);
       setModuleId(id)
 
-
       if (questions?.length <= answeredCount) {
         const userScore = scores?.userScore || 0;
         const maxScore = scores?.maxScore || 0;
@@ -138,7 +137,9 @@ const useWeeklyQuestion = () => {
 
 
   useEffect(() => {
-    if (!questions) {
+    const pathname = window.location.pathname;
+    // const lastPathSegment = pathname.substring(pathname.lastIndexOf('/') + 1);
+    if (!questions && !pathname.includes("insights")) {
       fetchWeeklyQuestions();
     }
   }, [fetchWeeklyQuestions]);

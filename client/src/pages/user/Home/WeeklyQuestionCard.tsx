@@ -64,7 +64,7 @@ const WeeklyQuestionCard = () => {
       </Stack>
       <Button
         onClick={()=>openModule()}
-        endIcon={<ArrowForward />}
+        endIcon={<ArrowForward sx={{width:"48px",height:"24px"}} />}
         variant="contained"
         sx={{
           bgcolor: "#000",

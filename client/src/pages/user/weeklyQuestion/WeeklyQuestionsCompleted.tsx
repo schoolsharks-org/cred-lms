@@ -127,6 +127,7 @@ const WeeklyQuestionsCompleted = () => {
                   Math.round((scores?.userScore * 100) / scores?.maxScore) ?? 0
                 }%`,
                 transform: "translateX(-50%)",
+                zIndex:2
               }}
             ></Box>
             <Box
@@ -143,6 +144,7 @@ const WeeklyQuestionsCompleted = () => {
                   0
                 }%`,
                 transform: "translateX(-50%)",
+                zIndex:1
               }}
             ></Box>
 

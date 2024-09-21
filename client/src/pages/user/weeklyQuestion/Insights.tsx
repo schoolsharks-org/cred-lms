@@ -29,7 +29,7 @@ const Insights = () => {
   const [isPaused, setIsPaused] = useState<boolean>(true);
   const synth = window.speechSynthesis;
 
-  // Function to speak insights
+  
   const speakInsight = (insight: string) => {
     if (synth.speaking) return; // Prevent overlap
 
@@ -161,7 +161,7 @@ const Insights = () => {
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
         <Stack sx={{ padding: "28px 24px", maxWidth: "310px" }}>
           <Typography fontSize={"1.25rem"} fontWeight={"600"}>
-            Once the test begins, you will not be able to uit.
+            Once the test begins, you will not be able to quit.
           </Typography>
           <Stack
             direction={"row"}

@@ -121,7 +121,7 @@ const IncentiveMain = () => {
             defaultValue={50}
             aria-label="Default"
             onChange={handleChange}
-            sx={{ position: "absolute", zIndex: "1" }}
+            sx={{ position: "absolute", zIndex: "1",bottom:"0" }}
           />
           <Stack
             alignItems={"center"}
@@ -137,7 +137,7 @@ const IncentiveMain = () => {
               position: "absolute",
               bottom: "-150%",
               left: `${data[category].target1.position}%`,
-              transform: `translateX(-${data[category].target1.position}%)`,
+              transform: `translateX(-50%)`,
             }}
           >
             <Typography fontWeight={"600"}>
@@ -150,7 +150,7 @@ const IncentiveMain = () => {
               position: "absolute",
               bottom: "-150%",
               left: `${data[category].target2.position}%`,
-              transform: `translateX(-${data[category].target2.position}%)`,
+              transform: `translateX(-50%)`,
             }}
           >
             <Typography fontWeight={"600"}>

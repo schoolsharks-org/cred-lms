@@ -16,7 +16,7 @@ const data={
         target:23.5,
         incentive:42000
     },
-    startValue:15,
+    startValue:17,
     endValue:23.5
 }
 
@@ -32,8 +32,10 @@ const PragatiScheme = () => {
     event;activeThumb;
   
     if (typeof value === "number") {
+      console.log(value)
       const n = (data.startValue + (value / 100) * (data.endValue - data.startValue)).toFixed(2);
       setTarget(n);
+
   
       const targetValue = parseFloat(n); 
       if(targetValue<data.target1.target){
@@ -72,15 +74,15 @@ const PragatiScheme = () => {
               "linear-gradient(90deg, #FFFFFF 0%, rgba(255, 178, 181, 0.83) 100%)",
             }}
         >
-           <Slider defaultValue={50} aria-label="Default" onChange={handleChange} sx={{position:"absolute",zIndex:"1"}} />
+           <Slider defaultValue={50} aria-label="Default" onChange={handleChange} sx={{position:"absolute",zIndex:"1",bottom:"0"}} />
            <Stack alignItems={"center"} sx={{position:"absolute",bottom:"-200%"}}>
             <Typography fontWeight={"600"}>{data.startValue}L</Typography>
            </Stack>
-           <Stack alignItems={"center"} sx={{position:"absolute",bottom:"-200%",left:"41.17%",transform:"translate(-41.17%)"}}>
+           <Stack alignItems={"center"} sx={{position:"absolute",bottom:"-200%",left:"23%",transform:"translate(-50%)"}}>
             <Typography fontWeight={"600"}>{data.target1.target}L</Typography>
             <Typography fontSize={"0.7rem"}>(Eligibility level)</Typography>
            </Stack>
-           <Stack alignItems={"center"} sx={{position:"absolute",bottom:"-200%",left:"58.82%",transform:"translate(-58.82%)"}}>
+           <Stack alignItems={"center"} sx={{position:"absolute",bottom:"-200%",left:"46.15%",transform:"translate(-50%)"}}>
             <Typography fontWeight={"600"}>{data.target2.target}L</Typography>
             <Typography fontSize={"0.7rem"} width={"max-content"}>(Level 2)</Typography>
            </Stack>

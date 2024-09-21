@@ -66,7 +66,6 @@ export const getWeeklyQuestion = async (
   const totalScore=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalScore==="number").reduce((a,b)=>a+b.totalScore,0)
   const totalAnswers=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalScore==="number").reduce((a,b)=>a+b.totalAnswers,0)
 
-  
   res.status(200).json({
     id:weeklyQuestions._id,
     questions: weeklyQuestions.weeklyQuestionModule,
@@ -155,10 +154,6 @@ export const respondToWeeklyQuestion = async (
     });
   }
   
-
-
-
-
   const alreadyResponded = existingUserResponse.userResponse.find(
     (response) => response._id.toString() === questionId
   );
@@ -208,8 +203,9 @@ export const respondToWeeklyQuestion = async (
   const totalAnswers=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalAnswers==="number").reduce((a,b)=>a+b.totalAnswers,0)
 
   const answeringLastQuestion=existingUserResponse.userResponse.length ===
-weeklyQuestions.weeklyQuestionModule.length
-
+  weeklyQuestions.weeklyQuestionModule.length
+  
+  
   res.status(200).json({
     message: "Response stored successfully",
     correctAnswer: question.correctOption,

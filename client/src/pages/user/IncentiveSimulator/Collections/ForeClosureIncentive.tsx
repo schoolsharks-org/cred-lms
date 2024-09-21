@@ -77,7 +77,7 @@ const ForeClosureIncentive = () => {
             defaultValue={50}
             aria-label="Default"
             onChange={handleChange}
-            sx={{ position: "absolute", zIndex: "1" }}
+            sx={{ position: "absolute", zIndex: "1",bottom:"0" }}
           />
           <Stack
             alignItems={"center"}

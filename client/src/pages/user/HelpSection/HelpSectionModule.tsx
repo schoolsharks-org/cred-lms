@@ -29,6 +29,7 @@ const HelpSectionModule = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
     arrows: true,
+    centerMode:true,
     afterChange: (currentSlide: number) => {
       setSelectedIndex(currentSlide);
     },
@@ -160,7 +161,7 @@ const HelpSectionModule = () => {
         <Stack width={"100%"} padding={"5px"}>
           <Slider ref={sliderRef} {...settings}>
             {data?.map((item: any, index: number) => (
-              <Stack padding={"16px"}>
+              <Stack padding={"5px"} sx={{scale:index===selectedIndex?"1":"0.95",transition:"all 0.3s ease"}}>
                 <Card
                   key={index}
                   sx={{
@@ -169,7 +170,9 @@ const HelpSectionModule = () => {
                     width: "100%",
                     flexDirection: "column",
                     display: "flex",
-                    color:"#fff"
+                    color:"#fff",
+                    opacity:index===selectedIndex?"1":"0.9",
+                    transition:"all 0.1s ease",
                     // display:index===0?"flex":"none",
                     // justifyContent: "center",
                     // textAlign: "center",
