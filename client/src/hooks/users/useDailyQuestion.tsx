@@ -11,6 +11,7 @@ export interface DailyQuestion {
     OptionB: string;
   };
   userResponse: "OptionA" | "OptionB" | "Not Answered";
+  correctOption:string;
   stats?: {
     Sales: {
       OptionA: number;

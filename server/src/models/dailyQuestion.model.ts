@@ -9,6 +9,7 @@ export interface DailyQuestionI extends Document {
     optionA: string;
     optionB: string;
   };
+  correctOption:string;
   departmentResponses: {
     Sales: {
       OptionA: number;
@@ -53,6 +54,9 @@ const dailyQuestionSchema: Schema<DailyQuestionI> = new Schema<DailyQuestionI>(
         type: String,
         required: true,
       },
+    },
+    correctOption:{
+      type:String
     },
     departmentResponses: {
       Sales: {

@@ -121,11 +121,18 @@ const DailyQuestion = () => {
           
           <Stack marginTop={"24px"}>
             <Typography
-              fontSize={"1.5rem"}
+              fontSize={"1.25rem"}
               fontWeight={"600"}
               padding={"0 48px"}
             >
               You Chose - {dailyQuestionData?.options[dailyQuestionData?.userResponse]}
+            </Typography>
+            <Typography
+              fontSize={"1.25rem"}
+              fontWeight={"600"}
+              padding={"0 48px"}
+            >
+              Correct Answer - {dailyQuestionData?.correctOption}
             </Typography>
             <Box
               sx={{

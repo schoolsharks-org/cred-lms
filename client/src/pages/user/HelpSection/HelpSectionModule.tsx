@@ -18,6 +18,7 @@ const HelpSectionModule = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const sliderRef = useRef<any>(null);
+  const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<any>();
@@ -29,9 +30,14 @@ const HelpSectionModule = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
     arrows: true,
-    centerMode:true,
     afterChange: (currentSlide: number) => {
       setSelectedIndex(currentSlide);
+      // Scroll the button into view
+      buttonsRef.current[currentSlide]?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
     },
   };
 
@@ -69,6 +75,7 @@ const HelpSectionModule = () => {
   if (loading) {
     return <Loader />;
   }
+
   return (
     <>
       <Stack height={"100vh"} padding={"12px"}>
@@ -99,21 +106,6 @@ const HelpSectionModule = () => {
           </Stack>
         </Stack>
 
-        {/* Title */}
-        {/* <Stack width={"max-content"} padding={"12px"}>
-          <Typography fontSize={"1.5rem"} fontWeight={"600"} maxWidth={"80%"}>
-            {title}
-          </Typography>
-          <Box
-            sx={{
-              height: "4px",
-              borderRadius: "8px",
-              bgcolor: theme.palette.primary.main,
-              marginTop: "4px",
-            }}
-          />
-        </Stack> */}
-
         {/* Number Navigation */}
         <Stack
           direction="row"
@@ -128,7 +120,6 @@ const HelpSectionModule = () => {
             overflow={"scroll"}
             width={"70%"}
             direction={"row"}
-            gap={"4px"}
             sx={{
               scrollbarWidth: "none",
               "&::-webkit-scrollbar": {
@@ -136,12 +127,12 @@ const HelpSectionModule = () => {
               },
             }}
           >
-            {data.map(
-              (_: any, index: number) => (
+            <Stack direction={"row"} gap={"4px"}>
+              {data.map((_: any, index: number) => (
                 <Button
                   key={index}
+                  ref={(el) => (buttonsRef.current[index] = el)} // Assign button ref
                   variant={selectedIndex === index ? "contained" : "outlined"}
-                  //   color="primary"
                   sx={{
                     borderColor: "black", // Set border color to black for outlined buttons
                     minWidth: "40px",
@@ -151,35 +142,36 @@ const HelpSectionModule = () => {
                 >
                   {index + 1}
                 </Button>
-              )
-            )}
+              ))}
+            </Stack>
           </Stack>
         </Stack>
 
         {/* Card with dynamic content */}
-
-        <Stack width={"110%"} padding={"5px"} marginLeft={"-32px"} marginTop={"16px"}>
+        <Stack width={"100%"} padding={"5px"} marginTop={"16px"}>
           <Slider ref={sliderRef} {...settings}>
             {data?.map((item: any, index: number) => (
-              <Stack padding={"5px"} sx={{scale:index===selectedIndex?"1":"0.95",transition:"all 0.3s ease",minWidth:"300px"}}>
+              <Stack
+                key={index}
+                padding={"16px"}
+                sx={{
+                  scale: index === selectedIndex ? "1" : "0.95",
+                  transition: "all 0.3s ease",
+                }}
+              >
                 <Card
-                  key={index}
                   sx={{
                     backgroundColor: "#800000",
                     padding: "20px",
                     width: "100%",
                     flexDirection: "column",
                     display: "flex",
-                    color:"#fff",
-                    opacity:index===selectedIndex?"1":"0.9",
-                    transition:"all 0.1s ease",
-                    // display:index===0?"flex":"none",
-                    // justifyContent: "center",
-                    // textAlign: "center",
-                    // margin: "20px", // Optional: Add space between cards
+                    color: "#fff",
+                    opacity: index === selectedIndex ? "1" : "0.9",
+                    transition: "all 0.1s ease",
                   }}
                 >
-                   <img
+                  <img
                     src={item.img}
                     alt={item.steps}
                     style={{
@@ -189,7 +181,7 @@ const HelpSectionModule = () => {
                       marginTop: "24px",
                     }}
                   />
-                  <Typography marginTop={"24px"}>Steps to follow- </Typography>
+                  <Typography marginTop={"24px"}>Steps to follow-</Typography>
                   <Typography
                     padding={"3px"}
                     color={"#FFFFFF"}
@@ -198,7 +190,6 @@ const HelpSectionModule = () => {
                   >
                     {item.steps}
                   </Typography>
-                 
                 </Card>
               </Stack>
             ))}

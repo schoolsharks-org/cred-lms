@@ -39,7 +39,6 @@ export const getDailyQuestion = async (
       dailyQuestion: dailyQuestion._id,
     });
     
-    console.log(dailyQuestion.departmentResponses)
     const response = {
       question: dailyQuestion.questionPrompt,
       options: {
@@ -47,6 +46,7 @@ export const getDailyQuestion = async (
         OptionB: dailyQuestion.options.optionB,
       },
       userResponse: userResponse ? userResponse.userResponse : "Not Answered",
+      correctOption:userResponse ? dailyQuestion.correctOption : "Not Answered",
       stats: userResponse ? {
         Sales: dailyQuestion.departmentResponses.Sales,
         Credit: dailyQuestion.departmentResponses.Credit,
@@ -108,6 +108,7 @@ export const respondToDailyQuestion = async (
           OptionB: dailyQuestion.options.optionB,
         },
         userResponse: existingResponse.userResponse,
+        correctOption:dailyQuestion.correctOption,
         stats: {
           Sales: dailyQuestion.departmentResponses.Sales,
           Credit: dailyQuestion.departmentResponses.Credit,
@@ -147,6 +148,7 @@ export const respondToDailyQuestion = async (
         OptionA: dailyQuestion.options.optionA,
         OptionB: dailyQuestion.options.optionB,
       },
+      correctOption:dailyQuestion.correctOption,
       stats: {
         Sales: dailyQuestion.departmentResponses.Sales,
         Credit: dailyQuestion.departmentResponses.Credit,
