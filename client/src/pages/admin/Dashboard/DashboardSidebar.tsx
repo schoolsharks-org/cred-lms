@@ -1,11 +1,27 @@
+import MarkerCicle from "@/components/user/MarkerCicle";
+import { BLACK, BLUE, GREEN, PURPLE, YELLOW } from "@/utils/departmentColors";
 import { ArrowForward } from "@mui/icons-material";
 import { Button, Stack, Typography, useTheme } from "@mui/material";
 
 
+
+type Department="Sales"|"Collection"|"Credit"|"Operations"|"Others"
+
 interface ScorelistData {
     Name: string;
+    Department:Department
     Score: number;
   }
+
+
+
+  const departments = [
+    { name: "Sales" ,icon:<MarkerCicle color={YELLOW} width={"16px"} left={0} positioned={true} bordered={false}/>},
+    { name: "Credit" ,icon:<MarkerCicle color={BLUE} width={"16px"} left={0} positioned={true} bordered={false}/>},
+    { name: "Collection",icon:<MarkerCicle color={PURPLE} width={"16px"} left={0} positioned={true} bordered={false}/> },
+    { name: "Operations",icon:<MarkerCicle color={BLACK} width={"16px"} left={0} positioned={true} bordered={false}/> },
+    { name: "Others" ,icon:<MarkerCicle color={GREEN} width={"16px"} left={0} positioned={true} bordered={false}/>},
+  ];
 
 const DashboardSidebar = ({topScorers,belowAverageScorers}:{topScorers:ScorelistData[] | null ,belowAverageScorers:ScorelistData[]| null}) => {
 
@@ -54,8 +70,9 @@ const ScoreList = ({ name, data }: { name: String; data: ScorelistData[] | null}
       </Typography>
       <Stack gap={"5px"} padding={"20px"}>
         {data?.map((item, index) => (
-          <Stack key={index} direction={"row"} gap="12px">
-            <Typography>{index + 1}.</Typography>
+          <Stack key={index} direction={"row"} gap="12px" alignItems={"center"}>
+            <Typography width={"0.4rem"}>{index + 1}.</Typography>
+            {departments.filter((dep)=>dep.name===item.Department)[0].icon}
             <Typography flex="1" fontWeight={"600"}>
               {item.Name}
             </Typography>

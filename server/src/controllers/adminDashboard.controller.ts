@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import WeeklyResponse from "../models/weeklyResponse.model";
-import User from "../models/user.model";
+import User, { Department } from "../models/user.model";
 import WeeklyQuestion from "../models/weeklyQuestion.model";
 
 function getMondayOfCurrentWeek(date: Date): Date {
@@ -32,8 +32,9 @@ async function handleUserScores() {
     startTime: { $gte: startOfWeek, $lte: endOfWeek },
   })
     .sort({ score: -1 })
-    .select("score user")
+    .select("score user department")
     .limit(10);
+
 
   const TopScorers = [];
   if (weeklyQuestions) {
@@ -41,11 +42,12 @@ async function handleUserScores() {
       .filter((item) => typeof item.totalScore === "number")
       .reduce((a, b) => a + b.totalScore, 0);
     for (const response of userWeeklyTopScorers) {
-      const user = await User.findOne({ _id: response.user }).select("name");
+      const user = await User.findOne({ _id: response.user }).select("name department");
       if (user) {
         TopScorers.push({
           Name: user.name,
           Score: (response.score * 100) / totalScore,
+          Department:user.department
         });
       }
     }
@@ -55,13 +57,13 @@ async function handleUserScores() {
     startTime: { $gte: startOfWeek, $lte: endOfWeek },
   })
     .sort({ score: 1 })
-    .select("score user")
+    .select("score user department")
     .limit(5);
 
   const belowAvgScorers = [];
   if (weeklyQuestions) {
     for (const response of userWeeklyBelowAverageScorers) {
-      const user = await User.findOne({ _id: response.user }).select("name");
+      const user = await User.findOne({ _id: response.user }).select("name department");
 
       if (user) {
         const totalScore = Object.values(weeklyQuestions.toObject().analytics)
@@ -70,6 +72,7 @@ async function handleUserScores() {
         belowAvgScorers.push({
           Name: user.name,
           Score: (response.score * 100) / totalScore,
+          Department:user.department
         });
       }
     }

@@ -3,6 +3,7 @@ import { useState } from "react";
 
 interface Scorers {
     Name: string;
+    Department:"Sales"| "Credit"| "Collection"| "Operations"| "Others"
     Score: number;
 }
 
