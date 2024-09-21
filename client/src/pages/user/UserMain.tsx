@@ -34,7 +34,7 @@ const UserMain = () => {
   if (loading) {
     return <Loader />;
   }
-
+  
   return (
     <Stack maxWidth={"480px"} width={"100%"} margin={"auto"}>
       {/* <Insights/> */}

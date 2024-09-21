@@ -58,16 +58,24 @@ export const getWeeklyQuestion = async (
     userResponse.save();
   }
 
-  if(userResponse.reattempts.length>0){
-    answeredCount=userResponse.reattempts[userResponse.reattempts.length-1].answeredCount
-  }  
+  if (userResponse.reattempts.length > 0) {
+    answeredCount =
+      userResponse.reattempts[userResponse.reattempts.length - 1].answeredCount;
+  }
 
-  const maxScore=weeklyQuestions.weeklyQuestionModule.reduce((a,b)=>a+b.score,0)
-  const totalScore=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalScore==="number").reduce((a,b)=>a+b.totalScore,0)
-  const totalAnswers=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalScore==="number").reduce((a,b)=>a+b.totalAnswers,0)
+  const maxScore = weeklyQuestions.weeklyQuestionModule.reduce(
+    (a, b) => a + b.score,
+    0
+  );
+  const totalScore = Object.values(weeklyQuestions.toObject().analytics)
+    .filter((item) => typeof item.totalScore === "number")
+    .reduce((a, b) => a + b.totalScore, 0);
+  const totalAnswers = Object.values(weeklyQuestions.toObject().analytics)
+    .filter((item) => typeof item.totalScore === "number")
+    .reduce((a, b) => a + b.totalAnswers, 0);
 
   res.status(200).json({
-    id:weeklyQuestions._id,
+    id: weeklyQuestions._id,
     questions: weeklyQuestions.weeklyQuestionModule,
     startTime: userResponse.startTime,
     answeredCount,
@@ -75,17 +83,13 @@ export const getWeeklyQuestion = async (
       answeredCount === weeklyQuestions.weeklyQuestionModule.length
         ? {
             userScore: userResponse.score,
-            maxScore:maxScore,
-            averageScore:
-              totalScore / totalAnswers,
-            reattemptScores:userResponse.reattempts.map((item)=>item.score)
+            maxScore: maxScore,
+            averageScore: totalScore / totalAnswers,
+            reattemptScores: userResponse.reattempts.map((item) => item.score),
           }
         : undefined,
   });
 };
-
-
-
 
 export const respondToWeeklyQuestion = async (
   req: Request,
@@ -97,9 +101,8 @@ export const respondToWeeklyQuestion = async (
     return;
   }
 
-
   const { questionId, response } = req.body;
-  const {_id:userId,department:userDepartment} = req.user;
+  const { _id: userId, department: userDepartment } = req.user;
 
   const today = new Date();
   const startOfWeek = getMondayOfCurrentWeek(today);
@@ -107,20 +110,19 @@ export const respondToWeeklyQuestion = async (
   const weeklyQuestions = await WeeklyQuestion.findOne({
     date: startOfWeek,
   });
-  
 
   if (!weeklyQuestions) {
     return next(new AppError("No weekly questions found for this week", 404));
   }
-  
+
   const question = weeklyQuestions.weeklyQuestionModule.find(
     (element) => element.id.toString() === questionId.toString()
   );
-  
+
   if (!question) {
     return next(new AppError("Invalid question ID", 400));
   }
-  
+
   let existingUserResponse = await WeeklyResponse.findOne({
     user: userId,
     weeklyQuestion: weeklyQuestions._id,
@@ -132,28 +134,30 @@ export const respondToWeeklyQuestion = async (
       weeklyQuestion: weeklyQuestions._id,
       startTime: new Date(),
       userResponse: [],
-      reattempts:[]
+      reattempts: [],
     });
   }
 
-
   if (existingUserResponse.reattempts?.length > 0) {
-    const lastReattempt = existingUserResponse.reattempts[existingUserResponse.reattempts.length - 1];
-  
+    const lastReattempt =
+      existingUserResponse.reattempts[
+        existingUserResponse.reattempts.length - 1
+      ];
+
     if (response === question.correctOption) {
       lastReattempt.score += question.score;
     }
-  
+
     lastReattempt.answeredCount = (lastReattempt.answeredCount || 0) + 1;
-  
+
     await existingUserResponse.save();
-    
+
     return res.status(200).json({
       correctAnswer: question.correctOption,
       answeredCount: lastReattempt.answeredCount,
     });
   }
-  
+
   const alreadyResponded = existingUserResponse.userResponse.find(
     (response) => response._id.toString() === questionId
   );
@@ -176,15 +180,19 @@ export const respondToWeeklyQuestion = async (
   });
 
   await existingUserResponse.save();
-  
-  if (existingUserResponse.userResponse.length === weeklyQuestions.weeklyQuestionModule.length) {
+
+  if (
+    existingUserResponse.userResponse.length ===
+    weeklyQuestions.weeklyQuestionModule.length
+  ) {
     const endTime = new Date();
 
     await WeeklyQuestion.findByIdAndUpdate(weeklyQuestions._id, {
       $inc: {
         [`analytics.${userDepartment}.totalScore`]: existingUserResponse.score,
         [`analytics.${userDepartment}.totalAnswers`]: 1,
-        [`analytics.${userDepartment}.totalTime`]: (endTime.getTime() - existingUserResponse.startTime.getTime()) / 1000,
+        [`analytics.${userDepartment}.totalTime`]:
+          (endTime.getTime() - existingUserResponse.startTime.getTime()) / 1000,
       },
     });
 
@@ -198,74 +206,99 @@ export const respondToWeeklyQuestion = async (
     });
   }
 
-  const maxScore=weeklyQuestions.weeklyQuestionModule.reduce((a,b)=>a+b.score,0)
-  const totalScore=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalScore==="number").reduce((a,b)=>a+b.totalScore,0)
-  const totalAnswers=Object.values(weeklyQuestions.toObject().analytics).filter(item=>typeof item.totalAnswers==="number").reduce((a,b)=>a+b.totalAnswers,0)
+  const maxScore = weeklyQuestions.weeklyQuestionModule.reduce(
+    (a, b) => a + b.score,
+    0
+  );
+  const totalScore = Object.values(weeklyQuestions.toObject().analytics)
+    .filter((item) => typeof item.totalScore === "number")
+    .reduce((a, b) => a + b.totalScore, 0);
+  const totalAnswers = Object.values(weeklyQuestions.toObject().analytics)
+    .filter((item) => typeof item.totalAnswers === "number")
+    .reduce((a, b) => a + b.totalAnswers, 0);
 
-  const answeringLastQuestion=existingUserResponse.userResponse.length ===
-  weeklyQuestions.weeklyQuestionModule.length
-  
-  
+  const answeringLastQuestion =
+    existingUserResponse.userResponse.length ===
+    weeklyQuestions.weeklyQuestionModule.length;
+
   res.status(200).json({
     message: "Response stored successfully",
     correctAnswer: question.correctOption,
     answeredCount: existingUserResponse.userResponse.length,
-    scores:
-    answeringLastQuestion
-        ? {
-            userScore: existingUserResponse.score,
-            maxScore:maxScore,
-            reattempts:existingUserResponse.reattempts,
-            averageScore:
-              totalScore / totalAnswers,
-          }
-        : undefined,
+    scores: answeringLastQuestion
+      ? {
+          userScore: existingUserResponse.score,
+          maxScore: maxScore,
+          reattempts: existingUserResponse.reattempts,
+          averageScore: totalScore / totalAnswers,
+        }
+      : undefined,
   });
 };
 
-
-export const handleReattemptRequest=async(req:Request,res:Response,next:NextFunction)=>{
+export const handleReattemptRequest = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   if (!req.user) {
     next(new AppError("Unauthorized", 401));
     return;
   }
 
-  const {weeklyQuestion}=req.body 
-  const { _id: userId } = req.user;
+  console.log("request aai")
 
+  const { weeklyQuestion } = req.body;
+  const { _id: userId, department } = req.user;
 
-  const weeklyResponse=await WeeklyResponse.findOne({weeklyQuestion:weeklyQuestion,user:userId})
+  const weeklyResponse = await WeeklyResponse.findOne({
+    weeklyQuestion: weeklyQuestion,
+    user: userId,
+  });
 
   const weeklyQuestions = await WeeklyQuestion.findOne({
     _id: weeklyQuestion,
   });
 
-
-  if(!weeklyResponse || !weeklyQuestions){
-    return next(new AppError("Invalid weekly question",400))
-
-  }
-  if((weeklyResponse?.reattempts || []).length >= MAX_REATTEMPTS){
-    return next(new AppError("Maximum reattempts exceeded",400))
+  if (!weeklyResponse || !weeklyQuestions) {
+    return next(new AppError("Invalid weekly question", 400));
   }
 
-  
+  if ((weeklyResponse?.reattempts || []).length >= MAX_REATTEMPTS) {
+    return next(new AppError("Maximum reattempts exceeded", 400));
+  }
 
+
+  console.log("Length",weeklyResponse?.reattempts.length)
+
+  if (weeklyResponse?.reattempts.length === 0) {
+    await WeeklyQuestion.findByIdAndUpdate(weeklyQuestions._id, {
+      $inc: {
+        [`analytics.${department}.reattempted`]: 1,
+      },
+    });
+  }
   // const maxScore=weeklyQuestions.weeklyQuestionModule.reduce((a,b)=>a+b.score,0)
 
   // if(weeklyResponse?.score/maxScore >= 0.8){
   //   return next(new AppError("Your score is already greater than 80%",400))
   // }
 
-  weeklyResponse?.reattempts.push({score:0,answeredCount:0})
-  weeklyResponse?.save()
+  weeklyResponse?.reattempts.push({ score: 0, answeredCount: 0 });
+  weeklyResponse?.save();
 
-  return res.status(200).json({message:`Reattempt ${weeklyResponse?.reattempts.length} requested successfully!`})
-}
+  return res
+    .status(200)
+    .json({
+      message: `Reattempt ${weeklyResponse?.reattempts.length} requested successfully!`,
+    });
+};
 
-
-
-export const fetchWeeklyQuestionInsights=async(req:Request,res:Response,next:NextFunction)=>{
+export const fetchWeeklyQuestionInsights = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const today = new Date();
   const startOfWeek = getMondayOfCurrentWeek(today);
 
@@ -273,10 +306,9 @@ export const fetchWeeklyQuestionInsights=async(req:Request,res:Response,next:Nex
     date: startOfWeek,
   }).select("insights");
 
-  if(!data){
-    return next(new AppError("No Weekly Module found",404))
+  if (!data) {
+    return next(new AppError("No Weekly Module found", 404));
   }
 
-  res.status(200).json({insights:data?.insights})
-
-}
+  res.status(200).json({ insights: data?.insights });
+};

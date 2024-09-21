@@ -12,7 +12,7 @@ interface weeklyResponseI extends Document {
     _id: mongoose.Schema.Types.ObjectId;
     response: string;
   }>;
-  reattempts: [{ score: number,answeredCount:number }];
+  reattempts: Array<{ score: number; answeredCount: number }>; 
 }
 
 export const MAX_REATTEMPTS=2

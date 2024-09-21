@@ -1,5 +1,5 @@
 import useAdminDashboard from "@/hooks/admin/useAdminDashboard";
-import { SaveAlt, Search, Settings } from "@mui/icons-material";
+import { FileDownloadOutlined, SaveAlt, Search, Settings } from "@mui/icons-material";
 import { Button, IconButton, Stack, Typography, useTheme } from "@mui/material";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -92,6 +92,7 @@ const Dashboard = () => {
               {departments.map((department, index) => (
                 <TableCell key={index} text={department.name} bold={true} startIcon={department.icon}/>
               ))}
+                <DownloadCell bold={true}/>
             </Stack>
             {data.map((row, index) => (
               <Stack
@@ -107,6 +108,7 @@ const Dashboard = () => {
                 {row.data.map((item, index) => (
                   <TableCell key={index} text={item.toString()} />
                 ))}
+                <DownloadCell bold={false}/>
               </Stack>
             ))}
           </Stack>
@@ -200,3 +202,24 @@ const TableCell = ({
     </Typography>
   </Stack>
 );
+
+
+const DownloadCell=({bold}:{bold:boolean})=>{
+  return (
+    <Stack
+    direction={"row"}
+    border={"1px solid #000"}
+    padding={"8px 16px"}
+    alignItems={"center"}
+    justifyContent={"center"}
+    flex={"0.5"}
+    minHeight={"64px"}
+    gap={"8px"}
+    sx={{ borderWidth: "0 1px 0 1px" }}
+  >
+    <IconButton>
+    <FileDownloadOutlined sx={{fontSize:bold?"1.6rem":"1.4rem",color:"#000000"}}/>
+    </IconButton>
+  </Stack>
+  )
+}
