@@ -1,159 +1,92 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Stack,
   Typography,
   Box,
   useTheme,
   Card,
-  Button,
   IconButton,
 } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
 import Slider from "react-slick";
-import { getHelpSectionModule } from "@/store/user/userActions";
-import { useNavigate, useParams } from "react-router-dom";
-import Loader from "@/components/Loader";
-import { ArrowBack, Pause, VolumeUpOutlined } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import { getDailyUpdates } from "@/store/user/userActions";
+import { useEffect, useState } from "react";
+import { ArrowBack } from "@mui/icons-material";
 
-const HelpSectionModule = () => {
-  const theme = useTheme();
-  const navigate = useNavigate();
-  const sliderRef = useRef<any>(null);
-  const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+
+interface DailyUpdate {
+  _id:string;
+  title: string;
+  image: string;
+}
+
+const modules = [
+  { name: "New Circulars from Aug 24 onwards", date: "8th Sep" },
+  { name: "Incentive scheme for FOs details", date: "12th Sep" },
+  { name: "Pragati Scheme for FOs details", date: "15th Sep" },
+];
+
+const HelpSection = () => {
+  const [dailyUpdates, setDailyUpdates] = useState<DailyUpdate[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [data, setData] = useState<any>();
-  const [title, setTitle] = useState<string>();
-
-  const [isPaused, setIsPaused] = useState<boolean>(true);
-  const synth = window.speechSynthesis;
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const handleVoicesChanged = () => {
-      if (data?.length > 0 && selectedIndex < data?.length && !isPaused) {
-        speakStep(data[selectedIndex].steps);
-      }
-    };
-
-    if (synth.onvoiceschanged !== undefined) {
-      synth.onvoiceschanged = handleVoicesChanged;
-    }
-  }, [data, selectedIndex, isPaused]);
-
-  const speakStep = (step: string) => {
-    if (synth.speaking) {
-      synth.cancel(); // Cancel any ongoing speech before starting new one
-    }
-
-    if (!isPaused && step) {
-      const utterance = new SpeechSynthesisUtterance(step);
-      const voices = synth.getVoices();
-      const indianVoice = voices.find(
-        (v) => v.lang === "en-IN" || v.name.includes("India")
-      );
-
-      if (indianVoice) {
-        utterance.voice = indianVoice;
-      }
-
-      utterance.onend = () => {
-        console.log("Speech finished for:", step);
-      };
-
-      utterance.onerror = (e) => {
-        console.error("SpeechSynthesis error:", e);
-      };
-
-      synth.speak(utterance); // Start speaking the step
-    }
-  };
-
-  const pauseAudio = () => {
-    if (synth.speaking && !synth.paused) {
-      synth.pause(); // Pause the speech
-      setIsPaused(true); // Update the paused state
-    }
-  };
-
-  const restartAudio = () => {
-    if (synth.paused) {
-      synth.resume(); // Resume the paused speech
-      setIsPaused(false); // Update the paused state
-    } else {
-      // If not paused, start from the current step
-      synth.cancel();
-      setIsPaused(false);
-      speakStep(data[selectedIndex]?.steps);
-    }
-  };
-
-  const handleVolumeClick = () => {
-    // If speech is paused or hasn't started yet, trigger restartAudio to start speech
-    if (isPaused) {
-      restartAudio();
-    } else {
-      pauseAudio(); // If already playing, pause
-    }
-  };
-
-  const settings = {
-    infinite: false,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    arrows: true,
-    afterChange: (currentSlide: number) => {
-      setSelectedIndex(currentSlide);
-      if (!isPaused) {
-        speakStep(data[currentSlide].steps);
-      } else {
-        pauseAudio();
-      }
-      buttonsRef.current[currentSlide]?.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "center",
-      });
-    },
-  };
-
-  const { id } = useParams();
-
-  useEffect(() => {
-    const fetchModule = async () => {
+    const fetchDailyUpdates = async () => {
       try {
-        setLoading(true);
-        if (id) {
-          const response = await getHelpSectionModule(id);
-          console.log("response: ", response);
-          setData(response.modules);
-          setTitle(response.title);
-        } else {
-          navigate(-1);
-        }
+        const response = await getDailyUpdates();
+        console.log("response: ", response);
+        // console.log("response.data: ", response.data);
+        setDailyUpdates(response);
       } catch (error: any) {
-        console.log(error);
+        setError(
+          error.response?.data?.message || "Failed to fetch daily updates"
+        );
       } finally {
         setLoading(false);
       }
     };
 
-    fetchModule();
+    fetchDailyUpdates();
   }, []);
+  // const array = [
+  //   {
+  //     title: "New E-NACH process Via Adhaar",
+  //     img: "https://via.placeholder.com/150", // sample image link
+  //   },
+  //   {
+  //     title: "B",
+  //     img: "https://via.placeholder.com/150", // sample image link
+  //   },
+  //   {
+  //     title: "C",
+  //     img: "https://via.placeholder.com/150", // sample image link
+  //   },
+  // ];
 
-  const handleButtonClick = (index: number) => {
-    setSelectedIndex(index);
-    if (sliderRef.current) {
-      sliderRef.current.slickGoTo(index);
-    }
+  const theme = useTheme();
+  const navigate = useNavigate();
+
+  const settings = {
+    // dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1, // One card visible at a time
+    slidesToScroll: 1,
+    arrows: true, // Optional: Adds left and right navigation arrows
   };
 
   if (loading) {
-    return <Loader />;
+    return <Typography>Loading...</Typography>;
+  }
+
+  if (error) {
+    return <Typography>Error: {error}</Typography>;
   }
 
   return (
     <>
-      <Stack height={"100vh"} padding={"12px"}>
+      <Stack height={"100vh"}>
         <Stack direction={"row"} marginTop={"24px"}>
           <Stack>
             <IconButton onClick={() => navigate(-1)}>
@@ -167,8 +100,12 @@ const HelpSectionModule = () => {
             </IconButton>
           </Stack>
           <Stack>
-            <Typography fontSize={"1.5rem"} fontWeight={"700"}>
-              {title}
+            <Typography
+              fontSize={"2rem"}
+              fontWeight={"700"}
+              width={"max-content"}
+            >
+              Zaroor Dekho
             </Typography>
             <Box
               sx={{
@@ -178,104 +115,47 @@ const HelpSectionModule = () => {
                 width: "90%",
               }}
             />
+            <Typography
+              fontSize={"1.25rem"}
+              fontWeight={"500"}
+              maxWidth={"90%"}
+            >
+              Weekly sangram shuru krne se Pehle zaroor dekhe
+            </Typography>
           </Stack>
         </Stack>
 
-        {/* Number Navigation */}
-        <Stack
-          direction="row"
-          spacing={1}
-          marginTop={"32px"}
-          padding={"0 0 0 20px"}
-        >
-          <Typography fontSize={"1.25rem"} fontWeight={"600"}>
-            Step-
-          </Typography>
-          <Stack
-            overflow={"scroll"}
-            width={"70%"}
-            direction={"row"}
-            sx={{
-              scrollbarWidth: "none",
-              "&::-webkit-scrollbar": {
-                display: "none",
-              },
-            }}
-          >
-            <Stack direction={"row"} gap={"4px"}>
-              {data?.map((_: any, index: number) => (
-                <Button
-                  key={index}
-                  ref={(el) => (buttonsRef.current[index] = el)} // Assign button ref
-                  variant={selectedIndex === index ? "contained" : "outlined"}
-                  sx={{
-                    borderColor: "black", // Set border color to black for outlined buttons
-                    minWidth: "40px",
-                    color: selectedIndex === index ? "white" : "black",
-                  }}
-                  onClick={() => handleButtonClick(index)}
-                >
-                  {index + 1}
-                </Button>
-              ))}
-            </Stack>
-          </Stack>
-        </Stack>
-
-        {/* Card with dynamic content */}
-        <Stack width={"100%"} padding={"5px"} marginTop={"16px"}>
-          <Slider ref={sliderRef} {...settings}>
-            {data?.map((item: any, index: number) => (
-              <Stack
-                key={index}
-                padding={"16px"}
-                sx={{
-                  scale: index === selectedIndex ? "1" : "0.95",
-                  transition: "all 0.3s ease",
-                }}
-              >
+        {/* Horizontal Slider for cards */}
+        <Stack width={"100%"} padding={"5px"}>
+          <Slider {...settings}>
+            {dailyUpdates.map((item, index) => (
+              <Stack padding={"16px"}>
                 <Card
+                 onClick={() => navigate(`/zaroor-dekho/${item._id}`)}
+                  key={index}
                   sx={{
                     backgroundColor: "#800000",
                     padding: "20px",
                     width: "100%",
                     flexDirection: "column",
-                    display: "flex",
-                    color: "#fff",
-                    opacity: index === selectedIndex ? "1" : "0.9",
-                    transition: "all 0.1s ease",
+                    cursor:"pointer",
+                    display:index===0?"flex":"none",
+                    // justifyContent: "center",
+                    // textAlign: "center",
+                    // margin: "20px", // Optional: Add space between cards
                   }}
                 >
-                  <Stack
-                    direction={"row"}
-                    bgcolor={theme.palette.primary.main}
-                    alignItems={"center"}
-                    padding={"8px 24px 8px 8px"}
+                  <Typography
+                    padding={"3px"}
+                    color={"#FFFFFF"}
+                    fontSize={"1.5rem"}
+                    fontWeight={"600"}
                   >
-                    <IconButton onClick={handleVolumeClick}>
-                      {isPaused ? (
-                        <VolumeUpOutlined
-                          sx={{ color: "#ffffff", fontSize: "1.8rem" }}
-                        />
-                      ) : (
-                        <Pause sx={{ color: "#ffffff", fontSize: "1.8rem" }} />
-                      )}
-                    </IconButton>
-
-                    <Box sx={{ height: "5px", flex: 1, bgcolor: "#ffffff79" }}>
-                      <Box
-                        sx={{
-                          height: "100%",
-                          width: `${(selectedIndex * 100) / data?.length}%`,
-                          bgcolor: "#ffffff",
-                          transition: "all 0.3s ease",
-                        }}
-                      />
-                    </Box>
-                  </Stack>
+                    {item.title}
+                  </Typography>
                   <img
-                    src={item.img}
-                    alt={item.steps}
+                    src={item.image}
+                    alt={item.title}
                     style={{
                       margin: "auto",
                       width: "90%",
@@ -283,22 +163,42 @@ const HelpSectionModule = () => {
                       marginTop: "24px",
                     }}
                   />
-                  <Typography marginTop={"24px"}>Steps to follow-</Typography>
-                  <Typography
-                    padding={"3px"}
-                    color={"#FFFFFFB2"}
-                    fontSize={"1.25rem"}
-                  >
-                    {item.steps}
-                  </Typography>
                 </Card>
               </Stack>
             ))}
           </Slider>
+        </Stack>
+
+        <Stack gap={"10px"}>
+          {modules.map((module, index) => (
+            <Stack
+              bgcolor={theme.palette.secondary.main}
+              borderTop={"1px solid #00000080 "}
+              padding={"15px"}
+            >
+              <Stack
+                direction={"row"}
+                justifyContent={"space-between"}
+                fontSize={"20px"}
+              >
+                <Typography color={theme.palette.text.secondary} fontWeight={"400"} fontSize={"0.8rem"}>
+                  Module {index+1}
+                </Typography>
+                <Typography fontWeight={"400"} fontSize={"0.8rem"} color={theme.palette.text.secondary} >
+                  {module.date}
+                </Typography>
+              </Stack>
+              <Stack paddingTop={"10px"}>
+                <Typography fontSize={"1.25rem"} fontWeight={"500"}>
+                  {module.name}
+                </Typography>
+              </Stack>
+            </Stack>
+          ))}
         </Stack>
       </Stack>
     </>
   );
 };
 
-export default HelpSectionModule;
+export default HelpSection;

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Stack, Typography, useTheme } from "@mui/material";
 import { getTrackLevels } from "@/store/user/userActions";
+import Loader from "@/components/Loader";
 
 enum moduleStatuses {
   TO_BE_LAUNCHED = "TO_BE_LAUNCHED",
@@ -31,7 +32,7 @@ const TrackLevels = () => {
 
   // Handle loading and error states
   if (loading) {
-    return <Typography>Loading...</Typography>;
+    return <Loader/>;
   }
 
   if (error) {
