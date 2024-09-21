@@ -95,7 +95,7 @@ const IncentiveMain = () => {
            </Stack>
         </Stack>
 
-        <Stack direction={"row"} marginTop={"108px"} justifyContent={"space-between"}>
+        <Stack direction={"row"} marginTop={"108px"} justifyContent={"space-between"} position={"relative"}>
             <Stack>
                 <Typography sx={{textDecoration:"underline",fontFamily:"sans-serif"}}>Target</Typography>
                 <Typography fontWeight={"500"}><span style={{fontSize:"2.5rem",fontWeight:"300"}}>{target}</span> Lakhs</Typography>
@@ -103,6 +103,7 @@ const IncentiveMain = () => {
             <Stack alignItems={"flex-end"}>
                 <Typography>Incentive</Typography>
                 <Typography fontSize={"1.5rem"}><span style={{fontSize:"2.5rem",fontWeight:"300"}}>{incentive}</span> ₹</Typography>
+                {target>"17.50"?<Typography fontSize={"0.7rem"} position={"absolute"} bottom={"-8px"}>(0.75% of Target)</Typography>:null}
             </Stack>
         </Stack>
       </Stack>

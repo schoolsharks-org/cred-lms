@@ -190,7 +190,7 @@ const WeeklyQuestionsCompleted = () => {
             "&:hover": { border: "2px solid #000000" },
           }}
         >
-          Request for In-Person Training
+          In-Person Training ke liye request karein
         </Button>
         <Button
           variant="outlined"
@@ -213,7 +213,7 @@ const WeeklyQuestionsCompleted = () => {
             },
           }}
         >
-          Request for Reattempt
+          Reattempt ke liye request karein
         </Button>
       </Stack>
 
@@ -223,10 +223,10 @@ const WeeklyQuestionsCompleted = () => {
         padding={"12px 16px"}
       >
         <Typography color={"#fff"} fontSize={"1"}>
-          You have earned 80 points.
+          You have earned {scores.userScore} points.
         </Typography>
         <Typography color={"#fff"} fontSize={"1"}>
-          20 points away from your next reward.{" "}
+          No points for reattempt
         </Typography>
       </Stack>
 

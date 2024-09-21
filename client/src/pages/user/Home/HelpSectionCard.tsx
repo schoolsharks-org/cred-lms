@@ -14,7 +14,7 @@ const HelpSectionCard = () => {
     >
       <Stack width={"100%"} height={"100%"}>
         <Stack direction={"row"} gap={"10px"} alignItems={"center"}>
-          <Typography fontSize={"2.5rem"} fontWeight={"700"} sx={{width:"max-content"}}>
+          <Typography fontSize={"1.8rem"} fontWeight={"700"} sx={{width:"max-content"}}>
             Zaroor Dekho
           </Typography>
           <VisibilityOutlined sx={{fontSize:"2.8rem"}}/>

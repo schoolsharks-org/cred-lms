@@ -27,7 +27,7 @@ const WeeklyQuestionCard = () => {
         justifyContent={"space-between"}
         zIndex={"2"}
       >
-        <Typography color={"#fff"} fontSize={"2rem"} fontWeight={"600"}>
+        <Typography color={"#fff"} fontSize={"1.8rem"} fontWeight={"600"}>
           Weekly Sangram
         </Typography>
         <img src={battleIcon} alt="Battle" style={{ width: "55px" }} />
@@ -45,10 +45,10 @@ const WeeklyQuestionCard = () => {
       >
         <Stack direction={"row"} justifyContent={"space-between"}>
           <Typography fontSize={"1.25rem"} fontWeight={"700"}>
-            Samuruddhi loan ka GYAN
+            New circulars from Aug 24
           </Typography>
           <Typography fontSize={"1.25rem"} fontWeight={"600"}>
-            26 Aug
+            16 Sep
           </Typography>
         </Stack>
         <Stack

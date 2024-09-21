@@ -40,7 +40,7 @@ const TrackLevels = () => {
 
   return (
     <Stack bgcolor={theme.palette.secondary.main} marginTop={"40px"} padding={"16px"}>
-      <Typography fontSize={"1.5rem"} fontWeight={"600"}>Track Levels</Typography>
+      <Typography fontSize={"1.8rem"} fontWeight={"600"}>Track Levels</Typography>
       <Stack marginTop={"48px"} gap={"24px"}>
         {trackLevels?.map((month, index) => (
           <Stack key={index} direction={"row"} gap={"16px"}>

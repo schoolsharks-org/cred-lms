@@ -161,7 +161,7 @@ const Insights = () => {
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
         <Stack sx={{ padding: "28px 24px", maxWidth: "310px" }}>
           <Typography fontSize={"1.25rem"} fontWeight={"600"}>
-            Once the test begins, you will not be able to quit.
+            Test shuru hone ke baad aap beech mein quit nahi kar paayenge.
           </Typography>
           <Stack
             direction={"row"}

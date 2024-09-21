@@ -120,7 +120,7 @@ const HelpSection = () => {
               fontWeight={"500"}
               maxWidth={"90%"}
             >
-              Learn before you go ahead with the weekly sangram
+              Weekly sangram shuru krne se Pehle zaroor dekhe
             </Typography>
           </Stack>
         </Stack>

@@ -8,11 +8,13 @@ import {
   Button,
   IconButton,
 } from "@mui/material";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 
 const Rewards = () => {
   const theme = useTheme();
   const { score } = useSelector((state: RootState) => state.user);
+  const [activeComingSoon,setActiveComingSoon]=useState<number>(-1)
 
   const rewardsArray = [
     {
@@ -46,6 +48,15 @@ const Rewards = () => {
       unlocked:false,
     },
   ];
+
+  const handleShowComingSoon=(index:number)=>{
+    if(activeComingSoon==-1){
+      setActiveComingSoon(index)
+      setTimeout(()=>{
+        setActiveComingSoon(-1)
+      },1700)
+    }
+  }
   return (
     <Stack height={"100vh"}>
       <Stack
@@ -110,6 +121,7 @@ const Rewards = () => {
       <Stack flex={"1"} paddingBottom={"64px"}>
         {rewardsArray.map((reward, index) => (
           <Stack
+            onClick={()=>handleShowComingSoon(index)}
             key={index}
             direction={"column"}
             padding={"16px"}
@@ -117,7 +129,11 @@ const Rewards = () => {
             bgcolor={reward.unlocked?theme.palette.secondary.main:"#E8E8E8"}
             border={"1px solid #796E6E"}
             borderRadius={"10px"}
+            position="relative"
+            overflow={"hidden"}
           >
+            <Stack width={"100%"} height={"100%"} alignItems={"center"} justifyContent={"center"} position={"absolute"} sx={{backdropFilter:"blur(4px)",bgcolor:"#00000066",top:"0",left:"0",zIndex:"99",opacity:index===activeComingSoon?"1":"0",transition:activeComingSoon!=-1?"none":"all 0.3s ease"}}><Typography fontSize={"2.5rem"} fontWeight={"600"} color={"#ffffff"} sx={{textShadow: "4px 0px 4px #00000048"}}>Coming Soon!!</Typography>
+            </Stack>
             <Stack direction={"row"} justifyContent={"space-between"}>
               <Typography fontWeight={"700"} fontSize={"1.25rem"}>
                 {reward.title}
