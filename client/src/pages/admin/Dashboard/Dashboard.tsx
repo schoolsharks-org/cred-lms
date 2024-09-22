@@ -120,9 +120,8 @@ const Dashboard = () => {
           </IconButton>
         </Stack>
       </Stack>
-
       <Stack direction={"row"} padding={"8px 20px"} gap="20px">
-        <Stack flex={"1"} paddingTop={"32px"}>
+        <Stack flex={"1"} paddingTop={"32px"} width="100%" overflow={"scroll"}>
           <Stack bgcolor={"#fff"} gap={"10px"} flex={"1"}>
             <Stack
               direction={"row"}
@@ -226,7 +225,7 @@ const Dashboard = () => {
             </Button>
           </Stack>
         </Stack>
-        <Stack minWidth={"376px"} gap="20px">
+        <Stack gap="20px">
           <DashboardSidebar
             topScorers={topScorers}
             belowAverageScorers={belowAverageScorers}
