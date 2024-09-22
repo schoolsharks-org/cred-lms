@@ -60,7 +60,7 @@ async function fetchStatusForWeeks(userId: string): Promise<MonthStatus> {
         user: new mongoose.Types.ObjectId(userId),
         weeklyQuestion: questionId,
       });
-      console.log(questionId,weeklyResponse)
+      // console.log(questionId,weeklyResponse)
 
       status = weeklyResponse ? 'COMPLETED' : 'IN_PROGRESS';
     }

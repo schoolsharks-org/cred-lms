@@ -22,7 +22,7 @@ const Insights = () => {
   const theme = useTheme();
   const navigate = useNavigate();
 
-  const { handleFetchInsights, insights, loading } = useWeeklyQuestion();
+  const { handleFetchInsights, insights, loading,moduleName } = useWeeklyQuestion();
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [currentInsightIndex, setCurrentInsightIndex] = useState<number>(0);
   const [isPaused, setIsPaused] = useState<boolean>(false);
@@ -95,7 +95,7 @@ const Insights = () => {
           </IconButton>
           <Stack gap={"5px"}>
             <Typography fontSize={"1.5rem"} fontWeight={"700"}>
-              New Circulars From Aug 24 onwards
+              {moduleName}
             </Typography>
             <Box
               height={"4px"}

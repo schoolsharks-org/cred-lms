@@ -116,3 +116,15 @@ export const getHelpSectionModule=async(id:string)=>{
     return error;
   }
 }
+
+
+
+
+export const getWeeklyQuestionStatus=async()=>{
+  try {
+    const response=await userApi.get("/weekly-question-status")
+    return response.data
+  } catch (error) {
+    return error;
+  }
+}

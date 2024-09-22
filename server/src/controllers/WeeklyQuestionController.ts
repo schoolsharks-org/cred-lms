@@ -80,6 +80,7 @@ export const getWeeklyQuestion = async (
   res.status(200).json({
     id: weeklyQuestions._id,
     questions: weeklyQuestions.weeklyQuestionModule,
+    moduleName:weeklyQuestions.moduleName,
     startTime: userResponse.startTime,
     answeredCount,
     scores:
@@ -315,11 +316,40 @@ export const fetchWeeklyQuestionInsights = async (
   const data = await WeeklyQuestion.findOne({
     date: startOfWeek,
     department
-  }).select("insights");
+  }).select("insights moduleName");
 
   if (!data) {
     return next(new AppError("No Weekly Module found", 404));
   }
 
-  res.status(200).json({ insights: data?.insights });
+  res.status(200).json({ insights: data?.insights,moduleName:data?.moduleName});
 };
+
+
+export const handleFetchWeeklyQuestionStatus=async(req:Request,res:Response,next:NextFunction)=>{
+  if (!req.user) {
+    next(new AppError("Unauthorized", 401));
+    return;
+  }
+
+  const {_id:userId,department}=req.user  
+
+  const today = new Date();
+  const startOfWeek = getMondayOfCurrentWeek(today);
+
+  const weeklyQuestion = await WeeklyQuestion.findOne({
+    date: startOfWeek,
+    department
+  });
+
+  
+  if(!weeklyQuestion){
+    return next(new AppError("No Weekly Question Found",404))
+  }  
+
+
+  return res.status(200).json({moduleName:weeklyQuestion.moduleName,date:weeklyQuestion.date})
+}
+
+// Fetch current week weekly question for that department,
+// return module name, date, played status

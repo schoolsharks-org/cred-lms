@@ -2,13 +2,24 @@ import { Box, Button, Stack, Typography, useTheme } from "@mui/material";
 import battleIcon from "@/assets/user/weekly-question-battle-icon.png";
 import { ArrowForward } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InitialAnimation from "../weeklyQuestion/InitialAnimation";
+import { getWeeklyQuestionStatus } from "@/store/user/userActions";
 
 const WeeklyQuestionCard = () => {
   const theme = useTheme();
   const navigate=useNavigate()
   const [animationVisible, setAnimationVisible]=useState<boolean>(false)
+  const [data,setData]=useState<any>()
+
+
+  const formatDate = (date: Date) => {
+    const formattedDate=new Date(date)
+    return `${formattedDate.getDate()} ${formattedDate.toLocaleString("default", {
+      month: "short",
+    })}`;
+  };
+
 
   const openModule=()=>{
     setAnimationVisible(true)
@@ -16,6 +27,20 @@ const WeeklyQuestionCard = () => {
       navigate("/weekly-question/insights")
     },3500)
   }
+
+  useEffect(()=>{
+    const fetchData=async()=>{
+      const response=await getWeeklyQuestionStatus()
+      console.log(response)
+      setData(response)
+    }
+    fetchData()
+  },[])
+
+  if(!data){
+    return null
+  }
+
   return (
     <>
     {animationVisible && <Stack position={"fixed"} width="100%" height={"100%"} top="0" left="0" sx={{zIndex:"9999"}}><InitialAnimation/></Stack>}
@@ -45,10 +70,10 @@ const WeeklyQuestionCard = () => {
       >
         <Stack direction={"row"} justifyContent={"space-between"}>
           <Typography fontSize={"1.25rem"} fontWeight={"700"}>
-            New circulars from Aug 24
+            {data?.moduleName}
           </Typography>
           <Typography fontSize={"1.25rem"} fontWeight={"600"}>
-            16 Sep
+            {formatDate(data?.date)}
           </Typography>
         </Stack>
         <Stack

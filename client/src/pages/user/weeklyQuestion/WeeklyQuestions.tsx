@@ -10,6 +10,7 @@ const WeeklyQuestions = () => {
     submissionLoading,
     currentQuestion,
     correctAnswer,
+    moduleName,
     time,
     totalQuestions,
     answered,
@@ -35,7 +36,7 @@ const WeeklyQuestions = () => {
     <Stack height="100vh">
       <Stack padding={"16px"}>
         <Typography fontSize={"2rem"} fontWeight={"600"}>
-        Samuruddhi loan ka GYAN
+        {moduleName}
         </Typography>
         <Box
           sx={{
@@ -111,7 +112,8 @@ const WeeklyQuestions = () => {
             sx={{ opacity: "0.75" }}
             textAlign={"center"}
           >
-            {correctAnswer && `Correct Answer - ${currentQuestion?.correctAnswerDescription ?? `Option ${correctAnswer}`}`}
+            {currentQuestion && correctAnswer && ["RIGHT","WRONG"].includes(currentQuestion?.optionA)?correctAnswer==="RIGHT"?"Correct Answer- Sahi":"Correct Answer- Galat":correctAnswer && `Correct Answer - ${currentQuestion?.correctAnswerDescription ?? `Option ${correctAnswer}`}`}
+            
           </Typography>
         </Stack>
         <Stack

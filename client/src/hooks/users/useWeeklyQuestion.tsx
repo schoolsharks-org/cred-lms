@@ -33,6 +33,7 @@ const useWeeklyQuestion = () => {
   const [moduleId,setModuleId]=useState<string|null>(null)
   const [scoreImprovement,setScoreImprovement]=useState<number|null>()
   const [insights,setInsights]=useState<string[]>([])
+  const [moduleName,setModuleName]=useState<string>()
 
   const [answeredCount, setAnsweredCount] = useState<number>(0);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
@@ -75,8 +76,9 @@ const useWeeklyQuestion = () => {
         params: { date: date.toISOString() },
       });
 
-      const { questions, startTime, answeredCount, scores,id } = response.data;
-
+      const { questions, startTime, answeredCount, scores,id,moduleName } = response.data;
+      
+      setModuleName(moduleName)
       setAnsweredCount(answeredCount);
       setQuestions(questions);
       setCurrentQuestion(questions[answeredCount] || null);
@@ -132,8 +134,6 @@ const useWeeklyQuestion = () => {
       setLoading(false);
     }
   }, [calculateTimeDifference]);
-
-
 
 
   useEffect(() => {
@@ -204,9 +204,10 @@ const useWeeklyQuestion = () => {
     try {
       setLoading(true)
       const response=await userApi.get("/weekly-question-insights")
-      const {insights:insightsData}=response.data
-      
+      const {insights:insightsData,moduleName}=response.data
+      console.log(response.data)
       setInsights(insightsData)
+      setModuleName(moduleName)
 
     } catch (error) {
       console.log(error)
@@ -228,6 +229,7 @@ const useWeeklyQuestion = () => {
     answered: answeredCount,
     currentQuestion,
     correctAnswer,
+    moduleName,
     time:scores?.reattemptScores?.length>0?"_": memoizedTime,
     scoreImprovement,
     insights,

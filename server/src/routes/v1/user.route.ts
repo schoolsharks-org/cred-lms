@@ -16,12 +16,16 @@ import { authMiddleware } from "../../middlewares/auth.middleware";
 import {
   fetchWeeklyQuestionInsights,
   getWeeklyQuestion,
+  handleFetchWeeklyQuestionStatus,
   handleReattemptRequest,
   respondToWeeklyQuestion,
 } from "../../controllers/WeeklyQuestionController";
 import { handleTrackLevels } from "../../controllers/trackLevel.controller";
 import { handleScoreboard } from "../../controllers/scoreboard.controller";
-import { fetchHelpSection, fetchModule } from "../../controllers/HelpSection.controller";
+import {
+  fetchHelpSection,
+  fetchModule,
+} from "../../controllers/HelpSection.controller";
 const router = express.Router();
 
 // router.route("/login").post(asyncHandler(handleLoginUser));
@@ -43,19 +47,33 @@ router
   .get(authMiddleware, asyncHandler(getWeeklyQuestion))
   .post(authMiddleware, asyncHandler(respondToWeeklyQuestion));
 
-router.post("/weekly-question-reattempt",authMiddleware,handleReattemptRequest)
-router.get("/weekly-question-insights",authMiddleware,fetchWeeklyQuestionInsights)
-  
-router.route("/track-levels").get(authMiddleware, asyncHandler(handleTrackLevels));
+router.get(
+  "/weekly-question-status",
+  authMiddleware,
+  asyncHandler(handleFetchWeeklyQuestionStatus)
+);
+router.post(
+  "/weekly-question-reattempt",
+  authMiddleware,
+  asyncHandler(handleReattemptRequest)
+);
+router.get(
+  "/weekly-question-insights",
+  authMiddleware,
+  asyncHandler(fetchWeeklyQuestionInsights)
+);
+
+router
+  .route("/track-levels")
+  .get(authMiddleware, asyncHandler(handleTrackLevels));
 
 router.route("/scoreboard").get(authMiddleware, asyncHandler(handleScoreboard));
 
 router
   .route("/help-section")
-  .get(authMiddleware,authMiddleware, asyncHandler(fetchHelpSection));
+  .get(authMiddleware, authMiddleware, asyncHandler(fetchHelpSection));
 router
   .route("/help-section-module")
-  .get(authMiddleware,authMiddleware, asyncHandler(fetchModule));
+  .get(authMiddleware, authMiddleware, asyncHandler(fetchModule));
 
-  
 export default router;
