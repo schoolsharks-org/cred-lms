@@ -136,6 +136,7 @@ const DailyQuestion = () => {
                           color: "#000",
                           fontWeight: "600",
                           padding: "16px auto",
+                          textTransform:"none",
                           "&:hover": {
                             border: "2px solid #000",
                           },

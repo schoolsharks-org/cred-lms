@@ -44,7 +44,7 @@ router
   .post(authMiddleware, asyncHandler(respondToWeeklyQuestion));
 
 router.post("/weekly-question-reattempt",authMiddleware,handleReattemptRequest)
-router.get("/weekly-question-insights",fetchWeeklyQuestionInsights)
+router.get("/weekly-question-insights",authMiddleware,fetchWeeklyQuestionInsights)
   
 router.route("/track-levels").get(authMiddleware, asyncHandler(handleTrackLevels));
 
@@ -52,10 +52,10 @@ router.route("/scoreboard").get(authMiddleware, asyncHandler(handleScoreboard));
 
 router
   .route("/help-section")
-  .get(authMiddleware, asyncHandler(fetchHelpSection));
+  .get(authMiddleware,authMiddleware, asyncHandler(fetchHelpSection));
 router
   .route("/help-section-module")
-  .get(authMiddleware, asyncHandler(fetchModule));
+  .get(authMiddleware,authMiddleware, asyncHandler(fetchModule));
 
   
 export default router;

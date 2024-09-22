@@ -15,9 +15,8 @@ export const getDailyQuestion = async (
       next(new AppError("Unauthorized", 401));
       return;
     }
-    
     const { date } = req.query;
-    const { _id: userId } = req.user;
+    const { _id: userId,department } = req.user;
     
 
     const requestedDate = moment.tz(date as string, "DD/MM/YYYY, hh:mm:ss A", "Asia/Kolkata");
@@ -27,6 +26,7 @@ export const getDailyQuestion = async (
 
     let dailyQuestion = await DailyQuestion.findOne({
       date: { $gte: startOfDay, $lt: endOfDay },
+      department:department
     });
 
     if (!dailyQuestion) {
@@ -87,6 +87,7 @@ export const respondToDailyQuestion = async (
 
     const dailyQuestion = await DailyQuestion.findOne({
       date: { $gte: startOfDay, $lt: endOfDay },
+      department:department
     });
 
     if (!dailyQuestion) {

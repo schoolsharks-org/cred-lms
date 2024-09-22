@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import { Department } from "./user.model";
 
 export type Option = "OptionA" | "OptionB";
 
@@ -10,6 +11,7 @@ export interface DailyQuestionI extends Document {
     optionB: string;
   };
   correctOption:string;
+  department:Department;
   departmentResponses: {
     Sales: {
       OptionA: number;
@@ -57,6 +59,11 @@ const dailyQuestionSchema: Schema<DailyQuestionI> = new Schema<DailyQuestionI>(
     },
     correctOption:{
       type:String
+    },
+    department: {
+      type: String,
+      enum: Object.values(Department),
+      required: true,
     },
     departmentResponses: {
       Sales: {

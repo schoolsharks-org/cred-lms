@@ -18,11 +18,13 @@ export const getWeeklyQuestion = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
+
   if (!req.user) {
     next(new AppError("Unauthorized", 401));
     return;
   }
-  const { _id: userId } = req.user;
+
+  const { _id: userId,department } = req.user;
   const { date } = req.query;
 
   const TodayDate = new Date(date as string);
@@ -30,6 +32,7 @@ export const getWeeklyQuestion = async (
 
   const weeklyQuestions = await WeeklyQuestion.findOne({
     date: startOfWeek,
+    department
   });
 
   if (!weeklyQuestions) {
@@ -104,11 +107,13 @@ export const respondToWeeklyQuestion = async (
   const { questionId, response } = req.body;
   const { _id: userId, department: userDepartment } = req.user;
 
+
   const today = new Date();
   const startOfWeek = getMondayOfCurrentWeek(today);
 
   const weeklyQuestions = await WeeklyQuestion.findOne({
     date: startOfWeek,
+    department:userDepartment
   });
 
   if (!weeklyQuestions) {
@@ -246,8 +251,6 @@ export const handleReattemptRequest = async (
     return;
   }
 
-  console.log("request aai")
-
   const { weeklyQuestion } = req.body;
   const { _id: userId, department } = req.user;
 
@@ -269,7 +272,6 @@ export const handleReattemptRequest = async (
   }
 
 
-  console.log("Length",weeklyResponse?.reattempts.length)
 
   if (weeklyResponse?.reattempts.length === 0) {
     await WeeklyQuestion.findByIdAndUpdate(weeklyQuestions._id, {
@@ -299,11 +301,20 @@ export const fetchWeeklyQuestionInsights = async (
   res: Response,
   next: NextFunction
 ) => {
+
+  if (!req.user) {
+    next(new AppError("Unauthorized", 401));
+    return;
+  }
+
+  const {department } = req.user;
+
   const today = new Date();
   const startOfWeek = getMondayOfCurrentWeek(today);
 
   const data = await WeeklyQuestion.findOne({
     date: startOfWeek,
+    department
   }).select("insights");
 
   if (!data) {
