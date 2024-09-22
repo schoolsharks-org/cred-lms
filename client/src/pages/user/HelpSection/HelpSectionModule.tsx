@@ -183,12 +183,13 @@ const HelpSectionModule = () => {
               {data?.map((_: any, index: number) => (
                 <Button
                   key={index}
-                  ref={(el) => (buttonsRef.current[index] = el)} // Assign button ref
+                  ref={(el) => (buttonsRef.current[index] = el)}
                   variant={selectedIndex === index ? "contained" : "outlined"}
                   sx={{
-                    borderColor: "black", // Set border color to black for outlined buttons
+                    borderColor: "#000000",
                     minWidth: "40px",
                     color: selectedIndex === index ? "white" : "black",
+                    borderRadius:"0"
                   }}
                   onClick={() => handleButtonClick(index)}
                 >

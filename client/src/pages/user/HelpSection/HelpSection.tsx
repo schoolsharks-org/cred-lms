@@ -21,11 +21,11 @@ interface DailyUpdate {
   image: string;
 }
 
-const modules = [
-  { name: "New Circulars from Aug 24 onwards", date: "8th Sep" },
-  { name: "Incentive scheme for FOs details", date: "12th Sep" },
-  { name: "Pragati Scheme for FOs details", date: "15th Sep" },
-];
+// const modules = [
+//   { name: "New Circulars from Aug 24 onwards", date: "8th Sep" },
+//   { name: "Incentive scheme for FOs details", date: "12th Sep" },
+//   { name: "Pragati Scheme for FOs details", date: "15th Sep" },
+// ];
 
 const HelpSection = () => {
   const [dailyUpdates, setDailyUpdates] = useState<DailyUpdate[]>([]);
@@ -170,7 +170,7 @@ const HelpSection = () => {
           </Slider>
         </Stack>
 
-        <Stack gap={"10px"}>
+        {/* <Stack gap={"10px"}>
           {modules.map((module, index) => (
             <Stack
               bgcolor={theme.palette.secondary.main}
@@ -196,7 +196,7 @@ const HelpSection = () => {
               </Stack>
             </Stack>
           ))}
-        </Stack>
+        </Stack> */}
       </Stack>
     </>
   );
