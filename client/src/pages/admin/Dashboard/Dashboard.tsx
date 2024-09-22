@@ -1,16 +1,23 @@
 import useAdminDashboard from "@/hooks/admin/useAdminDashboard";
+import { CallMade, FileDownloadOutlined, SaveAlt } from "@mui/icons-material";
 import {
-  CallMade,
-  FileDownloadOutlined,
-  SaveAlt,
-} from "@mui/icons-material";
-import { Button, IconButton, Stack, Typography, useTheme } from "@mui/material";
+  Button,
+  IconButton,
+  Stack,
+  Table,
+  TableCell,
+  // TableHead,
+  TableRow,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardSidebar from "./DashboardSidebar";
 import Loader from "@/components/Loader";
 import MarkerCicle from "@/components/user/MarkerCicle";
 import { BLACK, BLUE, GREEN, PURPLE, YELLOW } from "@/utils/departmentColors";
+import "./Dashboard.css"
 
 // const departments = ["Sales", "Credit", "Collection", "Operations", "Others"];
 const departments = [
@@ -103,7 +110,7 @@ const Dashboard = () => {
         alignItems={"center"}
         padding={"16px 20px"}
       >
-        <Typography color={"#fff"} fontSize={"2.5rem"} fontWeight={"600"}>
+        <Typography color={"#ffffff"} fontSize={"2.5rem"} fontWeight={"600"}>
           Admin Screen
         </Typography>
         <Stack
@@ -112,27 +119,73 @@ const Dashboard = () => {
           height={"max-content"}
           gap={"10px"}
         >
-          <Typography color={"#fff"} fontWeight={"500"}>
+          <Typography color={"#ffffff"} fontWeight={"500"}>
             Download Full Report
           </Typography>
           <IconButton>
-            <SaveAlt sx={{ color: "#fff" }} />
+            <SaveAlt sx={{ color: "#f4caca" }} />
           </IconButton>
         </Stack>
       </Stack>
       <Stack direction={"row"} padding={"8px 20px"} gap="20px">
-        <Stack flex={"1"} paddingTop={"32px"} width="100%" overflow={"scroll"} sx={{
-              scrollbarWidth: "none",
-              "&::-webkit-scrollbar": {
-                display: "none",
-              },
-            }}>
-          <Stack bgcolor={"#fff"} gap={"10px"} width={"fit-content"}>
+        <Stack
+          flex={"1"}
+          width="100%"
+          overflow={"scroll"}
+          sx={{
+            scrollbarWidth: "none",
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
+          }}
+        >
+          <Table>
+            <TableRow>
+              <TableCell sx={{bgcolor:"#FFB2B5",padding:"0",border:"2px solid #ffffff"}}>
+                <CustomCell text={"Department"} bold={true} />
+              </TableCell>
+              {departments.map((department, index) => (
+                  <TableCell key={index} sx={{bgcolor:"#FFB2B5",padding:"0", border:"2px solid #ffffff"}}>
+                    <CustomCell
+                      text={department.name}
+                      bold={true}
+                      startIcon={department.icon}
+                    />
+                  </TableCell>
+                ))}
+                <TableCell sx={{bgcolor:"#FFB2B5",padding:"0", border:"2px solid #ffffff"}}>
+                  <DownloadCell bold={true} />
+                </TableCell>
+            </TableRow>
+            {data.map((row, index) => (
+              <TableRow
+                key={index}
+                sx={{
+                  borderWidth: "1px 0 1px 0",
+                  bgcolor: index > 4 ? "#D0C5C5" : "#FFB2B5",
+                  // border: "1px solid #f4caca",
+                  flex: "1",
+                }}
+              >
+                <TableCell sx={{border:"2px solid #ffffff"}} ><CustomCell text={row.name} /></TableCell>
+                
+                {row.data.map((item, index) => (
+                  <TableCell sx={{padding:"0",border:"2px solid #ffffff"}}><CustomCell key={index} text={item.toString()} /></TableCell>
+                ))}
+                <TableCell sx={{padding:"0",border:"2px solid #ffffff"}}><DownloadCell bold={false} /></TableCell>
+              </TableRow>
+            ))}
+          </Table>
+          {/* <Stack
+            bgcolor={"#f4caca"}
+            //  gap={"10px"}
+            minWidth={"fit-content"}
+          >
             <Stack
               direction={"row"}
-              gap={"10px"}
+              // gap={"10px"}
               bgcolor={"#FFB2B5"}
-              border={"1px solid #000"}
+              border={"1px solid #f4caca"}
               sx={{ borderWidth: "1px 0 1px 0" }}
             >
               <TableCell text={"Department"} bold={true} />
@@ -151,9 +204,9 @@ const Dashboard = () => {
                 flex={"1"}
                 key={index}
                 direction={"row"}
-                gap={"10px"}
+                // gap={"10px"}
                 bgcolor={index > 4 ? "#D0C5C5" : "#FFB2B5"}
-                border={"1px solid #000"}
+                border={"1px solid #f4caca"}
                 sx={{ borderWidth: "1px 0 1px 0" }}
               >
                 <TableCell text={row.name} />
@@ -163,7 +216,7 @@ const Dashboard = () => {
                 <DownloadCell bold={false} />
               </Stack>
             ))}
-          </Stack>
+          </Stack> */}
           <Stack direction={"row"} marginTop={"10px"} gap={"10px"}>
             <Button
               variant="contained"
@@ -243,7 +296,7 @@ const Dashboard = () => {
 
 export default Dashboard;
 
-const TableCell = ({
+const CustomCell = ({
   text,
   bold,
   startIcon,
@@ -254,15 +307,15 @@ const TableCell = ({
 }) => (
   <Stack
     direction={"row"}
-    border={"1px solid #000"}
+    // border={"1px solid #f4caca"}
     padding={"8px 16px"}
     alignItems={"center"}
     justifyContent={"center"}
     flex={"1"}
     minHeight={"64px"}
-    minWidth={"140px"}
+    // minWidth={"136px"}
     gap={"8px"}
-    sx={{ borderWidth: "0 1px 0 1px" }}
+    sx={{ borderWidth: "0 1px 0 1px"}}
   >
     {startIcon}
     <Typography
@@ -278,7 +331,7 @@ const DownloadCell = ({ bold }: { bold: boolean }) => {
   return (
     <Stack
       direction={"row"}
-      border={"1px solid #000"}
+      // border={"1px solid #f4caca"}
       padding={"8px 16px"}
       alignItems={"center"}
       justifyContent={"center"}
