@@ -125,7 +125,7 @@ const handleSendOtp = async (
   let otpExpiry;
   // console.log(email)
   // console.log(user.otpData)
-  if(["dummy1@gmail.com","dummy2@gmail.com","dummy3@gmail.com","dummy4@gmail.com","dummy5@gmail.com"].includes(email)){
+  if(["dummy@gmail.com","dummy1@gmail.com","dummy2@gmail.com","dummy3@gmail.com","dummy4@gmail.com","dummy5@gmail.com"].includes(email)){
     otp=1111;
     otpExpiry = new Date(Date.now() + 100000000000); 
   }
