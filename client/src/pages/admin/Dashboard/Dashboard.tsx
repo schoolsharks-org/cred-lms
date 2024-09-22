@@ -121,8 +121,13 @@ const Dashboard = () => {
         </Stack>
       </Stack>
       <Stack direction={"row"} padding={"8px 20px"} gap="20px">
-        <Stack flex={"1"} paddingTop={"32px"} width="100%" overflow={"scroll"}>
-          <Stack bgcolor={"#fff"} gap={"10px"} flex={"1"}>
+        <Stack flex={"1"} paddingTop={"32px"} width="100%" overflow={"scroll"} sx={{
+              scrollbarWidth: "none",
+              "&::-webkit-scrollbar": {
+                display: "none",
+              },
+            }}>
+          <Stack bgcolor={"#fff"} gap={"10px"} width={"fit-content"}>
             <Stack
               direction={"row"}
               gap={"10px"}
@@ -255,6 +260,7 @@ const TableCell = ({
     justifyContent={"center"}
     flex={"1"}
     minHeight={"64px"}
+    minWidth={"140px"}
     gap={"8px"}
     sx={{ borderWidth: "0 1px 0 1px" }}
   >

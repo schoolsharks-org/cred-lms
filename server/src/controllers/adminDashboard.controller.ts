@@ -30,8 +30,7 @@ async function handleUserScores() {
 
   const userWeeklyTopScorers = await WeeklyResponse.find({
     startTime: { $gte: startOfWeek, $lte: endOfWeek },
-  })
-    .sort({ score: -1 })
+  }).sort({ score: -1 })
     .select("score user department")
     .limit(10);
 

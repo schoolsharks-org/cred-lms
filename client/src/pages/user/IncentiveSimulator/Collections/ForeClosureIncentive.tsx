@@ -56,7 +56,7 @@ const ForeClosureIncentive = () => {
     <Stack className="incentive-simulator-page" marginTop={"56px"}>
       <Box sx={{ bgcolor: "#000000", width: "max-content", padding: "12px" }}>
         <Typography color={"#ffffff"} width={"max-content"}>
-          Fore Closure Incentive
+          Foreclosure Incentive
         </Typography>
       </Box>
       <Stack

@@ -75,10 +75,10 @@ const IncentiveMain = () => {
         setIncentive(data[category].target1.incentive);
       } else if (
         targetValue > data[category].target2.target &&
-        targetValue <= data[category].target3.target
+        targetValue < data[category].target3.target
       ) {
         setIncentive(data[category].target2.incentive);
-      } else if (targetValue > data[category].target3.target) {
+      } else if (targetValue >= data[category].target3.target) {
         setIncentive(data[category].target3.incentive);
       }
     }
