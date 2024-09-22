@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { getDailyUpdates } from "@/store/user/userActions";
 import { useEffect, useState } from "react";
 import { ArrowBack } from "@mui/icons-material";
+import Loader from "@/components/Loader";
 
 
 interface DailyUpdate {
@@ -77,7 +78,7 @@ const HelpSection = () => {
   };
 
   if (loading) {
-    return <Typography>Loading...</Typography>;
+    return <Loader/>;
   }
 
   if (error) {

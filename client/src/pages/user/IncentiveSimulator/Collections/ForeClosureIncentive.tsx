@@ -56,7 +56,7 @@ const ForeClosureIncentive = () => {
     <Stack className="incentive-simulator-page" marginTop={"56px"}>
       <Box sx={{ bgcolor: "#000000", width: "max-content", padding: "12px" }}>
         <Typography color={"#ffffff"} width={"max-content"}>
-          ForeClosureIncentive
+          Fore Closure Incentive
         </Typography>
       </Box>
       <Stack
@@ -123,7 +123,7 @@ const ForeClosureIncentive = () => {
             POS + Int. due
           </Typography>
           {data[bucket].pos.map((pos, index) => (
-            <Typography key={index} fontSize={"1.25rem"} marginTop={"10px"}>
+            <Typography key={index} fontSize={"1.25rem"} marginTop={"10px"} lineHeight={"1.25rem"}>
               {pos}
             </Typography>
           ))}
@@ -145,10 +145,10 @@ const ForeClosureIncentive = () => {
           </Stack>
           {data[bucket].incentive.map((incentive, index) => (
             <Stack direction={"row"} justifyContent={"space-between"}>
-              <Typography key={index} fontSize={"1.25rem"} marginTop={"10px"}>
+              <Typography key={index} fontSize={"1.25rem"} marginTop={"10px"} lineHeight={"1.25rem"}>
                 {incentive.fos}
               </Typography>
-              <Typography fontSize={"1.25rem"} marginTop={"10px"}>{incentive.incentive}</Typography>
+              <Typography fontSize={"1.25rem"} marginTop={"10px"} lineHeight={"1.25rem"}>{incentive.incentive}</Typography>
             </Stack>
           ))}
         </Stack>

@@ -9,11 +9,10 @@ import {
 } from "recharts";
 
 const BarGraph = ({ data }: { data: any }) => {
-
-  if(!data){
+  if (!data) {
     return null;
   }
-  
+
   const formattedData = Object.entries(data).map(([key, value]: any) => ({
     name: key,
     a: value.OptionA,
@@ -31,9 +30,9 @@ const BarGraph = ({ data }: { data: any }) => {
           bottom: 36,
         }}
         barGap={0}
-        barCategoryGap={"20%"}
+        barCategoryGap={"25%"}
       >
-        <XAxis dataKey="name" />
+        <XAxis dataKey="name" interval={0} fontSize={"12px"} />
         <YAxis tick={false} />
         <Tooltip />
         <Bar dataKey="a" fill="#D53951">

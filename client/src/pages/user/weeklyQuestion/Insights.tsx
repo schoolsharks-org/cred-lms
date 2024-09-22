@@ -18,7 +18,6 @@ import {
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 const Insights = () => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -29,18 +28,20 @@ const Insights = () => {
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const synth = window.speechSynthesis;
 
-  
+  // Function to speak the current insight
   const speakInsight = (insight: string) => {
     if (synth.speaking) return; // Prevent overlap
 
     const utterance = new SpeechSynthesisUtterance(insight);
     const voices = synth.getVoices();
-    const indianVoice = voices.find((v) => v.lang === "en-IN" || v.name.includes("India"));
-    if(indianVoice){
-      utterance.voice=indianVoice
+    const indianVoice = voices.find(
+      (v) => v.lang === "en-IN" || v.name.includes("India")
+    );
+    if (indianVoice) {
+      utterance.voice = indianVoice;
     }
     utterance.onend = () => {
-      setCurrentInsightIndex((prev) => prev + 1); // Move to next insight
+      setCurrentInsightIndex((prev) => prev + 1); // Move to the next insight
     };
 
     synth.speak(utterance);
@@ -50,6 +51,7 @@ const Insights = () => {
     handleFetchInsights();
   }, []);
 
+  // Handle playing the insights when the component loads or when playing resumes
   useEffect(() => {
     if (
       insights.length > 0 &&
@@ -58,19 +60,21 @@ const Insights = () => {
     ) {
       speakInsight(insights[currentInsightIndex]);
     }
+
+    return () => {
+      synth.cancel();
+    };
   }, [insights, currentInsightIndex, isPaused]);
 
   const pauseAudio = () => {
-    if (synth.speaking && !synth.paused) {
-      synth.pause();
-      setIsPaused(true);
-    }
+    synth.cancel(); 
+    setIsPaused(true);
+    setCurrentInsightIndex(currentInsightIndex-1); 
   };
 
   const restartAudio = () => {
-    synth.cancel();
-    setCurrentInsightIndex(0);
     setIsPaused(false);
+    setCurrentInsightIndex(0); 
   };
 
   if (loading) {
@@ -81,7 +85,10 @@ const Insights = () => {
     <>
       <Stack>
         <Stack direction="row" padding={"24px 8px"} gap={"8px"}>
-          <IconButton sx={{ height: "max-content", marginTop: "12px" }} onClick={()=>navigate("/home")}>
+          <IconButton
+            sx={{ height: "max-content", marginTop: "12px" }}
+            onClick={() => navigate("/home")}
+          >
             <ArrowBack
               sx={{ color: theme.palette.primary.main, fontWeight: "700" }}
             />
@@ -105,17 +112,24 @@ const Insights = () => {
           padding={"8px 24px 8px 8px"}
         >
           {isPaused ? (
-            <IconButton onClick={()=>restartAudio()}>
+            <IconButton onClick={restartAudio}>
               <VolumeUpOutlined sx={{ color: "#ffffff", fontSize: "1.8rem" }} />
             </IconButton>
           ) : (
-            <IconButton onClick={()=>pauseAudio()}>
+            <IconButton onClick={pauseAudio}>
               <Pause sx={{ color: "#ffffff", fontSize: "1.8rem" }} />
             </IconButton>
           )}
 
           <Box sx={{ height: "5px", flex: 1, bgcolor: "#ffffff79" }}>
-            <Box sx={{height:"100%",width:`${currentInsightIndex*100/insights.length}%`,bgcolor:"#ffffff",transition:"all 0.3s ease"}}/>
+            <Box
+              sx={{
+                height: "100%",
+                width: `${(currentInsightIndex * 100) / insights.length}%`,
+                bgcolor: "#ffffff",
+                transition: "all 0.3s ease",
+              }}
+            />
           </Box>
         </Stack>
 
@@ -152,7 +166,7 @@ const Insights = () => {
             justifyContent: "space-between",
             textTransform: "none",
             padding: "12px 24px",
-            borderRadius:"0",
+            borderRadius: "0",
             "&:hover": { bgcolor: "#000000" },
           }}
         >

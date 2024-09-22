@@ -24,27 +24,14 @@ const HelpSectionModule = () => {
   const [data, setData] = useState<any>();
   const [title, setTitle] = useState<string>();
 
-  const [isPaused, setIsPaused] = useState<boolean>(true);
+  const [isPaused, setIsPaused] = useState<boolean>(true); // Start in paused state
   const synth = window.speechSynthesis;
-
-  useEffect(() => {
-    const handleVoicesChanged = () => {
-      if (data?.length > 0 && selectedIndex < data?.length && !isPaused) {
-        speakStep(data[selectedIndex].steps);
-      }
-    };
-
-    if (synth.onvoiceschanged !== undefined) {
-      synth.onvoiceschanged = handleVoicesChanged;
-    }
-  }, [data, selectedIndex, isPaused]);
 
   const speakStep = (step: string) => {
     if (synth.speaking) {
-      synth.cancel(); // Cancel current speech before starting new one
+      synth.cancel(); 
     }
-
-    if (!isPaused && step) {
+    if (step) {
       const utterance = new SpeechSynthesisUtterance(step);
       const voices = synth.getVoices();
       const indianVoice = voices.find(
@@ -55,34 +42,29 @@ const HelpSectionModule = () => {
         utterance.voice = indianVoice;
       }
 
-      utterance.onend = () => {
-        console.log("Speech finished for:", step);
-      };
+      // utterance.onend = () => {
+      //   console.log("Speech finished for:", step);
+      // };
 
-      utterance.onerror = (e) => {
-        console.error("SpeechSynthesis error:", e);
-      };
-
+      // utterance.onerror = (e) => {
+      //   console.error("SpeechSynthesis error:", e);
+      // };
       synth.speak(utterance); // Start speaking the step
     }
   };
 
   const pauseAudio = () => {
-    if (synth.speaking && !synth.paused) {
-      synth.pause(); // Pause the speech
-      setIsPaused(true); // Update the paused state
-    }
+    synth.cancel(); // Cancel current speech
+    setIsPaused(true); // Set the state to paused
   };
 
   const restartAudio = () => {
-    if (synth.paused) {
-      synth.resume(); // Resume the paused speech
-      setIsPaused(false); // Update the paused state
-    } else {
-      // If not paused, start from the current step
-      synth.cancel();
+    if (isPaused) {
       setIsPaused(false);
       speakStep(data[selectedIndex]?.steps);
+    } else {
+      synth.cancel();
+      speakStep(data[selectedIndex]?.steps); 
     }
   };
 
@@ -95,9 +77,9 @@ const HelpSectionModule = () => {
     afterChange: (currentSlide: number) => {
       setSelectedIndex(currentSlide);
       if (!isPaused) {
-        speakStep(data[currentSlide].steps);
+        speakStep(data[currentSlide]?.steps);
       } else {
-        pauseAudio();
+        synth.cancel(); 
       }
       buttonsRef.current[currentSlide]?.scrollIntoView({
         behavior: "smooth",
@@ -115,7 +97,6 @@ const HelpSectionModule = () => {
         setLoading(true);
         if (id) {
           const response = await getHelpSectionModule(id);
-          console.log("response: ", response);
           setData(response.modules);
           setTitle(response.title);
         } else {
@@ -129,6 +110,10 @@ const HelpSectionModule = () => {
     };
 
     fetchModule();
+
+    return()=>{
+      synth.cancel()
+    }
   }, []);
 
   const handleButtonClick = (index: number) => {
@@ -137,6 +122,7 @@ const HelpSectionModule = () => {
       sliderRef.current.slickGoTo(index);
     }
   };
+
 
   if (loading) {
     return <Loader />;

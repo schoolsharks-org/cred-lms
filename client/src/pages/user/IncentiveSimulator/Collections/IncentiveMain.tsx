@@ -63,22 +63,22 @@ const IncentiveMain = () => {
       const n =
         data[category].startValue +
         (value / 100) * (data[category].endValue - data[category].startValue);
-      setTarget(n.toFixed(0));
+      setTarget(Math.floor(n).toFixed(0));
 
       const targetValue = n;
-      if (targetValue < data[category].target1.target) {
+      if (targetValue <+ data[category].target1.target) {
         setIncentive(0);
       } else if (
-        targetValue >= data[category].target1.target &&
+        targetValue > data[category].target1.target &&
         targetValue < data[category].target2.target
       ) {
         setIncentive(data[category].target1.incentive);
       } else if (
-        targetValue >= data[category].target2.target &&
-        targetValue < data[category].target3.target
+        targetValue > data[category].target2.target &&
+        targetValue <= data[category].target3.target
       ) {
         setIncentive(data[category].target2.incentive);
-      } else if (targetValue >= data[category].target3.target) {
+      } else if (targetValue > data[category].target3.target) {
         setIncentive(data[category].target3.incentive);
       }
     }
