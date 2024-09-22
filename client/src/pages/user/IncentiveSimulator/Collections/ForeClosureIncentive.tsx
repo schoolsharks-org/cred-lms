@@ -131,13 +131,13 @@ const ForeClosureIncentive = () => {
         <Stack marginTop={"32px"}>
           <Stack direction={"row"} justifyContent={"space-between"}>
             <Typography
-              sx={{ textDecoration: "underline", fontFamily: "sans-serif" }}
+              sx={{ textDecoration: "underline", fontFamily: "sans-serif",lineHeight:"1rem" }}
               marginBottom={"4px"}
             >
               Incentive
             </Typography>
             <Typography
-              sx={{ textDecoration: "underline", fontFamily: "sans-serif" }}
+              sx={{ textDecoration: "underline", fontFamily: "sans-serif",lineHeight:"1rem" }}
               marginBottom={"4px"}
             >
               FOs
@@ -145,10 +145,10 @@ const ForeClosureIncentive = () => {
           </Stack>
           {data[bucket].incentive.map((incentive, index) => (
             <Stack direction={"row"} justifyContent={"space-between"}>
-              <Typography key={index} fontSize={"1.25rem"} marginTop={"10px"} lineHeight={"1.25rem"}>
-                {incentive.fos}
+              <Typography key={index} fontSize={"1.25rem"} marginTop={"10px"} lineHeight={"1rem"}>
+                {incentive.incentive}
               </Typography>
-              <Typography fontSize={"1.25rem"} marginTop={"10px"} lineHeight={"1.25rem"}>{incentive.incentive}</Typography>
+              <Typography fontSize={"1.25rem"} marginTop={"10px"} lineHeight={"1rem"}>{incentive.fos}</Typography>
             </Stack>
           ))}
         </Stack>
