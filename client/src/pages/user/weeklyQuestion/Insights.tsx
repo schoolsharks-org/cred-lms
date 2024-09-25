@@ -28,20 +28,21 @@ const Insights = () => {
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const synth = window.speechSynthesis;
 
-  // Function to speak the current insight
   const speakInsight = (insight: string) => {
-    if (synth.speaking) return; // Prevent overlap
+    if (synth.speaking) return;
 
     const utterance = new SpeechSynthesisUtterance(insight);
     const voices = synth.getVoices();
     const indianVoice = voices.find(
-      (v) => v.lang === "en-IN" || v.name.includes("India")
+      (v) => v.lang === "hi-IN"
     );
+    // const indianVoice=voices[12]
+    
     if (indianVoice) {
       utterance.voice = indianVoice;
     }
     utterance.onend = () => {
-      setCurrentInsightIndex((prev) => prev + 1); // Move to the next insight
+      setCurrentInsightIndex((prev) => prev + 1);
     };
 
     synth.speak(utterance);
@@ -51,7 +52,6 @@ const Insights = () => {
     handleFetchInsights();
   }, []);
 
-  // Handle playing the insights when the component loads or when playing resumes
   useEffect(() => {
     if (
       insights.length > 0 &&

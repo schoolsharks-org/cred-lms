@@ -35,7 +35,7 @@ const HelpSectionModule = () => {
       const utterance = new SpeechSynthesisUtterance(step);
       const voices = synth.getVoices();
       const indianVoice = voices.find(
-        (v) => v.lang === "en-IN" || v.name.includes("India")
+        (v) => v.lang === "hi-IN" || v.name.includes("India")
       );
 
       if (indianVoice) {
