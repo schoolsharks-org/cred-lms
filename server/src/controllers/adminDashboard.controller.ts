@@ -106,7 +106,7 @@ async function getInactiveUsersCount(days: number) {
   ]);
 }
 
-const getUserCountForEachDepartment = () =>
+export const getUserCountForEachDepartment = () =>
   User.aggregate([{ $group: { _id: "$department", count: { $sum: 1 } } }]);
 
 const getTotalModules = () =>
