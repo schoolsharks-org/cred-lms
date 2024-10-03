@@ -32,7 +32,7 @@ const useWeeklyQuestion = () => {
   const [questions, setQuestions] = useState<Question[] | null>(null);
   const [moduleId,setModuleId]=useState<string|null>(null)
   const [scoreImprovement,setScoreImprovement]=useState<number|null>()
-  const [insights,setInsights]=useState<string[]>([])
+  const [insights,setInsights]=useState<{type:"BODY"|"SUBHEADING",text:string}[]>([])
   const [moduleName,setModuleName]=useState<string>()
 
   const [answeredCount, setAnsweredCount] = useState<number>(0);

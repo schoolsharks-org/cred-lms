@@ -119,6 +119,13 @@ const DailyQuestion = () => {
                   You missed to respond
                 </Typography>
               ) : (
+                <>
+                {dailyQuestionData?.optionTexts &&
+                    <Stack padding={"10px 50px"}>
+                      <Typography fontSize="1.1rem" fontWeight={"500"}><b>Option A - </b> {dailyQuestionData.optionTexts.optionA}</Typography>
+                      <Typography fontSize="1.1rem" fontWeight={"500"} marginTop={"12px"}><b>Option B - </b> {dailyQuestionData.optionTexts.optionB}</Typography>
+                    </Stack>
+                    }
                 <Stack direction={"row"} marginTop={"1rem"}>
                   {Object.entries(dailyQuestionData.options).map(
                     ([key, value], index) => (
@@ -147,6 +154,7 @@ const DailyQuestion = () => {
                     )
                   )}
                 </Stack>
+                </>
               )
             ) : (
               <Stack marginTop={"24px"}>

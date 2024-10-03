@@ -15,66 +15,78 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { convertTextToSpeech } from "@/utils/speachToTextAws";
 
 const Insights = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const { handleFetchInsights, insights, loading,moduleName } = useWeeklyQuestion();
+  const { handleFetchInsights, insights, loading, moduleName } =
+    useWeeklyQuestion();
+  
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const [currentInsightIndex, setCurrentInsightIndex] = useState<number>(0);
-  const [isPaused, setIsPaused] = useState<boolean>(false);
-  const synth = window.speechSynthesis;
-
-  const speakInsight = (insight: string) => {
-    if (synth.speaking) return;
-
-    const utterance = new SpeechSynthesisUtterance(insight);
-    const voices = synth.getVoices();
-    const indianVoice = voices.find(
-      (v) => v.lang === "hi-IN"
-    );
-    // const indianVoice=voices[12]
-    
-    if (indianVoice) {
-      utterance.voice = indianVoice;
-    }
-    utterance.onend = () => {
-      setCurrentInsightIndex((prev) => prev + 1);
-    };
-
-    synth.speak(utterance);
-  };
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0); // New state for progress
 
   useEffect(() => {
     handleFetchInsights();
+    playAudio();
   }, []);
 
   useEffect(() => {
-    if (
-      insights.length > 0 &&
-      currentInsightIndex < insights.length &&
-      !isPaused
-    ) {
-      speakInsight(insights[currentInsightIndex]);
+    if (insights.length > 0 && audioBlob === null) {
+      const combinedInsights = insights.map(insight => insight.text).join(". ");
+      fetchSpeech(combinedInsights);
     }
+  }, [insights]);
 
-    return () => {
-      synth.cancel();
-    };
-  }, [insights, currentInsightIndex, isPaused]);
+  const fetchSpeech = async (combinedText: string) => {
+    const audio = await convertTextToSpeech(combinedText);
+    if (audio) {
+      setAudioBlob(audio);
+    }
+  };
+
+  const playAudio = () => {
+    if (audioBlob) {
+      const audioUrl = URL.createObjectURL(audioBlob);
+      audioRef.current = new Audio(audioUrl);
+      audioRef.current.play();
+      setIsPlaying(true);
+
+      // Update progress while the audio is playing
+      audioRef.current.ontimeupdate = () => {
+        const currentTime = audioRef.current?.currentTime || 0;
+        const duration = audioRef.current?.duration || 1;
+        setProgress((currentTime / duration) * 100);
+      };
+
+      audioRef.current.onended = () => {
+        setIsPlaying(false);
+        setProgress(100); // Set progress to 100% when audio ends
+      };
+    }
+  };
 
   const pauseAudio = () => {
-    synth.cancel(); 
-    setIsPaused(true);
-    setCurrentInsightIndex(currentInsightIndex-1); 
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
   };
 
   const restartAudio = () => {
-    setIsPaused(false);
-    setCurrentInsightIndex(0); 
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
+      setIsPlaying(true);
+    } else {
+      playAudio(); 
+    }
   };
 
   if (loading) {
@@ -111,23 +123,24 @@ const Insights = () => {
           alignItems={"center"}
           padding={"8px 24px 8px 8px"}
         >
-          {isPaused ? (
-            <IconButton onClick={restartAudio}>
-              <VolumeUpOutlined sx={{ color: "#ffffff", fontSize: "1.8rem" }} />
-            </IconButton>
-          ) : (
+          {isPlaying ? (
             <IconButton onClick={pauseAudio}>
               <Pause sx={{ color: "#ffffff", fontSize: "1.8rem" }} />
             </IconButton>
+          ) : (
+            <IconButton onClick={restartAudio}>
+              <VolumeUpOutlined sx={{ color: "#ffffff", fontSize: "1.8rem" }} />
+            </IconButton>
           )}
 
+          {/* Display the progress as a percentage */}
           <Box sx={{ height: "5px", flex: 1, bgcolor: "#ffffff79" }}>
             <Box
               sx={{
                 height: "100%",
-                width: `${(currentInsightIndex * 100) / insights.length}%`,
+                width: `${progress}%`, // Update the width based on progress
                 bgcolor: "#ffffff",
-                transition: "all 0.3s ease",
+                transition: "width 0.3s ease",
               }}
             />
           </Box>
@@ -147,11 +160,28 @@ const Insights = () => {
             Points to be noted-
           </Typography>
           <Stack gap={"20px"}>
-            {insights.map((insight, index) => (
-              <Typography key={index} color={"#fff"} fontSize={"1.25rem"}>
-                {index + 1}. {insight}
-              </Typography>
-            ))}
+            {insights.map((insight, index) => {
+              if (insight.type === "BODY") {
+                return (
+                  <Typography key={index} color={"#fff"} fontSize={"1.25rem"}>
+                    • {insight.text}
+                  </Typography>
+                );
+              }
+              if (insight.type === "SUBHEADING") {
+                return (
+                  <Typography
+                    key={index}
+                    color={"#fff"}
+                    fontWeight={"600"}
+                    marginTop="20px"
+                    fontSize={"1.25rem"}
+                  >
+                    {insight.text}
+                  </Typography>
+                );
+              }
+            })}
           </Stack>
         </Stack>
         <Button

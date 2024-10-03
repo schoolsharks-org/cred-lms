@@ -33,18 +33,22 @@ function getMonthName(monthIndex: number): string {
   return monthNames[monthIndex];
 }
 
-async function fetchStatusForWeeks(userId: string): Promise<MonthStatus> {
-  const today = new Date();
-  const year = today.getUTCFullYear();
-  const month = today.getUTCMonth() + 1; // JS month is 0-indexed
+async function fetchStatusForMonth(userId: string, year: number, month: number): Promise<MonthStatus | null> {
+  console.log(`Fetching status for ${year}-${month}`);
   const mondays = getMondaysOfMonth(year, month);
   
   const startOfMonth = new Date(Date.UTC(year, month - 1, 1));
-  const endOfMonth = new Date(Date.UTC(year, month, 0));
+  const endOfMonth = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
 
   const weeklyQuestions = await WeeklyQuestion.find({
-    date: { $gte: startOfMonth, $lt: endOfMonth },
+    date: { $gte: startOfMonth, $lte: endOfMonth },
   });
+
+  console.log(`Found ${weeklyQuestions.length} weekly questions for ${year}-${month}`);
+
+  if (weeklyQuestions.length === 0) {
+    return null;
+  }
 
   const weeklyQuestionsMap = new Map(weeklyQuestions.map(q => [q.date.toISOString().split('T')[0], q]));
 
@@ -60,7 +64,6 @@ async function fetchStatusForWeeks(userId: string): Promise<MonthStatus> {
         user: new mongoose.Types.ObjectId(userId),
         weeklyQuestion: questionId,
       });
-      // console.log(questionId,weeklyResponse)
 
       status = weeklyResponse ? 'COMPLETED' : 'IN_PROGRESS';
     }
@@ -79,6 +82,35 @@ async function fetchStatusForWeeks(userId: string): Promise<MonthStatus> {
   };
 }
 
+async function fetchAllMonthsStatus(userId: string): Promise<MonthStatus[]> {
+  const today = new Date();
+  const currentYear = today.getUTCFullYear();
+  const currentMonth = today.getUTCMonth() + 1;
+
+  const startDate = new Date(Date.UTC(2024, 8, 1)); // September 2024
+  const monthsToFetch: Array<[number, number]> = [];
+
+  for (let year = currentYear; year >= 2024; year--) {
+    const startMonth = year === currentYear ? currentMonth : 12;
+    const endMonth = year === 2024 ? 9 : 1;
+
+    for (let month = startMonth; month >= endMonth; month--) {
+      const currentDate = new Date(Date.UTC(year, month - 1, 1));
+      if (currentDate >= startDate && currentDate <= today) {
+        monthsToFetch.push([year, month]);
+      }
+    }
+  }
+
+  console.log('Months to fetch:', monthsToFetch);
+
+  const allMonthsStatus = await Promise.all(
+    monthsToFetch.map(([year, month]) => fetchStatusForMonth(userId, year, month))
+  );
+
+  return allMonthsStatus.filter((status): status is MonthStatus => status !== null);
+}
+
 export const handleTrackLevels = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.user) {
     next(new AppError("Unauthorized", 401));
@@ -87,10 +119,12 @@ export const handleTrackLevels = async (req: Request, res: Response, next: NextF
 
   try {
     const { _id: userId } = req.user;
-    const monthStatus = await fetchStatusForWeeks(userId.toString());
-    res.json({ monthly_status: [monthStatus] });
+    console.log('Fetching track levels for user:', userId);
+    const allMonthsStatus = await fetchAllMonthsStatus(userId.toString());
+    console.log(`Found status for ${allMonthsStatus.length} months`);
+    res.json({ monthly_status: allMonthsStatus });
   } catch (err) {
-    console.error(err);
+    console.error('Error in handleTrackLevels:', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-};
+}

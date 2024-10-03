@@ -1,90 +1,89 @@
 import { NextFunction, Request, Response } from "express";
 import WeeklyResponse from "../models/weeklyResponse.model";
-import User, { Department } from "../models/user.model";
+import User from "../models/user.model";
 import WeeklyQuestion from "../models/weeklyQuestion.model";
 
-function getMondayOfCurrentWeek(date: Date): Date {
+// Helper functions for date calculations
+const getDateRange = (date: Date): { startOfWeek: Date; endOfWeek: Date } => {
   const dayOfWeek = date.getUTCDay();
-  const difference = (dayOfWeek + 6) % 7;
-  const monday = new Date(date);
-  monday.setUTCDate(date.getUTCDate() - difference);
-  monday.setUTCHours(0, 0, 0, 0);
-  return monday;
-}
+  const startOfWeek = new Date(date);
+  startOfWeek.setUTCDate(date.getUTCDate() - ((dayOfWeek + 6) % 7));
+  startOfWeek.setUTCHours(0, 0, 0, 0);
 
-function getSundayOfCurrentWeek(date: Date): Date {
-  const sunday = new Date(date);
-  sunday.setUTCDate(date.getUTCDate() + (6 - ((date.getUTCDay() + 6) % 7)));
-  sunday.setUTCHours(23, 59, 59, 999);
-  return sunday;
-}
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setUTCDate(endOfWeek.getUTCDate() + 6);
+  endOfWeek.setUTCHours(23, 59, 59, 999);
+
+  return { startOfWeek, endOfWeek };
+};
+
+const getMonthRange = (
+  date: Date
+): { startOfMonth: Date; endOfMonth: Date } => {
+  const startOfMonth = new Date(date.getUTCFullYear(), date.getUTCMonth(), 1);
+  startOfMonth.setUTCHours(0, 0, 0, 0);
+
+  const endOfMonth = new Date(date.getUTCFullYear(), date.getUTCMonth() + 1, 0);
+  endOfMonth.setUTCHours(23, 59, 59, 999);
+
+  return { startOfMonth, endOfMonth };
+};
 
 async function handleUserScores() {
-  const TodayDate = new Date();
-  const startOfWeek = getMondayOfCurrentWeek(TodayDate);
-  const endOfWeek = getSundayOfCurrentWeek(TodayDate);
+  const { startOfWeek, endOfWeek } = getDateRange(new Date());
 
-  const weeklyQuestions = await WeeklyQuestion.findOne({
-    date: startOfWeek,
-  });
+  const [weeklyQuestions, userWeeklyScorers] = await Promise.all([
+    WeeklyQuestion.findOne({ date: startOfWeek }),
+    WeeklyResponse.find({ startTime: { $gte: startOfWeek, $lte: endOfWeek } })
+      .sort({ score: -1 })
+      .select("score user")
+      .limit(15)
+      .lean(),
+  ]);
 
-  const userWeeklyTopScorers = await WeeklyResponse.find({
-    startTime: { $gte: startOfWeek, $lte: endOfWeek },
-  }).sort({ score: -1 })
-    .select("score user department")
-    .limit(10);
-
-
-  const TopScorers = [];
-  if (weeklyQuestions) {
-    const totalScore = Object.values(weeklyQuestions.toObject().analytics)
-      .filter((item) => typeof item.totalScore === "number")
-      .reduce((a, b) => a + b.totalScore, 0);
-    for (const response of userWeeklyTopScorers) {
-      const user = await User.findOne({ _id: response.user }).select("name department");
-      if (user) {
-        TopScorers.push({
-          Name: user.name,
-          Score: (response.score * 100) / totalScore,
-          Department:user.department
-        });
-      }
-    }
+  if (!weeklyQuestions) {
+    return { TopScore: [], BelowAverageScore: [] };
   }
 
-  const userWeeklyBelowAverageScorers = await WeeklyResponse.find({
-    startTime: { $gte: startOfWeek, $lte: endOfWeek },
-  })
-    .sort({ score: 1 })
-    .select("score user department")
-    .limit(5);
+  const totalScore = Object.values(weeklyQuestions.analytics).reduce(
+    (sum, item) =>
+      sum + (typeof item.totalScore === "number" ? item.totalScore : 0),
+    0
+  );
 
-  const belowAvgScorers = [];
-  if (weeklyQuestions) {
-    for (const response of userWeeklyBelowAverageScorers) {
-      const user = await User.findOne({ _id: response.user }).select("name department");
+  const userIds = userWeeklyScorers.map((res) => res.user);
+  const users = await User.find({ _id: { $in: userIds } })
+    .select("name department")
+    .lean();
 
-      if (user) {
-        const totalScore = Object.values(weeklyQuestions.toObject().analytics)
-          .filter((item) => typeof item.totalScore === "number")
-          .reduce((a, b) => a + b.totalScore, 0);
-        belowAvgScorers.push({
+  const usersMap = new Map(users.map((user) => [user._id.toString(), user]));
+
+  const processScores = (responses: typeof userWeeklyScorers) =>
+    responses
+      .map((response) => {
+        const user = usersMap.get(response.user.toString());
+        if (!user) return null;
+        return {
           Name: user.name,
           Score: (response.score * 100) / totalScore,
-          Department:user.department
-        });
-      }
-    }
-  }
+          Department: user.department,
+        };
+      })
+      .filter(Boolean);
 
-  return { TopScore: TopScorers, BelowAverageScore: belowAvgScorers };
+  const topScorers = processScores(userWeeklyScorers.slice(0, 10));
+  const belowAverageScorers = processScores(
+    userWeeklyScorers.slice(-5).reverse()
+  );
+
+  return { TopScore: topScorers, BelowAverageScore: belowAverageScorers };
 }
 
-async function getSevenDaysInactiveUsersCount() {
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+async function getInactiveUsersCount(days: number) {
+  const dateLimit = new Date();
+  dateLimit.setDate(dateLimit.getDate() - days);
 
-  const lastSevenDaysInactiveUsers = await User.aggregate([
+  return User.aggregate([
     {
       $lookup: {
         from: "dailyresponses",
@@ -95,7 +94,7 @@ async function getSevenDaysInactiveUsersCount() {
     },
     {
       $match: {
-        "responses.date": { $not: { $gte: sevenDaysAgo } },
+        "responses.date": { $not: { $gte: dateLimit } },
       },
     },
     {
@@ -105,102 +104,46 @@ async function getSevenDaysInactiveUsersCount() {
       },
     },
   ]);
-
-  return lastSevenDaysInactiveUsers;
 }
 
-async function getFifteenDaysInactiveUsersCount() {
-  const fifteenDaysAgo = new Date();
-  fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
+const getUserCountForEachDepartment = () =>
+  User.aggregate([{ $group: { _id: "$department", count: { $sum: 1 } } }]);
 
-  const lastFifteenDaysInactiveUsers = await User.aggregate([
-    {
-      $lookup: {
-        from: "dailyresponses",
-        localField: "_id",
-        foreignField: "user",
-        as: "responses",
-      },
-    },
-    {
-      $match: {
-        "responses.date": { $not: { $gte: fifteenDaysAgo } },
-      },
-    },
-    {
-      $group: {
-        _id: "$department",
-        count: { $sum: 1 },
-      },
-    },
+const getTotalModules = () =>
+  WeeklyQuestion.aggregate([
+    { $group: { _id: "$department", count: { $sum: 1 } } },
   ]);
 
-  return lastFifteenDaysInactiveUsers;
-}
-
-export async function getUserCountForEachDepartment() {
-  const departmentUserCounts = await User.aggregate([
-    {
-      $group: {
-        _id: "$department",
-        count: { $sum: 1 },
-      },
-    },
-  ]);
-  // console.log("departmentUserCounts: ", departmentUserCounts);
-  return departmentUserCounts;
-}
-
-async function getTotalModules() {
-  const totalDepartmentModules = await WeeklyQuestion.aggregate([
-    {
-      $group: {
-        _id: "$department",
-        totalModules: { $count: {} },
-      },
-    },
-  ]);
-  return totalDepartmentModules.map(item => ({
-    _id: item._id,
-    count: item.totalModules
-  }));
-}
 async function calculateModulesCompletedPercentage() {
-  const departmentUserCounts = await getUserCountForEachDepartment();
-  const totalDepartmentModules = await getTotalModules();
+  const [departmentUserCounts, totalDepartmentModules, totalAnswersResult] =
+    await Promise.all([
+      getUserCountForEachDepartment(),
+      getTotalModules(),
+      WeeklyQuestion.aggregate([
+        {
+          $group: {
+            _id: null,
+            Sales: { $sum: "$analytics.Sales.totalAnswers" },
+            Operations: { $sum: "$analytics.Operations.totalAnswers" },
+            Collection: { $sum: "$analytics.Collection.totalAnswers" },
+            Credit: { $sum: "$analytics.Credit.totalAnswers" },
+            Others: { $sum: "$analytics.Others.totalAnswers" },
+          },
+        },
+      ]),
+    ]);
 
-  const totalAnswersResult = await WeeklyQuestion.aggregate([
-    {
-      $group: {
-        _id: null,
-        Sales: { $sum: "$analytics.Sales.totalAnswers" },
-        Operations: { $sum: "$analytics.Operations.totalAnswers" },
-        Collection: { $sum: "$analytics.Collection.totalAnswers" },
-        Credit: { $sum: "$analytics.Credit.totalAnswers" },
-        Others: { $sum: "$analytics.Others.totalAnswers" },
-      },
-    },
-  ]);
-
-  // Convert departmentUserCounts to a map for easier lookup
-  const departmentUserCountsMap = departmentUserCounts.reduce<{ [key: string]: number }>((acc, item) => {
-    acc[item.department] = item.count;
-    return acc;
-  }, {});
-
-  // Convert totalDepartmentModules to a map for easier lookup
-  const totalDepartmentModulesMap = totalDepartmentModules.reduce<{ [key: string]: number }>((acc, item) => {
-    acc[item.count] = item.count || 0;
-    return acc;
-  }, {});
-
-  // Extract total answers per department from aggregation result
+  const departmentUserCountsMap = new Map(
+    departmentUserCounts.map((item) => [item._id, item.count])
+  );
+  const totalDepartmentModulesMap = new Map(
+    totalDepartmentModules.map((item) => [item._id, item.count])
+  );
   const totalAnswers: { [key: string]: number } = totalAnswersResult[0] || {};
 
-  // Calculate completion percentages for each department
-  const completionPercentages = Object.keys(departmentUserCountsMap).map((department) => {
-    const userCount = departmentUserCountsMap[department];
-    const totalModules = totalDepartmentModulesMap[department] || 0;
+  return Array.from(departmentUserCountsMap.keys()).map((department) => {
+    const userCount = departmentUserCountsMap.get(department) || 0;
+    const totalModules = totalDepartmentModulesMap.get(department) || 0;
     const totalAnswersForDepartment = totalAnswers[department] || 0;
 
     const percentage =
@@ -208,16 +151,55 @@ async function calculateModulesCompletedPercentage() {
         ? 0
         : ((userCount * totalModules) / totalAnswersForDepartment) * 100;
 
-    return {
-      department,
-      count: percentage,
-    };
+    return { department, count: percentage };
   });
-
-  return completionPercentages;
 }
 
+async function getMonthlyAggregatedData() {
+  const { startOfMonth, endOfMonth } = getMonthRange(new Date());
 
+  const monthlyAggregation = await WeeklyQuestion.aggregate([
+    {
+      $match: { date: { $gte: startOfMonth, $lte: endOfMonth } },
+    },
+    {
+      $group: {
+        _id: null,
+        ...["Sales", "Operations", "Collection", "Credit", "Others"].reduce(
+          (acc, dept) => ({
+            ...acc,
+            [`${dept.toLowerCase()}BelowEighty`]: {
+              $sum: `$analytics.${dept}.belowEighty`,
+            },
+            [`${dept.toLowerCase()}ProgressReattempt`]: {
+              $sum: `$analytics.${dept}.progressReattempt`,
+            },
+            [`${dept.toLowerCase()}Reattempted`]: {
+              $sum: `$analytics.${dept}.reattempted`,
+            },
+          }),
+          {}
+        ),
+      },
+    },
+  ]);
+
+  if (monthlyAggregation.length === 0) return null;
+
+  const result = monthlyAggregation[0];
+  return ["Sales", "Operations", "Collection", "Credit", "Others"].reduce(
+    (acc, dept) => ({
+      ...acc,
+      [dept]: {
+        belowEighty: result[`${dept.toLowerCase()}BelowEighty`] || 0,
+        progressReattempt:
+          result[`${dept.toLowerCase()}ProgressReattempt`] || 0,
+        reattempted: result[`${dept.toLowerCase()}Reattempted`] || 0,
+      },
+    }),
+    {}
+  );
+}
 
 export const handleAdminDashboard = async (
   req: Request,
@@ -231,13 +213,15 @@ export const handleAdminDashboard = async (
     userCountofDepartment,
     getTotalDepartmentModules,
     modulesCompleted,
+    monthlyAggregatedData,
   ] = await Promise.all([
     handleUserScores(),
-    getSevenDaysInactiveUsersCount(),
-    getFifteenDaysInactiveUsersCount(),
+    getInactiveUsersCount(7),
+    getInactiveUsersCount(15),
     getUserCountForEachDepartment(),
     getTotalModules(),
     calculateModulesCompletedPercentage(),
+    getMonthlyAggregatedData(),
   ]);
 
   return res.json({
@@ -247,5 +231,6 @@ export const handleAdminDashboard = async (
     userCountofDepartment,
     getTotalDepartmentModules,
     modulesCompleted,
+    monthlyAggregatedData,
   });
 };

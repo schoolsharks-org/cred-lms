@@ -48,7 +48,7 @@ interface WeeklyQuestionI extends Document {
       progressReattempt:number
     }
   }
-  insights:string[];
+  insights:{type:"BODY"|"SUBHEADING",text:string}[];
   // totalScore: {
   //   Sales:number,
   //   Operations:number,
@@ -130,10 +130,13 @@ const weeklyQuestionSchema: Schema<WeeklyQuestionI> =
       //   type: Number,
       //   required: true,
       // },
-      insights:{
-        type:[String],
-        default:[""]
-      },
+      insights: [{
+        type: {
+          type: String, 
+          enum: ["BODY", "SUBHEADING"],
+        },
+        text: String,
+      }],
       department: {
         type: String,
         required: true,

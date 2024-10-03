@@ -18,13 +18,12 @@ export const getWeeklyQuestion = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-
   if (!req.user) {
     next(new AppError("Unauthorized", 401));
     return;
   }
 
-  const { _id: userId,department } = req.user;
+  const { _id: userId, department } = req.user;
   const { date } = req.query;
 
   const TodayDate = new Date(date as string);
@@ -32,7 +31,7 @@ export const getWeeklyQuestion = async (
 
   const weeklyQuestions = await WeeklyQuestion.findOne({
     date: startOfWeek,
-    department
+    department,
   });
 
   if (!weeklyQuestions) {
@@ -80,7 +79,7 @@ export const getWeeklyQuestion = async (
   res.status(200).json({
     id: weeklyQuestions._id,
     questions: weeklyQuestions.weeklyQuestionModule,
-    moduleName:weeklyQuestions.moduleName,
+    moduleName: weeklyQuestions.moduleName,
     startTime: userResponse.startTime,
     answeredCount,
     scores:
@@ -108,13 +107,12 @@ export const respondToWeeklyQuestion = async (
   const { questionId, response } = req.body;
   const { _id: userId, department: userDepartment } = req.user;
 
-
   const today = new Date();
   const startOfWeek = getMondayOfCurrentWeek(today);
 
   const weeklyQuestions = await WeeklyQuestion.findOne({
     date: startOfWeek,
-    department:userDepartment
+    department: userDepartment,
   });
 
   if (!weeklyQuestions) {
@@ -144,6 +142,17 @@ export const respondToWeeklyQuestion = async (
     });
   }
 
+  const maxScore = weeklyQuestions.weeklyQuestionModule.reduce(
+    (a, b) => a + b.score,
+    0
+  );
+  const totalScore = Object.values(weeklyQuestions.toObject().analytics)
+    .filter((item) => typeof item.totalScore === "number")
+    .reduce((a, b) => a + b.totalScore, 0);
+  const totalAnswers = Object.values(weeklyQuestions.toObject().analytics)
+    .filter((item) => typeof item.totalAnswers === "number")
+    .reduce((a, b) => a + b.totalAnswers, 0);
+
   if (existingUserResponse.reattempts?.length > 0) {
     const lastReattempt =
       existingUserResponse.reattempts[
@@ -156,6 +165,17 @@ export const respondToWeeklyQuestion = async (
 
     lastReattempt.answeredCount = (lastReattempt.answeredCount || 0) + 1;
 
+    if (
+      lastReattempt.answeredCount >=
+        weeklyQuestions.weeklyQuestionModule.length &&
+      lastReattempt.score > 0.8 * maxScore
+    ) {
+      await WeeklyQuestion.findByIdAndUpdate(weeklyQuestions._id, {
+        $inc: {
+          [`analytics.${userDepartment}.progressReattempt`]: 1,
+        },
+      });
+    }
     await existingUserResponse.save();
 
     return res.status(200).json({
@@ -199,6 +219,8 @@ export const respondToWeeklyQuestion = async (
         [`analytics.${userDepartment}.totalAnswers`]: 1,
         [`analytics.${userDepartment}.totalTime`]:
           (endTime.getTime() - existingUserResponse.startTime.getTime()) / 1000,
+        [`analytics.${userDepartment}.belowEighty`]:
+          existingUserResponse.score < 0.8 * maxScore ? 1 : 0,
       },
     });
 
@@ -211,17 +233,6 @@ export const respondToWeeklyQuestion = async (
       $inc: { score: existingUserResponse.score },
     });
   }
-
-  const maxScore = weeklyQuestions.weeklyQuestionModule.reduce(
-    (a, b) => a + b.score,
-    0
-  );
-  const totalScore = Object.values(weeklyQuestions.toObject().analytics)
-    .filter((item) => typeof item.totalScore === "number")
-    .reduce((a, b) => a + b.totalScore, 0);
-  const totalAnswers = Object.values(weeklyQuestions.toObject().analytics)
-    .filter((item) => typeof item.totalAnswers === "number")
-    .reduce((a, b) => a + b.totalAnswers, 0);
 
   const answeringLastQuestion =
     existingUserResponse.userResponse.length ===
@@ -241,6 +252,8 @@ export const respondToWeeklyQuestion = async (
       : undefined,
   });
 };
+
+
 
 export const handleReattemptRequest = async (
   req: Request,
@@ -272,8 +285,6 @@ export const handleReattemptRequest = async (
     return next(new AppError("Maximum reattempts exceeded", 400));
   }
 
-
-
   if (weeklyResponse?.reattempts.length === 0) {
     await WeeklyQuestion.findByIdAndUpdate(weeklyQuestions._id, {
       $inc: {
@@ -290,11 +301,9 @@ export const handleReattemptRequest = async (
   weeklyResponse?.reattempts.push({ score: 0, answeredCount: 0 });
   weeklyResponse?.save();
 
-  return res
-    .status(200)
-    .json({
-      message: `Reattempt ${weeklyResponse?.reattempts.length} requested successfully!`,
-    });
+  return res.status(200).json({
+    message: `Reattempt ${weeklyResponse?.reattempts.length} requested successfully!`,
+  });
 };
 
 export const fetchWeeklyQuestionInsights = async (
@@ -302,54 +311,57 @@ export const fetchWeeklyQuestionInsights = async (
   res: Response,
   next: NextFunction
 ) => {
-
   if (!req.user) {
     next(new AppError("Unauthorized", 401));
     return;
   }
 
-  const {department } = req.user;
+  const { department } = req.user;
 
   const today = new Date();
   const startOfWeek = getMondayOfCurrentWeek(today);
 
   const data = await WeeklyQuestion.findOne({
     date: startOfWeek,
-    department
+    department,
   }).select("insights moduleName");
 
   if (!data) {
     return next(new AppError("No Weekly Module found", 404));
   }
 
-  res.status(200).json({ insights: data?.insights,moduleName:data?.moduleName});
+  res
+    .status(200)
+    .json({ insights: data?.insights, moduleName: data?.moduleName });
 };
 
-
-export const handleFetchWeeklyQuestionStatus=async(req:Request,res:Response,next:NextFunction)=>{
+export const handleFetchWeeklyQuestionStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   if (!req.user) {
     next(new AppError("Unauthorized", 401));
     return;
   }
 
-  const {_id:userId,department}=req.user  
+  const { _id: userId, department } = req.user;
 
   const today = new Date();
   const startOfWeek = getMondayOfCurrentWeek(today);
 
   const weeklyQuestion = await WeeklyQuestion.findOne({
     date: startOfWeek,
-    department
+    department,
   });
 
-  
-  if(!weeklyQuestion){
-    return next(new AppError("No Weekly Question Found",404))
-  }  
+  if (!weeklyQuestion) {
+    return next(new AppError("No Weekly Question Found", 404));
+  }
+
+  return res
+    .status(200)
+    .json({ moduleName: weeklyQuestion.moduleName, date: weeklyQuestion.date });
+};
 
 
-  return res.status(200).json({moduleName:weeklyQuestion.moduleName,date:weeklyQuestion.date})
-}
-
-// Fetch current week weekly question for that department,
-// return module name, date, played status

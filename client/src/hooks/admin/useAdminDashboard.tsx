@@ -15,6 +15,7 @@ const useAdminDashboard = () => {
     const [dashboardData, setDashboardData] = useState<{ name: string; data: number[] }[]>([]);
     const [loading, setLoading] = useState<boolean>(true); // Add loading state
 
+
     const mapCountsToDepartments = (data: { _id: string; count: number }[]) => {
         const countsArray = new Array(departments.length).fill(0);
         data.forEach(item => {
@@ -24,6 +25,22 @@ const useAdminDashboard = () => {
             }
         });
         return countsArray;
+    };
+
+    const mapAggregatedDataToDepartments = (data: { [key: string]: { belowEighty: number; progressReattempt: number; reattempted: number; } }) => {
+        const belowEightyArray = new Array(departments.length).fill(0);
+        const reattemptedArray = new Array(departments.length).fill(0);
+        const progressReattemptArray = new Array(departments.length).fill(0);
+
+        departments.forEach((department, index) => {
+            if (data[department]) {
+                belowEightyArray[index] = data[department].belowEighty;
+                reattemptedArray[index] = data[department].reattempted;
+                progressReattemptArray[index] = data[department].progressReattempt;
+            }
+        });
+
+        return { belowEightyArray, reattemptedArray, progressReattemptArray };
     };
 
     const fetchDashboardData = async () => {
@@ -40,6 +57,8 @@ const useAdminDashboard = () => {
             const inactive15Days = mapCountsToDepartments(response?.data.fifteenDaysInactiveUsers);
             const weeklyModules = mapCountsToDepartments(response?.data.getTotalDepartmentModules);
             const modulesCompleted = mapCountsToDepartments(response?.data.modulesCompleted);
+
+            const { belowEightyArray, reattemptedArray, progressReattemptArray } = mapAggregatedDataToDepartments(response?.data.monthlyAggregatedData);
 
             const formattedData = [
                 {
@@ -63,16 +82,16 @@ const useAdminDashboard = () => {
                     data: modulesCompleted,
                 },
                 {
-                    name:"Below 80%",
-                    data:modulesCompleted,
+                    name: "Below 80%",
+                    data: belowEightyArray, 
                 },
                 {
-                    name:"Reattempted",
-                    data:modulesCompleted,
+                    name: "Reattempted",
+                    data: reattemptedArray, 
                 },
                 {
-                    name:">80% After\n reattempt",
-                    data:modulesCompleted,
+                    name: ">80% After\n reattempt",
+                    data: progressReattemptArray, 
                 },
             ];
 
@@ -80,7 +99,7 @@ const useAdminDashboard = () => {
         } catch (error) {
             console.error("Failed to fetch admin dashboard data:", error);
         } finally {
-            setLoading(false); 
+            setLoading(false);
         }
     };
 
@@ -88,7 +107,7 @@ const useAdminDashboard = () => {
         topScorers,
         belowAverageScorers,
         dashboardData,
-        loading, 
+        loading,
         fetchDashboardData,
     };
 };

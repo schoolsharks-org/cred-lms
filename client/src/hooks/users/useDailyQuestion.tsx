@@ -12,6 +12,10 @@ export interface DailyQuestion {
   };
   userResponse: "OptionA" | "OptionB" | "Not Answered";
   correctOption:string;
+  optionTexts?:{
+    optionA:string;
+    optionB:string;
+  };
   stats?: {
     Sales: {
       OptionA: number;
@@ -52,6 +56,7 @@ const useDailyQuestion = () => {
         params: { date:istDate },
       });
       setData(response.data);
+      
     } catch (error: any) {
       setError(error?.message);
     }

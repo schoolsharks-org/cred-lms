@@ -45,6 +45,7 @@ export const getDailyQuestion = async (
         OptionA: dailyQuestion.options.optionA,
         OptionB: dailyQuestion.options.optionB,
       },
+      optionTexts:dailyQuestion.optionTexts,
       userResponse: userResponse ? userResponse.userResponse : "Not Answered",
       correctOption:userResponse ? dailyQuestion.correctOption : "Not Answered",
       stats: userResponse ? {

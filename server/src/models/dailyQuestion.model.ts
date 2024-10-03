@@ -10,6 +10,10 @@ export interface DailyQuestionI extends Document {
     optionA: string;
     optionB: string;
   };
+  optionTexts:{
+    optionA:string;
+    optionB:string;
+  };
   correctOption:string;
   department:Department;
   departmentResponses: {
@@ -59,6 +63,12 @@ const dailyQuestionSchema: Schema<DailyQuestionI> = new Schema<DailyQuestionI>(
     },
     correctOption:{
       type:String
+    },
+    optionTexts: {
+      type: {
+        optionA: { type: String, required: true },
+        optionB: { type: String, required: true },
+      },
     },
     department: {
       type: String,
