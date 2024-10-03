@@ -7,12 +7,13 @@ import {
   Button,
   IconButton,
 } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Slider from "react-slick";
 import { getHelpSectionModule } from "@/store/user/userActions";
 import { useNavigate, useParams } from "react-router-dom";
 import Loader from "@/components/Loader";
 import { ArrowBack, Pause, VolumeUpOutlined } from "@mui/icons-material";
+import useTextToSpeech from "@/hooks/users/useTextToSpeech";
 
 const HelpSectionModule = () => {
   const theme = useTheme();
@@ -23,73 +24,75 @@ const HelpSectionModule = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<any>();
   const [title, setTitle] = useState<string>();
+  const { id } = useParams();
 
-  const [isPaused, setIsPaused] = useState<boolean>(true); // Start in paused state
-  const synth = window.speechSynthesis;
+  const { convertTextToSpeech, audioBlob } = useTextToSpeech();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState<number>(0);
 
-  const speakStep = (step: string) => {
-    if (synth.speaking) {
-      synth.cancel(); 
-    }
-    if (step) {
-      const utterance = new SpeechSynthesisUtterance(step);
-      const voices = synth.getVoices();
-      const indianVoice = voices.find(
-        (v) => v.lang === "hi-IN" || v.name.includes("India")
-      );
-
-      if (indianVoice) {
-        utterance.voice = indianVoice;
+  const handleAudioSetup = useCallback(() => {
+    if (audioBlob) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        URL.revokeObjectURL(audioRef.current.src);
       }
 
-      // utterance.onend = () => {
-      //   console.log("Speech finished for:", step);
-      // };
+      const audioUrl = URL.createObjectURL(audioBlob);
+      audioRef.current = new Audio(audioUrl);
+      
+      audioRef.current.onloadedmetadata = () => {
+        playAudio();
+      };
+      
+      audioRef.current.ontimeupdate = () => {
+        const currentTime = audioRef.current?.currentTime || 0;
+        const duration = audioRef.current?.duration || 1;
+        setProgress((currentTime / duration) * 100);
+      };
 
-      // utterance.onerror = (e) => {
-      //   console.error("SpeechSynthesis error:", e);
-      // };
-      synth.speak(utterance); // Start speaking the step
+      audioRef.current.onended = () => {
+        setIsPlaying(false);
+        setProgress(100);
+      };
+    }
+  }, [audioBlob]);
+
+  const playAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+      setIsPlaying(true);
     }
   };
 
   const pauseAudio = () => {
-    synth.cancel(); // Cancel current speech
-    setIsPaused(true); // Set the state to paused
-  };
-
-  const restartAudio = () => {
-    if (isPaused) {
-      setIsPaused(false);
-      speakStep(data[selectedIndex]?.steps);
-    } else {
-      synth.cancel();
-      speakStep(data[selectedIndex]?.steps); 
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
     }
   };
 
-  const settings = {
-    infinite: false,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    arrows: true,
-    afterChange: (currentSlide: number) => {
-      setSelectedIndex(currentSlide);
-      if (!isPaused) {
-        speakStep(data[currentSlide]?.steps);
-      } else {
-        synth.cancel(); 
-      }
-      buttonsRef.current[currentSlide]?.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "center",
-      });
-    },
+  const restartAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      playAudio();
+    } else {
+      handleAudioSetup();
+    }
   };
 
-  const { id } = useParams();
+  useEffect(() => {
+    if (data?.length > 0) {
+      const initialSteps = data[0]?.steps;
+      convertTextToSpeech(initialSteps);
+    }
+  }, [data, convertTextToSpeech]);
+
+  useEffect(() => {
+    if (audioBlob) {
+      handleAudioSetup();
+    }
+  }, [audioBlob, handleAudioSetup]);
 
   useEffect(() => {
     const fetchModule = async () => {
@@ -99,10 +102,13 @@ const HelpSectionModule = () => {
           const response = await getHelpSectionModule(id);
           setData(response.modules);
           setTitle(response.title);
+          if (response.modules.length > 0) {
+            convertTextToSpeech(response.modules[0].steps);
+          }
         } else {
           navigate(-1);
         }
-      } catch (error: any) {
+      } catch (error) {
         console.log(error);
       } finally {
         setLoading(false);
@@ -111,10 +117,40 @@ const HelpSectionModule = () => {
 
     fetchModule();
 
-    return()=>{
-      synth.cancel()
-    }
-  }, []);
+    // Cleanup function to stop audio when component unmounts
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        URL.revokeObjectURL(audioRef.current.src);
+      }
+    };
+  }, [id, navigate, convertTextToSpeech]);
+
+  const settings = {
+    infinite: false,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: true,
+    afterChange: (currentSlide: number) => {
+      setSelectedIndex(currentSlide);
+      const currentStep = data[currentSlide]?.steps;
+      
+      // Stop current audio before converting new text
+      if (audioRef.current) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      }
+      
+      convertTextToSpeech(currentStep);
+      
+      buttonsRef.current[currentSlide]?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    },
+  };
 
   const handleButtonClick = (index: number) => {
     setSelectedIndex(index);
@@ -122,7 +158,6 @@ const HelpSectionModule = () => {
       sliderRef.current.slickGoTo(index);
     }
   };
-
 
   if (loading) {
     return <Loader />;
@@ -189,7 +224,7 @@ const HelpSectionModule = () => {
                     borderColor: "#000000",
                     minWidth: "40px",
                     color: selectedIndex === index ? "white" : "black",
-                    borderRadius:"0"
+                    borderRadius: "0",
                   }}
                   onClick={() => handleButtonClick(index)}
                 >
@@ -230,7 +265,7 @@ const HelpSectionModule = () => {
                     alignItems={"center"}
                     padding={"8px 24px 8px 8px"}
                   >
-                    {isPaused ? (
+                    {!isPlaying ? (
                       <IconButton onClick={restartAudio}>
                         <VolumeUpOutlined
                           sx={{ color: "#ffffff", fontSize: "1.8rem" }}
@@ -246,7 +281,7 @@ const HelpSectionModule = () => {
                       <Box
                         sx={{
                           height: "100%",
-                          width: `${(selectedIndex * 100) / data?.length}%`,
+                          width: `${progress}%`,
                           bgcolor: "#ffffff",
                           transition: "all 0.3s ease",
                         }}

@@ -17,7 +17,7 @@ client/bower_components/
 server/bower_components/
 
 # Production files
-client/dist/
+# client/dist/
 server/dist/
 
 # Environment variables

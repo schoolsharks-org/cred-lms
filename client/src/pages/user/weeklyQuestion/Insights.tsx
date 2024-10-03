@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { convertTextToSpeech } from "@/utils/speachToTextAws";
+import useTextToSpeech from "@/hooks/users/useTextToSpeech";
 
 const Insights = () => {
   const theme = useTheme();
@@ -26,30 +26,44 @@ const Insights = () => {
 
   const { handleFetchInsights, insights, loading, moduleName } =
     useWeeklyQuestion();
-  
+
+  const { audioBlob, convertTextToSpeech, isLoading } = useTextToSpeech();
+
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [progress, setProgress] = useState<number>(0); // New state for progress
+  const [progress, setProgress] = useState<number>(0);
 
   useEffect(() => {
     handleFetchInsights();
-    playAudio();
   }, []);
 
   useEffect(() => {
+    const handleBeforeUnload = () => {
+      pauseAudio();
+    };
+  
+    window.addEventListener("beforeunload", handleBeforeUnload);
+  
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      pauseAudio(); 
+    };
+  }, [navigate]);
+
+  useEffect(() => {
     if (insights.length > 0 && audioBlob === null) {
-      const combinedInsights = insights.map(insight => insight.text).join(". ");
-      fetchSpeech(combinedInsights);
+      const combinedInsights = insights
+        .map((insight) => insight.text)
+        .join(". ");
+      convertTextToSpeech(combinedInsights);
     }
   }, [insights]);
 
-  const fetchSpeech = async (combinedText: string) => {
-    const audio = await convertTextToSpeech(combinedText);
-    if (audio) {
-      setAudioBlob(audio);
+  useEffect(() => {
+    if (audioBlob && !isPlaying) {
+      playAudio();
     }
-  };
+  }, [audioBlob]);
 
   const playAudio = () => {
     if (audioBlob) {
@@ -58,7 +72,6 @@ const Insights = () => {
       audioRef.current.play();
       setIsPlaying(true);
 
-      // Update progress while the audio is playing
       audioRef.current.ontimeupdate = () => {
         const currentTime = audioRef.current?.currentTime || 0;
         const duration = audioRef.current?.duration || 1;
@@ -67,7 +80,7 @@ const Insights = () => {
 
       audioRef.current.onended = () => {
         setIsPlaying(false);
-        setProgress(100); // Set progress to 100% when audio ends
+        setProgress(100);
       };
     }
   };
@@ -85,13 +98,15 @@ const Insights = () => {
       audioRef.current.play();
       setIsPlaying(true);
     } else {
-      playAudio(); 
+      playAudio();
     }
   };
 
-  if (loading) {
+  if (loading || isLoading) {
     return <Loader />;
   }
+
+ 
 
   return (
     <>
@@ -133,12 +148,11 @@ const Insights = () => {
             </IconButton>
           )}
 
-          {/* Display the progress as a percentage */}
           <Box sx={{ height: "5px", flex: 1, bgcolor: "#ffffff79" }}>
             <Box
               sx={{
                 height: "100%",
-                width: `${progress}%`, // Update the width based on progress
+                width: `${progress}%`,
                 bgcolor: "#ffffff",
                 transition: "width 0.3s ease",
               }}
@@ -160,7 +174,7 @@ const Insights = () => {
             Points to be noted-
           </Typography>
           <Stack gap={"20px"}>
-            {insights.map((insight, index) => {
+            {insights?.map((insight, index) => {
               if (insight.type === "BODY") {
                 return (
                   <Typography key={index} color={"#fff"} fontSize={"1.25rem"}>

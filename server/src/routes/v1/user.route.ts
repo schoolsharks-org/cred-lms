@@ -26,6 +26,7 @@ import {
   fetchHelpSection,
   fetchModule,
 } from "../../controllers/HelpSection.controller";
+import { getAWSCredentials } from "../../controllers/credentials.controller";
 const router = express.Router();
 
 // router.route("/login").post(asyncHandler(handleLoginUser));
@@ -75,5 +76,10 @@ router
 router
   .route("/help-section-module")
   .get(authMiddleware, authMiddleware, asyncHandler(fetchModule));
+
+
+
+router.get("/voice-keys",getAWSCredentials)
+
 
 export default router;
