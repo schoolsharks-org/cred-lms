@@ -33,7 +33,7 @@ const useAdminDashboard = () => {
         const progressReattemptArray = new Array(departments.length).fill(0);
 
         departments.forEach((department, index) => {
-            if (data[department]) {
+            if (data && data[department]) {
                 belowEightyArray[index] = data[department].belowEighty;
                 reattemptedArray[index] = data[department].reattempted;
                 progressReattemptArray[index] = data[department].progressReattempt;
@@ -58,7 +58,7 @@ const useAdminDashboard = () => {
             const weeklyModules = mapCountsToDepartments(response?.data.getTotalDepartmentModules);
             const modulesCompleted = mapCountsToDepartments(response?.data.modulesCompleted);
 
-            const { belowEightyArray, reattemptedArray, progressReattemptArray } = mapAggregatedDataToDepartments(response?.data.monthlyAggregatedData);
+            const { belowEightyArray, reattemptedArray, progressReattemptArray } = mapAggregatedDataToDepartments(response?.data?.monthlyAggregatedData);
 
             const formattedData = [
                 {
