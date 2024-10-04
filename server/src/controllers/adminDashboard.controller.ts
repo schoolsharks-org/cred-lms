@@ -184,7 +184,7 @@ async function getMonthlyAggregatedData() {
     },
   ]);
 
-  if (monthlyAggregation.length === 0) return null;
+  if (monthlyAggregation.length === 0) return monthlyAggregation;
 
   const result = monthlyAggregation[0];
   return ["Sales", "Operations", "Collection", "Credit", "Others"].reduce(
