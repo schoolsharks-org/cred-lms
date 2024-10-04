@@ -31,7 +31,6 @@ const WeeklyQuestionCard = () => {
   useEffect(()=>{
     const fetchData=async()=>{
       const response=await getWeeklyQuestionStatus()
-      console.log(response)
       setData(response)
     }
     fetchData()

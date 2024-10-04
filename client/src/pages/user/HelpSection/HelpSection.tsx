@@ -36,7 +36,7 @@ const HelpSection = () => {
     const fetchDailyUpdates = async () => {
       try {
         const response = await getDailyUpdates();
-        console.log("response: ", response);
+        // console.log("response: ", response);
         // console.log("response.data: ", response.data);
         setDailyUpdates(response);
       } catch (error: any) {

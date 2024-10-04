@@ -205,7 +205,6 @@ const useWeeklyQuestion = () => {
       setLoading(true)
       const response=await userApi.get("/weekly-question-insights")
       const {insights:insightsData,moduleName}=response.data
-      console.log(response.data)
       setInsights(insightsData)
       setModuleName(moduleName)
 
