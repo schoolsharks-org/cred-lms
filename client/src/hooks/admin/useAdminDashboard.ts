@@ -28,6 +28,10 @@ const useAdminDashboard = () => {
     };
 
     const mapAggregatedDataToDepartments = (data: { [key: string]: { belowEighty: number; progressReattempt: number; reattempted: number } } = {}) => {
+
+        if(!data){
+            return { belowEightyArray:[0,0,0,0,0], reattemptedArray:[0,0,0,0,0], progressReattemptArray:[0,0,0,0,0] }
+        }
         const belowEightyArray = new Array(departments.length).fill(0);
         const reattemptedArray = new Array(departments.length).fill(0);
         const progressReattemptArray = new Array(departments.length).fill(0);
