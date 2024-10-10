@@ -18,6 +18,7 @@ import Loader from "@/components/Loader";
 import MarkerCicle from "@/components/user/MarkerCicle";
 import { BLACK, BLUE, GREEN, PURPLE, YELLOW } from "@/utils/departmentColors";
 import "./Dashboard.css"
+import useDownloadData from "@/hooks/admin/useDownloadData";
 
 // const departments = ["Sales", "Credit", "Collection", "Operations", "Others"];
 const departments = [
@@ -70,7 +71,7 @@ const departments = [
     ),
   },
   {
-    name: "Others",
+    name: "BMs/RSMs",
     icon: (
       <MarkerCicle
         color={GREEN}
@@ -172,7 +173,7 @@ const Dashboard = () => {
                 {row.data.map((item, index) => (
                   <TableCell sx={{padding:"0",border:"2px solid #ffffff"}}><CustomCell key={index} text={item.toString()} /></TableCell>
                 ))}
-                <TableCell sx={{padding:"0",border:"2px solid #ffffff"}}><DownloadCell bold={false} /></TableCell>
+                <TableCell sx={{padding:"0",border:"2px solid #ffffff"}}><DownloadCell bold={false} name={row.name}/></TableCell>
               </TableRow>
             ))}
           </Table>
@@ -327,7 +328,9 @@ const CustomCell = ({
   </Stack>
 );
 
-const DownloadCell = ({ bold }: { bold: boolean }) => {
+const DownloadCell = ({ bold ,name}: { bold: boolean ,name?:string}) => {
+  const {handleDownload}=useDownloadData()
+
   return (
     <Stack
       direction={"row"}
@@ -340,7 +343,7 @@ const DownloadCell = ({ bold }: { bold: boolean }) => {
       gap={"8px"}
       sx={{ borderWidth: "0 1px 0 1px" }}
     >
-      <IconButton>
+      <IconButton onClick={()=>handleDownload(name??"")}>
         <FileDownloadOutlined
           sx={{ fontSize: bold ? "1.6rem" : "1.4rem", color: "#000000" }}
         />

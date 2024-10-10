@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import WeeklyResponse from "../models/weeklyResponse.model";
 import User from "../models/user.model";
 import WeeklyQuestion from "../models/weeklyQuestion.model";
+import { count } from "console";
 
 // Helper functions for date calculations
 const getDateRange = (date: Date): { startOfWeek: Date; endOfWeek: Date } => {
@@ -114,46 +115,78 @@ const getTotalModules = () =>
     { $group: { _id: "$department", count: { $sum: 1 } } },
   ]);
 
+// async function calculateModulesCompletedPercentage() {
+//   const [departmentUserCounts, totalDepartmentModules, totalAnswersResult] =
+//     await Promise.all([
+//       getUserCountForEachDepartment(),
+//       getTotalModules(),
+//       WeeklyQuestion.aggregate([
+//         {
+//           $group: {
+//             _id: null,
+//             Sales: { $sum: "$analytics.Sales.totalAnswers" },
+//             Operations: { $sum: "$analytics.Operations.totalAnswers" },
+//             Collection: { $sum: "$analytics.Collection.totalAnswers" },
+//             Credit: { $sum: "$analytics.Credit.totalAnswers" },
+//             Others: { $sum: "$analytics.Others.totalAnswers" },
+//           },
+//         },
+//       ]),
+//     ]);
+
+//   const departmentUserCountsMap = new Map(
+//     departmentUserCounts.map((item) => [item._id, item.count])
+//   );
+//   const totalDepartmentModulesMap = new Map(
+//     totalDepartmentModules.map((item) => [item._id, item.count])
+//   );
+//   const totalAnswers: { [key: string]: number } = totalAnswersResult[0] || {};
+
+//   return Array.from(departmentUserCountsMap.keys()).map((department) => {
+//     const userCount = departmentUserCountsMap.get(department) || 0;
+//     const totalModules = totalDepartmentModulesMap.get(department) || 0;
+//     const totalAnswersForDepartment = totalAnswers[department] || 0;
+
+//     console.log("Total Modules",totalModules)
+//     console.log("Total Answers", totalAnswersForDepartment)
+//     const percentage =  
+//       totalModules === 0 || totalAnswersForDepartment === 0
+//         ? 0
+//         : ((userCount * totalModules) / totalAnswersForDepartment) * 100;
+
+//     console.log("Percentage",percentage)
+//     return { department, count: percentage };
+//   });
+// }
+
 async function calculateModulesCompletedPercentage() {
-  const [departmentUserCounts, totalDepartmentModules, totalAnswersResult] =
-    await Promise.all([
-      getUserCountForEachDepartment(),
-      getTotalModules(),
-      WeeklyQuestion.aggregate([
-        {
-          $group: {
-            _id: null,
-            Sales: { $sum: "$analytics.Sales.totalAnswers" },
-            Operations: { $sum: "$analytics.Operations.totalAnswers" },
-            Collection: { $sum: "$analytics.Collection.totalAnswers" },
-            Credit: { $sum: "$analytics.Credit.totalAnswers" },
-            Others: { $sum: "$analytics.Others.totalAnswers" },
-          },
-        },
-      ]),
-    ]);
+  const departmentCounts = await WeeklyResponse.aggregate([
+    {
+      $lookup: {
+        from: "weeklyquestions", 
+        localField: "weeklyQuestion", 
+        foreignField: "_id", 
+        as: "weeklyQuestionDetails", 
+      },
+    },
+    {
+      $unwind: "$weeklyQuestionDetails", 
+    },
+    {
+      $group: {
+        _id: "$weeklyQuestionDetails.department", 
+        count: { $sum: 1 }, 
+      },
+    },
+  ]);
 
-  const departmentUserCountsMap = new Map(
-    departmentUserCounts.map((item) => [item._id, item.count])
-  );
-  const totalDepartmentModulesMap = new Map(
-    totalDepartmentModules.map((item) => [item._id, item.count])
-  );
-  const totalAnswers: { [key: string]: number } = totalAnswersResult[0] || {};
-
-  return Array.from(departmentUserCountsMap.keys()).map((department) => {
-    const userCount = departmentUserCountsMap.get(department) || 0;
-    const totalModules = totalDepartmentModulesMap.get(department) || 0;
-    const totalAnswersForDepartment = totalAnswers[department] || 0;
-
-    const percentage =
-      totalModules === 0 || totalAnswersForDepartment === 0
-        ? 0
-        : ((userCount * totalModules) / totalAnswersForDepartment) * 100;
-
-    return { department, count: percentage };
-  });
+  return departmentCounts.map((item) => ({
+    _id: item._id,
+    count: item.count,
+  }));
 }
+
+
 
 async function getMonthlyAggregatedData() {
   const { startOfMonth, endOfMonth } = getMonthRange(new Date());

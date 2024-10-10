@@ -14,14 +14,14 @@ const useAdminDashboard = () => {
     const [belowAverageScorers, setBelowAverageScorers] = useState<Scorers[] | null>(null);
     const [dashboardData, setDashboardData] = useState<{ name: string; data: number[] }[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null); // Add error state
+    const [error, setError] = useState<string | null>(null); 
 
     const mapCountsToDepartments = (data: { _id: string; count: number }[] = []) => {
         const countsArray = new Array(departments.length).fill(0);
         data.forEach(item => {
             const index = departments.indexOf(item?._id);
             if (index !== -1) {
-                countsArray[index] = item?.count ?? 0; // Add fallback for missing count
+                countsArray[index] = item?.count ?? 0; 
             }
         });
         return countsArray;
@@ -37,7 +37,7 @@ const useAdminDashboard = () => {
         const progressReattemptArray = new Array(departments.length).fill(0);
 
         departments.forEach((department, index) => {
-            const departmentData = data[department] ?? {}; // Fallback to empty object
+            const departmentData = data[department] ?? {}; 
             belowEightyArray[index] = departmentData.belowEighty ?? 0;
             reattemptedArray[index] = departmentData.reattempted ?? 0;
             progressReattemptArray[index] = departmentData.progressReattempt ?? 0;
@@ -62,11 +62,15 @@ const useAdminDashboard = () => {
             setBelowAverageScorers(response.data.userScores?.BelowAverageScore ?? []);
 
             // Department data
+            
             const totalEmployees = mapCountsToDepartments(response.data.userCountofDepartment);
             const inactive7Days = mapCountsToDepartments(response.data.sevenDaysInactiveUsers);
             const inactive15Days = mapCountsToDepartments(response.data.fifteenDaysInactiveUsers);
             const weeklyModules = mapCountsToDepartments(response.data.getTotalDepartmentModules);
             const modulesCompleted = mapCountsToDepartments(response.data.modulesCompleted);
+
+
+            console.log(modulesCompleted)
 
             // Aggregated Data
             const { belowEightyArray, reattemptedArray, progressReattemptArray } = mapAggregatedDataToDepartments(response.data.monthlyAggregatedData);
