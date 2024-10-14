@@ -11,11 +11,13 @@ import {
 import { getTrackLevels } from "@/store/user/userActions";
 import Loader from "@/components/Loader";
 import { ArrowCircleDown } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 enum moduleStatuses {
   TO_BE_LAUNCHED = "TO_BE_LAUNCHED",
   IN_PROGRESS = "IN_PROGRESS",
   COMPLETED = "COMPLETED",
+  MISSED="MISSED"
 }
 
 const TrackLevels = () => {
@@ -30,6 +32,7 @@ const TrackLevels = () => {
       try {
         const response = await getTrackLevels();
         setTrackLevels(response);
+
       } catch (error: any) {
         setError(
           error.response?.data?.message || "Failed to fetch track levels"
@@ -99,6 +102,15 @@ export default TrackLevels;
 
 const TrackLevelsItem = ({ month }: { month: any }) => {
   const theme = useTheme();
+  const navigate=useNavigate()
+
+  const handleRedirectToReview=({date,status}:{date:string,status:moduleStatuses})=>{
+    const weekDate = new Date(date); 
+    const today=new Date()
+    if(weekDate<=today && status != moduleStatuses.IN_PROGRESS && status != moduleStatuses.TO_BE_LAUNCHED){
+      navigate(`/weekly-questions-review?date=${date}`)
+    }
+  }
   return (
     <Stack direction={"row"} gap={"16px"}>
       <Stack padding={"10px 4px"}>
@@ -120,6 +132,8 @@ const TrackLevelsItem = ({ month }: { month: any }) => {
                   ? "#FFB2B5"
                   : "transparent"
               }
+              sx={{cursor:"pointer"}}
+              onClick={()=>handleRedirectToReview({date:week.date,status:week.status})}
             />
             {weekIndex !== month.weeks.length - 1 ? (
               <Box width={"2px"} height={"24px"} bgcolor={"#FFB2B5"} />
@@ -152,6 +166,8 @@ const TrackLevelsItem = ({ month }: { month: any }) => {
                 ? "(To be launched)"
                 : week.status === moduleStatuses.COMPLETED
                 ? "(Completed)"
+                : week.status === moduleStatuses.MISSED?
+                  "(Missed)"
                 : "(In Progress)"}
             </Typography>
           </Stack>

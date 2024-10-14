@@ -18,8 +18,10 @@ export interface Question {
     optionB: string;
   };
   correctAnswerDescription?:string;
+  correctAnswer?:string;
   questionCategory: QuestionCategory;
   images?: string[];
+  userResponse:string; // Used while reviewing past modules
 }
 
 const useWeeklyQuestion = () => {
@@ -38,6 +40,7 @@ const useWeeklyQuestion = () => {
   const [answeredCount, setAnsweredCount] = useState<number>(0);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [correctAnswer, setCorrectAnswer] = useState<null | string>(null);
+
 
 
   const [time, setTime] = useState<string>("00:00");
@@ -65,7 +68,6 @@ const useWeeklyQuestion = () => {
       "0"
     )}`;
   }, []);
-
 
 
   const fetchWeeklyQuestions = useCallback(async () => {
@@ -139,7 +141,7 @@ const useWeeklyQuestion = () => {
   useEffect(() => {
     const pathname = window.location.pathname;
     // const lastPathSegment = pathname.substring(pathname.lastIndexOf('/') + 1);
-    if (!questions && !pathname.includes("insights")) {
+    if (!questions && !pathname.includes("insights") && !pathname.includes("weekly-questions-review")) {
       fetchWeeklyQuestions();
     }
   }, [fetchWeeklyQuestions]);
@@ -188,7 +190,17 @@ const useWeeklyQuestion = () => {
 
 
   const handleNextQuestion = useCallback(() => {
-    if (questions) {
+    if(window.location.pathname.includes("weekly-questions-review") && questions){
+
+      setAnsweredCount((prev)=>prev+1)
+      setCorrectAnswer(questions[answeredCount+1]?.correctAnswer??null)
+      setCurrentQuestion(questions[answeredCount+1])
+
+      if (questions.length <= answeredCount+1) {
+        navigate("completed");
+      }
+    }
+    else if (questions) {
       if (questions?.length <= answeredCount) {
         navigate("completed");
       }
@@ -216,6 +228,30 @@ const useWeeklyQuestion = () => {
     }
   }
 
+
+
+
+  const handleFetchPastWeek=async(date:string)=>{
+    setLoading(true)
+    try {
+      const response=await userApi.get("/weekly-question-review",{
+        params: { date }}
+      )
+      setModuleName(response.data.moduleName)
+      setQuestions(response.data.questions)
+      setCurrentQuestion(response.data.questions[0])
+      setCorrectAnswer(response.data.questions[0].correctAnswer)
+      // setAnsweredCount(0)
+
+    } catch (error) {
+      navigate("/home")
+      console.log(error)
+    }
+    finally{
+      setLoading(false)
+    }
+  }
+
   
 
 
@@ -235,7 +271,8 @@ const useWeeklyQuestion = () => {
     handleFetchInsights,
     handleSubmitAnswer,
     handleNextQuestion,
-    handleReattempt
+    handleReattempt,
+    handleFetchPastWeek
   };
 };
 
