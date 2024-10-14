@@ -253,8 +253,6 @@ export const respondToWeeklyQuestion = async (
   });
 };
 
-
-
 export const handleReattemptRequest = async (
   req: Request,
   res: Response,
@@ -365,3 +363,63 @@ export const handleFetchWeeklyQuestionStatus = async (
 };
 
 
+export const handleReviewPastWeek = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.user) {
+    next(new AppError("Unauthorized", 401));
+    return;
+  }
+  const { date } = req.query;
+  const { _id: userId,department} = req.user;
+
+  if(!date){
+    return next(new AppError("Bad Request: Date not given",401))
+  }
+
+  const startOfDay = new Date(date?.toString());
+  const endOfDay = new Date(date.toString());
+  endOfDay.setUTCDate(endOfDay.getUTCDate() + 1);
+
+  const weeklyQuestion = await WeeklyQuestion.findOne({
+    date: {
+      $gte: startOfDay,
+      $lt: endOfDay,
+    },
+    department
+  });
+
+  if (!weeklyQuestion) {
+    return next(new AppError("No Weekly Question Found", 404));
+  }
+
+  const userResponse = await WeeklyResponse.findOne({
+    user: userId,
+    weeklyQuestion: weeklyQuestion._id,
+  });
+
+  // console.log(weeklyQuestion.weeklyQuestionModule[0])
+  // console.log(userResponse?.userResponse[0])
+
+  const questions = weeklyQuestion.weeklyQuestionModule.map((question,index) => {
+    const userRes = userResponse?.userResponse?.find(
+      (response) => response._id === question._id
+    );
+    return {
+      questionPrompt: question.questionPrompt,
+      optionA:question.optionA,
+      optionB:question.optionB,
+      correctAnswer: question.correctOption,
+      userResponse: userResponse?.userResponse[index].response ?? null,
+    };
+  });
+
+  const response = {
+    moduleName: weeklyQuestion.moduleName,
+    questions: questions,
+  };
+
+  res.status(200).json(response)
+};

@@ -18,6 +18,7 @@ import {
   getWeeklyQuestion,
   handleFetchWeeklyQuestionStatus,
   handleReattemptRequest,
+  handleReviewPastWeek,
   respondToWeeklyQuestion,
 } from "../../controllers/WeeklyQuestionController";
 import { handleTrackLevels } from "../../controllers/trackLevel.controller";
@@ -63,6 +64,13 @@ router.get(
   authMiddleware,
   asyncHandler(fetchWeeklyQuestionInsights)
 );
+
+router.get(
+  "/weekly-question-review",
+  authMiddleware,
+  asyncHandler(handleReviewPastWeek)
+);
+
 
 router
   .route("/track-levels")
