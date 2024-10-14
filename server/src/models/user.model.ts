@@ -10,6 +10,7 @@ export enum Department {
   Others = "Others",
 }
 
+
 export interface User extends Document {
   _id: mongoose.Types.ObjectId;
   name: string;
@@ -18,10 +19,12 @@ export interface User extends Document {
   department: Department;
   contact: string;
   address: string;
+  employeeId:string;
   score: number;
   dailyQuestionResponse: string;
   refreshToken: string;
   otpData:{otp:number,expiry:Date};
+  status:"Active" | "Inactive";
   createdAt: Date;
   isPasswordCorrect(password: string): Promise<boolean>;
   generateAccessToken(): string;
@@ -34,6 +37,11 @@ const UserSchema: Schema<User> = new Schema<User>(
       type: String,
       required: true,
       trim: true,
+    },
+    employeeId:{
+      type:String,
+      // required:true,
+      trim:true,
     },
     password: {
       type: String,
@@ -76,13 +84,18 @@ const UserSchema: Schema<User> = new Schema<User>(
       type: String,
       trim: true,
     },
+    status:{
+      type:String,
+      enum:["Active","Inactive"]
+    },
     otpData:{
       type:{
         otp:Number,
         expiry:Date
       },
       default:null
-    }
+    },
+
   },
   {
     timestamps: true,

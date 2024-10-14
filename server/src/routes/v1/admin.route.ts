@@ -5,6 +5,7 @@ import { handleAdminDashboard } from "../../controllers/adminDashboard.controlle
 import { hanldeWeeklySangramStats } from "../../controllers/employeeStats.controller";
 import { employeeDailyStats } from "../../controllers/employeeDailyStats";
 import { handleDownloadBelow80Scorers, handleDownloadInactiveLast15Days, handleDownloadInactiveLast7Days, handleDownloadModulesCompleted, handleDownloadProgressReattempt, handleDownloadReattempted, handleDownloadWeeklyModules, handleTotalEmployeesDownload } from "../../controllers/adminDownload.controller";
+import { handleGetEmployeeStatus } from "../../controllers/employeeStatus.controller";
 const router = express.Router();
 
 router.route("/admin-dashboard").get(asyncHandler(handleAdminDashboard));
@@ -24,6 +25,10 @@ router.route("/download-modulesCompleted").get(asyncHandler(handleDownloadModule
 router.route("/download-below80Scorers").get(asyncHandler(handleDownloadBelow80Scorers));
 router.route("/download-reattempted").get(asyncHandler(handleDownloadReattempted));
 router.route("/download-progressReattempt").get(asyncHandler(handleDownloadProgressReattempt));
+
+
+router.route("/get-employee-status").get(asyncHandler(handleGetEmployeeStatus));
+
 
 
 

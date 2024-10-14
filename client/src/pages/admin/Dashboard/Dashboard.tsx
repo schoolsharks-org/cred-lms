@@ -119,7 +119,8 @@ const Dashboard = () => {
           alignItems={"center"}
           height={"max-content"}
           gap={"10px"}
-        >
+        > 
+          <Typography color={"#ffffff"} fontWeight={"500"} marginRight={"20px"} sx={{cursor:"pointer"}} onClick={()=>navigate("/admin/employee-status")}>Employee Status</Typography>
           <Typography color={"#ffffff"} fontWeight={"500"}>
             Download Full Report
           </Typography>
