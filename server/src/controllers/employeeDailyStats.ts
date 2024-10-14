@@ -47,7 +47,6 @@ export const employeeDailyStats = async (
     endOfWeek = new Date(year, monthNumber, 0); // Last day of the month
   }
 
-  // Adjust the end of the week to include the entire last day
   endOfWeek.setDate(endOfWeek.getDate());
   endOfWeek.setHours(23, 59, 59, 999);
 
@@ -61,7 +60,6 @@ export const employeeDailyStats = async (
     );
   }
   
-  // Get the total number of users once
   const usersCount = await User.countDocuments();
   
   const percentagesByDay = [];
@@ -98,7 +96,6 @@ export const employeeDailyStats = async (
       totalResponses += totalOptions;
     }
   
-    // Calculate the number of users who did not vote
     const usersNotVoted = usersCount - totalResponses;
   
     percentagesByDay.push({
@@ -109,6 +106,7 @@ export const employeeDailyStats = async (
         })
         .replace(/ (\d)$/, " $1th"),
       question: dailyQuestion.questionPrompt,
+      department:dailyQuestion.department,
       stats: percentages,
       Voted: totalResponses,
       NotVoted: usersNotVoted,

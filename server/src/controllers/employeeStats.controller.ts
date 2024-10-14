@@ -109,6 +109,7 @@ export const hanldeWeeklySangramStats = async (
       moduleName: weeklyQuestion.moduleName,
       date: new Date(weeklyQuestion.date).toLocaleString('en-GB', { day: 'numeric', month: 'short' }).replace(/ (\d)$/, ' $1th'),
       departmentStats,
+      department:weeklyQuestion.department
     };
   });
 

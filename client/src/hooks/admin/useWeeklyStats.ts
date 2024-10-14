@@ -1,7 +1,7 @@
 import adminApi from "@/api/adminApi";
 import { useState, useEffect } from "react";
 
-const useWeeklyStats = (month: number, year: number) => {
+const useWeeklyStats = (month: number, year: number,department:string) => {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -16,7 +16,10 @@ const useWeeklyStats = (month: number, year: number) => {
       });
 
       if (response && response.data) {
-        setData(response.data);
+        const filteredData = response.data.filter(
+          (item:any) => item.department.toLowerCase() === department.toLowerCase()
+        );
+        setData(filteredData);
       }
     } catch (err) {
       setError("Failed to fetch data");
@@ -27,7 +30,7 @@ const useWeeklyStats = (month: number, year: number) => {
 
   useEffect(() => {
     fetchData();
-  }, [month, year]);
+  }, [month, year,department]);
 
   return { data, loading, error };
 };

@@ -31,9 +31,10 @@ const months: string[] = [
   "December",
 ];
 
+export const departments = ["Sales", "Collection", "Operations", "Credit", "Others"];
+
 const weeks: string[] = ["Week-1", "Week-2", "Week-3", "Week-4"];
 const AapkiAwaaz = () => {
-  
   const theme = useTheme();
   const navigate = useNavigate();
   const [selectedMonth, setSelectedMonth] = useState<string>(
@@ -42,18 +43,20 @@ const AapkiAwaaz = () => {
   const [selectedWeek, setSelectedWeek] = useState<string>(
     `week-${Math.min(Math.ceil(new Date().getDate() / 7), 4)}`
   );
+  const [selectedDepartment, setSelectedDepartment] = useState("sales");
+
   const monthIndex =
     months.findIndex((month) => month.toLowerCase() === selectedMonth) + 1;
 
   const weekIndex =
     weeks.findIndex((week) => week.toLowerCase() === selectedWeek) + 1;
 
-  const { data, loading } = useDailyStats(monthIndex, weekIndex);
+  const { data, loading } = useDailyStats(monthIndex, weekIndex,selectedDepartment);
 
-  if(loading){
-    return <Loader/>
+  if (loading) {
+    return <Loader />;
   }
-  
+
   return (
     <Stack className="aapki-awaaz-page">
       <Header />
@@ -73,6 +76,20 @@ const AapkiAwaaz = () => {
           </Typography>
         </Stack>
         <Stack direction={"row"}>
+          <Select
+            labelId="demo-simple-select-standard-label"
+            id="demo-simple-select-standard"
+            IconComponent={ExpandMore}
+            value={selectedDepartment}
+            onChange={(e) => setSelectedDepartment(e.target.value)}
+            sx={{ color: theme.palette.text.secondary, fontSize: "1.25rem" }}
+          >
+            {departments.map((department, index) => (
+              <MenuItem key={index} value={department.toLowerCase()}>
+                {department}
+              </MenuItem>
+            ))}
+          </Select>
           <Select
             labelId="demo-simple-select-standard-label"
             id="demo-simple-select-standard"
@@ -104,18 +121,21 @@ const AapkiAwaaz = () => {
         </Stack>
       </Stack>
 
-        {!data || !data.length?<Typography textAlign={"center"}>No Data Available</Typography>:null}
+      {!data || !data.length ? (
+        <Typography textAlign={"center"}>No Data Available</Typography>
+      ) : null}
       <Stack padding={"0 24px"} gap={"48px"}>
-        {data && data.map((item,index) => (
-          <AapkiAwaazCard
-             key={index}
-            date={item.date}
-            question={"Q-"+(index+1) +" "+ item.question}
-            departments={item.stats}
-            voted={item.Voted}
-            notVoted={item.NotVoted}
-          />
-        ))}
+        {data &&
+          data.map((item:any, index) => (
+            <AapkiAwaazCard
+              key={index}
+              date={item.date}
+              question={"Q-" + (index + 1) + " " + item.question}
+              departments={item.stats}
+              voted={item.Voted}
+              notVoted={item.NotVoted}
+            />
+          ))}
         {/* <AapkiAwaazCard
           date="8th Aug"
           question="Q. Which one do you think is the most appropriate? "
@@ -137,8 +157,8 @@ export default AapkiAwaaz;
 interface ModuleCardProps {
   date: string;
   question: string;
-  voted:number;
-  notVoted:number;
+  voted: number;
+  notVoted: number;
   departments: {
     Sales: { OptionA: number; OptionB: number };
     Credit: { OptionA: number; OptionB: number };
@@ -152,7 +172,7 @@ const AapkiAwaazCard: React.FC<ModuleCardProps> = ({
   question,
   departments,
   voted,
-  notVoted
+  notVoted,
 }) => {
   const theme = useTheme();
   return (

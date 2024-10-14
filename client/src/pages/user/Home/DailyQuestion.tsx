@@ -80,7 +80,7 @@ const DailyQuestion = () => {
                   color={theme.palette.text.secondary}
                   fontWeight={"600"}
                 >
-                  250
+                  {dailyQuestionData?.peopleResponded}
                 </Typography>
                 <img src={userCheckedIcon} alt="" />
               </Stack>

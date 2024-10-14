@@ -36,6 +36,7 @@ const months: string[] = [
   "November",
   "December",
 ];
+const departments = ["Sales", "Collection", "Operations", "Credit", "Others"];
 
 const WeeklySangram = () => {
   const theme = useTheme();
@@ -43,11 +44,17 @@ const WeeklySangram = () => {
     months[new Date().getMonth()].toLowerCase()
   );
 
+  const [selectedDepartment, setSelectedDepartment] = useState("sales");
+
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
   const monthIndex =
     months.findIndex((month) => month.toLowerCase() === selectedMonth) + 1;
-  const { data, loading } = useWeeklyStats(monthIndex, currentYear);
+  const { data, loading } = useWeeklyStats(
+    monthIndex,
+    currentYear,
+    selectedDepartment
+  );
 
   const handleMonthChange = (event: SelectChangeEvent<string>) => {
     setSelectedMonth(event.target.value);
@@ -74,20 +81,36 @@ const WeeklySangram = () => {
             Weekly Sangram
           </Typography>
         </Stack>
-        <Select
-          labelId="demo-simple-select-standard-label"
-          id="demo-simple-select-standard"
-          IconComponent={ExpandMore}
-          value={selectedMonth}
-          onChange={handleMonthChange}
-          sx={{ color: theme.palette.text.secondary, fontSize: "1.25rem" }}
-        >
-          {months.map((month, index) => (
-            <MenuItem key={index} value={month.toLowerCase()}>
-              {month}
-            </MenuItem>
-          ))}
-        </Select>
+        <Stack direction={"row"}>
+          <Select
+            labelId="demo-simple-select-standard-label"
+            id="demo-simple-select-standard"
+            IconComponent={ExpandMore}
+            value={selectedDepartment}
+            onChange={(e) => setSelectedDepartment(e.target.value)}
+            sx={{ color: theme.palette.text.secondary, fontSize: "1.25rem" }}
+          >
+            {departments.map((department, index) => (
+              <MenuItem key={index} value={department.toLowerCase()}>
+                {department}
+              </MenuItem>
+            ))}
+          </Select>
+          <Select
+            labelId="demo-simple-select-standard-label"
+            id="demo-simple-select-standard"
+            IconComponent={ExpandMore}
+            value={selectedMonth}
+            onChange={handleMonthChange}
+            sx={{ color: theme.palette.text.secondary, fontSize: "1.25rem" }}
+          >
+            {months.map((month, index) => (
+              <MenuItem key={index} value={month.toLowerCase()}>
+                {month}
+              </MenuItem>
+            ))}
+          </Select>
+        </Stack>
       </Stack>
 
       {/* Modules */}
@@ -200,11 +223,35 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ name, date, data }) => {
         marginTop={"48px"}
         position={"relative"}
       >
-        <MarkerCicle width="20px" color="#2874BA" left={data.find((item)=>item.department==="Sales").averageScore} />
-        <MarkerCicle width="20px" color="#FFDD00" left={data.find((item)=>item.department==="Credit").averageScore} />
-        <MarkerCicle width="20px" color="#AA75CB" left={data.find((item)=>item.department==="Collection").averageScore} />
-        <MarkerCicle width="20px" color="#000000" left={data.find((item)=>item.department==="Operations").averageScore} />
-        <MarkerCicle width="20px" color="#32FF21" left={data.find((item)=>item.department==="Others").averageScore} />
+        <MarkerCicle
+          width="20px"
+          color="#2874BA"
+          left={data.find((item) => item.department === "Sales").averageScore}
+        />
+        <MarkerCicle
+          width="20px"
+          color="#FFDD00"
+          left={data.find((item) => item.department === "Credit").averageScore}
+        />
+        <MarkerCicle
+          width="20px"
+          color="#AA75CB"
+          left={
+            data.find((item) => item.department === "Collection").averageScore
+          }
+        />
+        <MarkerCicle
+          width="20px"
+          color="#000000"
+          left={
+            data.find((item) => item.department === "Operations").averageScore
+          }
+        />
+        <MarkerCicle
+          width="20px"
+          color="#32FF21"
+          left={data.find((item) => item.department === "Others").averageScore}
+        />
         <Box
           sx={{
             width: 0,
@@ -214,7 +261,9 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ name, date, data }) => {
             borderBottom: "20px solid #F40009",
             position: "absolute",
             bottom: "0",
-            left: `${data.find((item)=>item.department==="Average").averageScore}%`,
+            left: `${
+              data.find((item) => item.department === "Average").averageScore
+            }%`,
             transform: "translateX(-50%)",
           }}
         />
@@ -309,7 +358,7 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ name, date, data }) => {
                   key={index}
                   sx={{ border: "1px solid black" }}
                 >
-                  {item.averageScore !== null ? item.averageScore+"%" : "N/A"}
+                  {item.averageScore !== null ? item.averageScore + "%" : "N/A"}
                 </TableCell>
               ))}
             </TableRow>
@@ -347,6 +396,3 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ name, date, data }) => {
     </Stack>
   );
 };
-
-
-

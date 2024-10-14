@@ -16,6 +16,7 @@ export interface DailyQuestion {
     optionA:string;
     optionB:string;
   };
+  peopleResponded:number,
   stats?: {
     Sales: {
       OptionA: number;

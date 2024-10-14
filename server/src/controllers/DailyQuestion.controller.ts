@@ -39,6 +39,11 @@ export const getDailyQuestion = async (
       dailyQuestion: dailyQuestion._id,
     });
     
+    const peopleResponded = Object.values(dailyQuestion.departmentResponses).reduce(
+      (a, b) => a + b.OptionA+b.OptionB, 
+      0 
+    );
+
     const response = {
       question: dailyQuestion.questionPrompt,
       options: {
@@ -46,6 +51,7 @@ export const getDailyQuestion = async (
         OptionB: dailyQuestion.options.optionB,
       },
       optionTexts:dailyQuestion.optionTexts,
+      peopleResponded,
       userResponse: userResponse ? userResponse.userResponse : "Not Answered",
       correctOption:userResponse ? dailyQuestion.correctOption : "Not Answered",
       stats: userResponse ? {
